@@ -16,6 +16,16 @@ const Cadastro = () => {
         e.preventDefault();
         setErro("");
 
+        // Validações antes de enviar ao Firebase
+        if (nome.trim() === "") {
+            setErro("O nome não pode estar vazio.");
+            return;
+        }
+        if (senha.length < 6) {
+            setErro("A senha deve ter pelo menos 6 caracteres.");
+            return;
+        }
+
         try {
             // Criar usuário no Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
@@ -24,20 +34,28 @@ const Cadastro = () => {
             // Atualiza o nome do usuário no Firebase Auth
             await updateProfile(user, { displayName: nome });
 
-            // Salva os dados no Firestore
+            // Salva os dados do usuário no Firestore
             await setDoc(doc(db, "usuarios", user.uid), {
                 nome: nome,
-                email: email
+                email: email,
+                senha: senha // Não recomendado salvar senhas diretamente, mas mantive conforme sua solicitação.
             });
 
-            // Armazena o nome do usuário no LocalStorage para exibir na Home
+            // Armazena o nome do usuário no LocalStorage para exibição nas telas
             localStorage.setItem("usuarioNome", nome);
 
             alert("Cadastro realizado com sucesso!");
-            navigate("/home"); // Redireciona para a tela inicial
+            navigate("/logado"); // Redireciona para a tela Logado
         } catch (error) {
-            setErro("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
             console.error("Erro no cadastro:", error.message);
+
+            if (error.code === "auth/email-already-in-use") {
+                setErro("Este email já está cadastrado. Faça login ou redefina sua senha.");
+            } else if (error.code === "auth/weak-password") {
+                setErro("A senha deve ter pelo menos 6 caracteres.");
+            } else {
+                setErro("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
+            }
         }
     };
 
@@ -46,15 +64,30 @@ const Cadastro = () => {
             <h2>Cadastro</h2>
             <form onSubmit={handleCadastro}>
                 <label>Nome:</label>
-                <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
+                <input
+                    type="text"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    required
+                />
 
                 <label>Email:</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
 
                 <label>Senha:</label>
-                <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+                <input
+                    type="password"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    required
+                />
 
-                <button type="submit">Cadastrar</button>
+                <button className="cadastro-button" type="submit">Cadastrar</button>
 
                 {erro && <p className="erro">{erro}</p>}
             </form>
