@@ -1,3 +1,4 @@
+import "./EsqueciSenha.css";
 import { useState } from "react";
 import { auth } from "../config/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";

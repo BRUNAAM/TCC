@@ -1,3 +1,5 @@
+import "./Cob.css";
+
 const Cob = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">

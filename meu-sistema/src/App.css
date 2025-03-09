@@ -1,5 +1,5 @@
 /* ================== */
-/* 🌎 Estilos Globais */
+/* 🌎 Estilos Globais (Cores e Layout Geral) */
 /* ================== */
 * {
   margin: 0;
@@ -19,125 +19,8 @@ body {
   padding: 20px;
 }
 
-/* ================== */
-/* 📌 Estrutura Geral */
-/* ================== */
+/* Centralização de containers */
 .container {
   width: 90%;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.15);
-  /* Mais transparência */
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  /* Efeito vidro fosco */
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* ================== */
-/* 🔹 Estilos de Formulário */
-/* ================== */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  /* Mais espaçamento entre os inputs */
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-size: 16px;
-  outline: none;
-  text-align: center;
-  transition: all 0.3s ease-in-out;
-}
-
-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-input:focus {
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5);
-}
-
-/* ================== */
-/* 🔘 Botões */
-/* ================== */
-button {
-  width: 100%;
-  padding: 14px;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  text-transform: uppercase;
-}
-
-.btn-primary {
-  background: rgba(212, 160, 23, 0.8);
-  /* Transparente */
-  color: black;
-}
-
-.btn-primary:hover {
-  background: rgba(212, 160, 23, 1);
-  transform: scale(1.05);
-}
-
-.btn-danger {
-  background: rgba(255, 0, 0, 0.8);
-  /* Transparente */
-  color: white;
-}
-
-.btn-danger:hover {
-  background: rgba(255, 0, 0, 1);
-  transform: scale(1.05);
-}
-
-/* ================== */
-/* 📏 Espaçamento Entre Elementos */
-/* ================== */
-.container h2 {
-  margin-bottom: 20px;
-}
-
-button {
-  margin-top: 15px;
-}
-
-/* ================== */
-/* 📱 Responsividade */
-/* ================== */
-@media screen and (max-width: 600px) {
-  .container {
-    width: 95%;
-  }
-
-  input,
-  button {
-    font-size: 14px;
-    padding: 12px;
-  }
-}
-
-@media screen and (max-width: 400px) {
-  h2 {
-    font-size: 20px;
-  }
-
-  input,
-  button {
-    font-size: 14px;
-    padding: 10px;
-  }
 }

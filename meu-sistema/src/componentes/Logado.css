@@ -1,0 +1,102 @@
+/* ================== */
+/* 🎨 Estilos da Tela Logado */
+/* ================== */
+
+.logado-container {
+    background: rgba(255, 255, 255, 0.12);
+    /* Transparência leve */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    /* Efeito vidro fosco */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease-in-out;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.logado-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 10px 25px rgba(255, 255, 255, 0.3);
+}
+
+.logado-container h2 {
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+/* ================== */
+/* 🏷 Estilização das Opções */
+/* ================== */
+.logado-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    /* Espaçamento entre as opções */
+    align-items: center;
+    margin-top: 20px;
+}
+
+.logado-button {
+    width: 100%;
+    max-width: 300px;
+    /* Define um limite para o tamanho */
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(212, 160, 23, 0.8);
+    color: black;
+    box-shadow: 0px 4px 10px rgba(255, 204, 0, 0.3);
+}
+
+.logado-button:hover {
+    background: rgba(212, 160, 23, 1);
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(255, 204, 0, 0.5);
+}
+
+/* Botão de Logout em vermelho */
+.logado-button.logout {
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.3);
+}
+
+.logado-button.logout:hover {
+    background: rgba(255, 0, 0, 1);
+    transform: scale(1.05);
+    box-shadow: 0px 6px 15px rgba(255, 0, 0, 0.5);
+}
+
+/* ================== */
+/* 📱 Responsividade */
+/* ================== */
+@media screen and (max-width: 600px) {
+    .logado-container {
+        width: 95%;
+    }
+
+    .logado-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    .logado-button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}

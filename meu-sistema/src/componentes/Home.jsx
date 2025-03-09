@@ -1,16 +1,23 @@
 import { useNavigate } from "react-router-dom";
+import "./Home.css";
+import logo from "../assets/logo.svg";
 
 const Home = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <h2 className="text-2xl font-bold">Bem-vindo à Página Inicial!</h2>
-            <button
-                className="bg-red-500 text-white p-2 rounded mt-4"
-                onClick={() => navigate("/")}>
-                Sair
-            </button>
+        <div className="home-container">
+            <div className="home-content">
+                <img src={logo} alt="Coffee Grader" className="home-logo" />
+                <h1>Bem-vindo ao Coffee Grader</h1>
+                <p> O SISTEMA QUE VAI TE AJUDAR ADMINISTRAR <br /> COM PRATICIDADE E ORGANIZAÇÃO <br />SUAS AVALIAÇÕES .</p>
+
+                {/* Adicionar imagem ou logo */}
+
+                <button onClick={() => navigate("/login")} className="home-button">
+                    Entrar no Sistema
+                </button>
+            </div>
         </div>
     );
 };

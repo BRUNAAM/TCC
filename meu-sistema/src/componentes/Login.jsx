@@ -1,3 +1,4 @@
+import "./Login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
@@ -19,12 +20,13 @@ const Login = () => {
     };
 
     return (
-        <div className="container">
+        <div className="login-container">
             <h2>FAÇA SEU LOGIN</h2>
             <form onSubmit={handleLogin}>
                 <input
                     type="email"
                     placeholder="E-mail"
+                    className="login-input"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -32,18 +34,21 @@ const Login = () => {
                 <input
                     type="password"
                     placeholder="Senha"
+                    className="login-input"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     required
                 />
-                <button className="btn-primary" type="submit">Entrar</button>
+                <button className="login-button" type="submit">Entrar</button>
             </form>
-            <button className="btn-primary" onClick={() => navigate("/cadastro")}>
+
+            <button className="login-button secondary" onClick={() => navigate("/cadastro")}>
                 Criar Conta
             </button>
-            <button className="btn-danger" onClick={() => navigate("/esqueci-senha")}>
+
+            <p className="esqueci-senha" onClick={() => navigate("/esqueci-senha")}>
                 Esqueci minha senha
-            </button>
+            </p>
         </div>
     );
 };

@@ -1,0 +1,53 @@
+.cadastro-container {
+    text-align: center;
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.cadastro-container h2 {
+    font-size: 24px;
+    color: white;
+}
+
+.cadastro-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.cadastro-container label {
+    text-align: left;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.cadastro-container input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: none;
+    width: 100%;
+}
+
+.cadastro-container button {
+    padding: 10px;
+    background: #8B4513;
+    /* Cor de café */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cadastro-container button:hover {
+    background: #6B3A1B;
+}
+
+.erro {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
