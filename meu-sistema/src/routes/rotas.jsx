@@ -14,14 +14,14 @@ const Rotas = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Login />} />
-                <Route path="/cadastro" element={<Cadastro />} />
-                <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+                <Route path="/Cadastro" element={<Cadastro />} />
+                <Route path="/Esqueci-senha" element={<EsqueciSenha />} />
                 <Route element={<PrivateRoute />}>
-                    <Route path="/logado" element={<Logado />} />
-                    <Route path="/scaa" element={<Scaa />} /> {/* Rota SCAA */}
-                    <Route path="/cob" element={<Cob />} />
-                    <Route path="/cadastro-fornecedores" element={<CadastroFornecedores />} />
-                    <Route path="/configuracoes" element={<Configuracoes />} />
+                    <Route path="/Logado" element={<Logado />} />
+                    <Route path="/Scaa" element={<Scaa />} /> {/* Rota SCAA */}
+                    <Route path="/Cob" element={<Cob />} />
+                    <Route path="/Cadastro-Fornecedores" element={<CadastroFornecedores />} />
+                    <Route path="/Configuracoes" element={<Configuracoes />} />
                 </Route>
             </Routes>
         </Router>

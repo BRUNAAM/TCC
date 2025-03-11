@@ -45,7 +45,7 @@ const Cadastro = () => {
             localStorage.setItem("usuarioNome", nome);
 
             alert("Cadastro realizado com sucesso!");
-            navigate("/logado"); // Redireciona para a tela Logado
+            navigate("/Login"); // Redireciona para a tela Logado
         } catch (error) {
             console.error("Erro no cadastro:", error.message);
 
