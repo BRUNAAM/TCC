@@ -20,7 +20,7 @@ const Login = () => {
             const user = userCredential.user;
 
             // Buscar o nome do usuário no Firestore
-            const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+            const userDoc = await getDoc(doc(db, "usuario", user.uid));
             if (userDoc.exists()) {
                 const nomeUsuario = userDoc.data().nome;
 

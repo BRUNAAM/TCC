@@ -35,7 +35,7 @@ const Logado = () => {
     const handleLogout = async () => {
         await signOut(auth);
         localStorage.removeItem("usuarioNome");
-        navigate("/home");
+        navigate("/Logado");
     };
 
     return (

@@ -33,13 +33,13 @@ const EsqueciSenha = () => {
                     onChange={(e) => setEmail(e.target.value)} 
                     required 
                 />
-                <button className="bg-blue-500 text-white p-2 rounded" type="submit">
+                <button className="enviar" type="submit">
                     Enviar link de recuperação
                 </button>
             </form>
-            {mensagem && <p className="mt-4 text-green-500">{mensagem}</p>}
-            <p className="mt-4">
-                Lembrou a senha? <button className="text-blue-500" onClick={() => navigate("/")}>Fazer Login</button>
+            {mensagem && <p className="">{mensagem}</p>}
+            <p className="lembrou">
+                Lembrou a senha? <button className="" onClick={() => navigate("/")}>Voltar</button>
             </p>
         </div>
     );

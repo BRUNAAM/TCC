@@ -1,12 +1,19 @@
-
-.home-content h1 {
-    font-size: 28px;
-    margin-bottom: 10px;
+.home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
 }
 
-.home-content p {
-    font-size: 18px;
-    margin-bottom: 20px;
+.home-content {
+    background: rgba(0, 0, 0, 0.7);
+    /* Fundo semi-transparente para contraste */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
+    max-width: 600px;
+    width: 90%;
 }
 
 .home-logo {
@@ -14,35 +21,71 @@
     margin-bottom: 20px;
 }
 
+h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #BF9108;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #fff;
+}
+
 .home-button {
+    margin-top: 20px;
     padding: 12px 20px;
-    font-size: 16px;
-    color: white;
-    background: #0c0500;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    background: #BF9108;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.3s ease-in-out;
 }
 
 .home-button:hover {
-    background: #494949;
-}
-
-.home-logo {
-    width: 300px;
-    /* Aumentando o tamanho da imagem */
-    height: auto;
-    /* Mantém a proporção original */
-    margin-bottom: 20px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    transition: transform 0.3s ease-in-out;
-    /* Efeito suave ao passar o mouse */
-}
-
-.home-logo:hover {
+    background: #e0a817;
     transform: scale(1.05);
-    /* Pequeno efeito de zoom ao passar o mouse */
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .home-content {
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .home-button {
+        font-size: 16px;
+        padding: 10px 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-content {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+
+    .home-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
 }

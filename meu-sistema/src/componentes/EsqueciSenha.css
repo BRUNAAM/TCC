@@ -1,0 +1,116 @@
+.esqueci-senha-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+h2 {
+    font-size: 26px;
+    color: #BF9108;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
+    max-width: 400px;
+    width: 90%;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #BF9108;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    background-color: #fff;
+}
+
+.enviar {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    background: #BF9108;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.enviar:hover {
+    background: #e0a817;
+    transform: scale(1.05);
+}
+
+.mensagem {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #4CAF50;
+}
+
+.lembrou {
+    margin-top: 20px;
+}
+
+.lembrou button {
+    background: none;
+    border: none;
+    color: #BF9108;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.lembrou button:hover {
+    color: #e0a817;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 25px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    .enviar {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .enviar {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

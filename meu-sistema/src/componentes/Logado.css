@@ -1,0 +1,93 @@
+.logado-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+h2 {
+    font-size: 28px;
+    color: #BF9108;
+    margin-bottom: 20px;
+}
+
+.botoes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.botoes-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    background: #BF9108;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.botoes-container button:hover {
+    background: #e0a817;
+    transform: scale(1.05);
+}
+
+.logout-button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #BF9108;
+    background: none;
+    border: 2px solid #BF9108;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.logout-button:hover {
+    background: #BF9108;
+    color: #000;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 24px;
+    }
+
+    .botoes-container button {
+        font-size: 16px;
+    }
+
+    .logout-button {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    .botoes-container {
+        max-width: 300px;
+    }
+
+    .botoes-container button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .logout-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
