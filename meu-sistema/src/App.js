@@ -1,5 +1,5 @@
-import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
 import Home from "./componentes/Home";
 import Login from "./componentes/Login";
 import Cadastro from "./componentes/Cadastro";
@@ -14,13 +14,13 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/logado" element={<Logado />} />
-        <Route path="/esquecisenha" element={<EsqueciSenha />} />
-        <Route path="/cob" element={<Cob />} />
-        <Route path="/scaa" element={<Scaa />} />
-        <Route path="/cadastrofornecedores" element={<CadastroFornecedores />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Cadastro" element={<Cadastro />} />
+        <Route path="/Logado" element={<Logado />} />
+        <Route path="/EsqueciSenha" element={<EsqueciSenha />} />
+        <Route path="/Cob" element={<Cob />} />
+        <Route path="/Scaa" element={<Scaa />} />
+        <Route path="/CadastroFornecedores" element={<CadastroFornecedores />} />
       </Routes>
     </Router>
   );
