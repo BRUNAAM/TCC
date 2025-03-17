@@ -19,16 +19,16 @@ const Login = () => {
             const userCredential = await signInWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
 
-            let nomeUsuario = user.displayName || ""; // Se o nome já estiver salvo no Firebase Auth
+            let usuarioNome = user.displayName || ""; // Se o nome já estiver salvo no Firebase Auth
 
             // Buscar nome salvo no Firestore
             const userDoc = await getDoc(doc(db, "usuarios", user.uid)); // Corrigido de "usuario" para "usuarios"
             if (userDoc.exists()) {
-                nomeUsuario = userDoc.data().nome;
+                usuarioNome = userDoc.data().nome;
             }
 
             // Armazena o nome no LocalStorage para acesso em outras telas
-            localStorage.setItem("usuarioNome", nomeUsuario);
+            localStorage.setItem("usuarioNome", usuarioNome);
 
             navigate("/Logado"); // Redireciona para a tela Logado
         } catch (error) {

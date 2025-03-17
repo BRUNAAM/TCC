@@ -40,7 +40,7 @@ const Logado = () => {
 
     return (
         <div className="logado-container">
-            <h2>Bem-vindo, {usuarioNome || "Usuário"}!</h2>
+            <h2>Bem-vindo, {usuarioNome}!</h2>
 
             <div className="botoes-container">
                 <button onClick={() => navigate("/Cob")}>Avaliação COB</button>

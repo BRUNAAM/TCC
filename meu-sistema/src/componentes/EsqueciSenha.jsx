@@ -41,13 +41,13 @@ const EsqueciSenha = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <h2 className="text-2xl font-bold">Recuperar Senha</h2>
-            <form onSubmit={handleResetPassword} className="flex flex-col gap-4 p-6 shadow-md">
+        <div className="">
+            <h2 className="">Recuperar Senha</h2>
+            <form onSubmit={handleResetPassword} className="">
                 <input
                     type="email"
                     placeholder="Digite seu e-mail"
-                    className="border p-2 rounded"
+                    className=""
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

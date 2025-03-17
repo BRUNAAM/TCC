@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Home from "./componentes/Home";
-import Login from "./componentes/Login";
-import Cadastro from "./componentes/Cadastro";
-import Logado from "./componentes/Logado";
-import EsqueciSenha from "./componentes/EsqueciSenha";
-import Cob from "./componentes/Cob";  // Importando a Tela COB
-import Scaa from "./componentes/Scaa";  // Importando a Tela SCAA
-import Fornecedores from "./componentes/Fornecedores"; // Importando Cadastro de Fornecedores
+import Login from "./Componentes/Login";
+import Cadastro from "./Componentes/Cadastro";
+import Logado from "./Componentes/Logado";
+import EsqueciSenha from "./Componentes/EsqueciSenha";
+import Cob from "./Componentes/Cob";  // Importando a Tela COB
+import Scaa from "./Componentes/Scaa";  // Importando a Tela SCAA
+import Fornecedores from "./Componentes/Fornecedores"; // Importando Cadastro de Fornecedores
 
 function App() {
   return (
