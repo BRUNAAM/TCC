@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "./Login.css";
 
-const login = () => {
+const Login = () => {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
@@ -84,4 +84,4 @@ const login = () => {
     );
 };
 
-export default login;
+export default Login;

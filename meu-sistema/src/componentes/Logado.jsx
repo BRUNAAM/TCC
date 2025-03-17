@@ -5,7 +5,7 @@ import { signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "./Logado.css";
 
-const logado = () => {
+const Logado = () => {
     const [usuarioNome, setUsuarioNome] = useState("");
     const navigate = useNavigate();
 
@@ -53,4 +53,4 @@ const logado = () => {
     );
 };
 
-export default logado;
+export default Logado;

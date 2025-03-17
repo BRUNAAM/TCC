@@ -1,6 +1,6 @@
 import "./Scaa.css";
 
-const scaa = () => {
+const Scaa = () => {
     return <h2>Página SCAA em construção</h2>;
 };
-export default scaa;
+export default Scaa;

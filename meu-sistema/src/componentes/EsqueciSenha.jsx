@@ -4,7 +4,7 @@ import { auth } from "../config/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const esquecisenha = () => {
+const EsqueciSenha = () => {
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [erro, setErro] = useState("");
@@ -67,4 +67,4 @@ const esquecisenha = () => {
     );
 };
 
-export default esquecisenha;
+export default EsqueciSenha;

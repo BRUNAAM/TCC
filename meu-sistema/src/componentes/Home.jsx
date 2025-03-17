@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import logo from "../assets/logo.svg";
 
-const home = () => {
+const Home = () => {
     const navigate = useNavigate();
 
     return (
@@ -19,4 +19,4 @@ const home = () => {
     );
 };
 
-export default home;
+export default Home;

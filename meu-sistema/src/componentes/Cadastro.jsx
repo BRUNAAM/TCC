@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-const cadastro = () => {
+const Cadastro = () => {
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
@@ -109,4 +109,4 @@ const cadastro = () => {
     );
 };
 
-export default cadastro;
+export default Cadastro;

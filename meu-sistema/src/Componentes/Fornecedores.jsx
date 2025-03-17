@@ -1,5 +1,5 @@
 import "./Fornecedores.css";
-const fornecedores = () => {
+const Fornecedores = () => {
     return (
         <div className="Fornecedores">
             <h2 className="">Cadastro de Fornecedores</h2>
@@ -7,4 +7,4 @@ const fornecedores = () => {
     );
 };
 
-export default fornecedores;
+export default Fornecedores;
