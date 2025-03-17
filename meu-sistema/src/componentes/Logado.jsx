@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../config/firebase";
+import { auth, db } from "../Config/Firebase";
 import { signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "./Logado.css";
@@ -43,9 +43,9 @@ const Logado = () => {
             <h2>Bem-vindo, {usuarioNome || "Usuário"}!</h2>
 
             <div className="botoes-container">
-                <button onClick={() => navigate("/cob")}>Avaliação COB</button>
-                <button onClick={() => navigate("/scaa")}>Avaliação SCAA</button>
-                <button onClick={() => navigate("/cadastroprodutores")}>Cadastrar Produtores</button>
+                <button onClick={() => navigate("/Cob")}>Avaliação COB</button>
+                <button onClick={() => navigate("/Scaa")}>Avaliação SCAA</button>
+                <button onClick={() => navigate("/Fornecedores")}>Cadastrar Produtores</button>
             </div>
 
             <button className="logout-button" onClick={handleLogout}>Sair</button>

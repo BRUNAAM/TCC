@@ -7,7 +7,7 @@ import Logado from "./componentes/Logado";
 import EsqueciSenha from "./componentes/EsqueciSenha";
 import Cob from "./componentes/Cob";  // Importando a Tela COB
 import Scaa from "./componentes/Scaa";  // Importando a Tela SCAA
-import CadastroFornecedores from "./componentes/CadastroFornecedores"; // Importando Cadastro de Fornecedores
+import Fornecedores from "./componentes/Fornecedores"; // Importando Cadastro de Fornecedores
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
         <Route path="/EsqueciSenha" element={<EsqueciSenha />} />
         <Route path="/Cob" element={<Cob />} />
         <Route path="/Scaa" element={<Scaa />} />
-        <Route path="/CadastroFornecedores" element={<CadastroFornecedores />} />
+        <Route path="/Fornecedores" element={<Fornecedores />} />
       </Routes>
     </Router>
   );
