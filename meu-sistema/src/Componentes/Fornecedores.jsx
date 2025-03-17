@@ -1,4 +1,4 @@
-import "./fornecedores.css";
+import "./Fornecedores.css";
 const fornecedores = () => {
     return (
         <div className="Fornecedores">

@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./componentes/home";
-import Login from "./componentes/login";
-import Cadastro from "./componentes/cadastro";
-import Logado from "./componentes/logado";
-import Scaa from "./componentes/scaa"; // Adicionando SCAA
-import Cob from "./componentes/cob";
-import Fornecedores from "./componentes/fornecedores";
-import EsqueciSenha from "./componentes/esquecisenha";
-import PrivateRoute from "./privateroute";
+import Home from "../componentes/Home";
+import Login from "../componentes/Login";
+import Cadastro from "../componentes/Cadastro";
+import Logado from "../componentes/Logado";
+import Scaa from "../componentes/Scaa"; // Adicionando SCAA
+import Cob from "../componentes/Cob";
+import Fornecedores from "../componentes/Fornecedores";
+import EsqueciSenha from "../componentes/EsqueciSenha";
+import PrivateRoute from "./PrivateRoute";
 
 const rotas = () => {
     return (

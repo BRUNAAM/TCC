@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import "./logado.css";
+import "./Logado.css";
 
 const logado = () => {
     const [usuarioNome, setUsuarioNome] = useState("");

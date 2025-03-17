@@ -3,7 +3,7 @@ import { auth, db } from "../config/firebase";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
-const privateroute = () => {
+const PrivateRoute = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -24,4 +24,4 @@ const privateroute = () => {
     return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-export default privateroute;
+export default PrivateRoute;

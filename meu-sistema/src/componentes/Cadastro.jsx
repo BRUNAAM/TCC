@@ -1,4 +1,4 @@
-import "./cadastro.css";
+import "./Cadastro.css";
 import { useState } from "react";
 import { auth, db } from "../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
