@@ -1,11 +1,11 @@
-import "./Cadastro.css";
+import "./cadastro.css";
 import { useState } from "react";
-import { auth, db } from "../Config/Firebase";
+import { auth, db } from "../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-const Cadastro = () => {
+const cadastro = () => {
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
@@ -53,7 +53,7 @@ const Cadastro = () => {
             localStorage.setItem("usuarioNome", nome);
 
             alert("Cadastro realizado com sucesso!");
-            navigate("/Login"); // Redireciona para a tela de login
+            navigate("/login"); // Redireciona para a tela de login
         } catch (error) {
             console.error("Erro no cadastro:", error.message);
 
@@ -109,4 +109,4 @@ const Cadastro = () => {
     );
 };
 
-export default Cadastro;
+export default cadastro;

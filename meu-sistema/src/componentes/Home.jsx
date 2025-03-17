@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import "./home.css";
 import logo from "../assets/logo.svg";
 
-const Home = () => {
+const home = () => {
     const navigate = useNavigate();
 
     return (
@@ -11,7 +11,7 @@ const Home = () => {
                 <img src={logo} alt="Coffee Grader" className="home-logo" />
                 <h1>Bem-vindo ao Coffee Grader</h1>
                 <p> O SISTEMA QUE VAI TE AJUDAR ADMINISTRAR <br /> COM PRATICIDADE E ORGANIZAÇÃO <br />SUAS AVALIAÇÕES .</p>
-                <button onClick={() => navigate("/Login")} className="home-button">
+                <button onClick={() => navigate("/login")} className="home-button">
                     Entrar no Sistema
                 </button>
             </div>
@@ -19,4 +19,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default home;

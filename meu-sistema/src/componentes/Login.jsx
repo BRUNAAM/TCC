@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../Config/Firebase";
+import { auth, db } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import "./Login.css";
+import "./login.css";
 
-const Login = () => {
+const login = () => {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
@@ -30,7 +30,7 @@ const Login = () => {
             // Armazena o nome no LocalStorage para acesso em outras telas
             localStorage.setItem("usuarioNome", usuarioNome);
 
-            navigate("/Logado"); // Redireciona para a tela Logado
+            navigate("/logado"); // Redireciona para a tela Logado
         } catch (error) {
             if (error.code === "auth/user-not-found") {
                 setErro("Usuário não encontrado. Verifique o e-mail e tente novamente.");
@@ -66,14 +66,14 @@ const Login = () => {
 
                     <button className="login-button" type="submit">ENTRAR</button>
 
-                    <button className="register-button" onClick={() => navigate("/Cadastro")} type="button">
+                    <button className="register-button" onClick={() => navigate("/cadastro")} type="button">
                         CRIAR CONTA
                     </button>
 
                     <p className="forgot-password">
                         <button
                             className="forgot-password-link"
-                            onClick={() => navigate("/EsqueciSenha")}
+                            onClick={() => navigate("/esquecisenha")}
                         >
                             Esqueci minha senha
                         </button>
@@ -84,4 +84,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default login;

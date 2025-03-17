@@ -1,10 +1,10 @@
-import "./EsqueciSenha.css";
+import "./esquecisenha.css";
 import { useState } from "react";
-import { auth } from "../Config/Firebase";
+import { auth } from "../config/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const EsqueciSenha = () => {
+const esquecisenha = () => {
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [erro, setErro] = useState("");
@@ -67,4 +67,4 @@ const EsqueciSenha = () => {
     );
 };
 
-export default EsqueciSenha;
+export default esquecisenha;

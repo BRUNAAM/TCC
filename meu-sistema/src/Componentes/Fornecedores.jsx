@@ -1,5 +1,5 @@
-import "./Fornecedores.css";
-const Fornecedores = () => {
+import "./fornecedores.css";
+const fornecedores = () => {
     return (
         <div className="Fornecedores">
             <h2 className="">Cadastro de Fornecedores</h2>
@@ -7,4 +7,4 @@ const Fornecedores = () => {
     );
 };
 
-export default Fornecedores;
+export default fornecedores;

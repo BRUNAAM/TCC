@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { auth } from "../Config/Firebase";
+import { auth, db } from "../config/firebase";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
-const PrivateRoute = () => {
+const privateroute = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -21,7 +21,7 @@ const PrivateRoute = () => {
         return null; // Não renderiza nada enquanto verifica a autenticação
     }
 
-    return user ? <Outlet /> : <Navigate to="/Login" replace />;
+    return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-export default PrivateRoute;
+export default privateroute;

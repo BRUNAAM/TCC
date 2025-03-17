@@ -1,26 +1,25 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
-import Home from "./componentes/Home";
-import Login from "./Componentes/Login";
-import Cadastro from "./Componentes/Cadastro";
-import Logado from "./Componentes/Logado";
-import EsqueciSenha from "./Componentes/EsqueciSenha";
-import Cob from "./Componentes/Cob";  // Importando a Tela COB
-import Scaa from "./Componentes/Scaa";  // Importando a Tela SCAA
-import Fornecedores from "./Componentes/Fornecedores"; // Importando Cadastro de Fornecedores
+import Home from "./componentes/home";
+import Login from "./componentes/login";
+import Cadastro from "./componentes/cadastro";
+import Logado from "./componentes/logado";
+import Scaa from "./componentes/scaa"; // Adicionando SCAA
+import Cob from "./componentes/cob";
+import Fornecedores from "./componentes/fornecedores";
+import EsqueciSenha from "./componentes/esquecisenha";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Cadastro" element={<Cadastro />} />
-        <Route path="/Logado" element={<Logado />} />
-        <Route path="/EsqueciSenha" element={<EsqueciSenha />} />
-        <Route path="/Cob" element={<Cob />} />
-        <Route path="/Scaa" element={<Scaa />} />
-        <Route path="/Fornecedores" element={<Fornecedores />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/logado" element={<Logado />} />
+        <Route path="/esqueciSenha" element={<EsqueciSenha />} />
+        <Route path="/cob" element={<Cob />} />
+        <Route path="/scaa" element={<Scaa />} />
+        <Route path="/fornecedores" element={<Fornecedores />} />
       </Routes>
     </Router>
   );

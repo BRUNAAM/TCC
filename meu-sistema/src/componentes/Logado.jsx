@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../Config/Firebase";
+import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import "./Logado.css";
+import "./logado.css";
 
-const Logado = () => {
+const logado = () => {
     const [usuarioNome, setUsuarioNome] = useState("");
     const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const Logado = () => {
     const handleLogout = async () => {
         await signOut(auth);
         localStorage.removeItem("usuarioNome");
-        navigate("/Login");
+        navigate("/login");
     };
 
     return (
@@ -43,9 +43,9 @@ const Logado = () => {
             <h2>Bem-vindo, {usuarioNome}!</h2>
 
             <div className="botoes-container">
-                <button onClick={() => navigate("/Cob")}>Avaliação COB</button>
-                <button onClick={() => navigate("/Scaa")}>Avaliação SCAA</button>
-                <button onClick={() => navigate("/Fornecedores")}>Cadastrar Produtores</button>
+                <button onClick={() => navigate("/cob")}>Avaliação COB</button>
+                <button onClick={() => navigate("/scaa")}>Avaliação SCAA</button>
+                <button onClick={() => navigate("/fornecedores")}>Cadastrar Produtores</button>
             </div>
 
             <button className="logout-button" onClick={handleLogout}>Sair</button>
@@ -53,4 +53,4 @@ const Logado = () => {
     );
 };
 
-export default Logado;
+export default logado;
