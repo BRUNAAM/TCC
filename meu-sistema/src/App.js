@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "../componentes/Home";
-import Login from "../componentes/Login";
-import Cadastro from "../componentes/Cadastro";
-import Logado from "../componentes/Logado";
-import Scaa from "../componentes/Scaa"; // Adicionando SCAA
-import Cob from "../componentes/Cob";
-import Fornecedores from "../componentes/Fornecedores";
-import EsqueciSenha from "../componentes/EsqueciSenha";
+import Home from "./componentes/Home";
+import Login from "./componentes/Login";
+import Cadastro from "./componentes/Cadastro";
+import Logado from "./componentes/Logado";
+import Scaa from "./componentes/Scaa"; // Adicionando SCAA
+import Cob from "./componentes/Cob";
+import Fornecedores from "./componentes/Fornecedores";
+import EsqueciSenha from "./componentes/EsqueciSenha";
 
 function App() {
   return (

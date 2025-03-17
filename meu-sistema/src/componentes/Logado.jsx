@@ -45,7 +45,7 @@ const Logado = () => {
             <div className="botoes-container">
                 <button onClick={() => navigate("/cob")}>Avaliação COB</button>
                 <button onClick={() => navigate("/scaa")}>Avaliação SCAA</button>
-                <button onClick={() => navigate("/fornecedores")}>Cadastrar Produtores</button>
+                <button onClick={() => navigate("/fornecedores")}>Fornecedores</button>
             </div>
 
             <button className="logout-button" onClick={handleLogout}>Sair</button>

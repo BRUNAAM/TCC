@@ -55,7 +55,7 @@ const Cadastro = () => {
             alert("Cadastro realizado com sucesso!");
             navigate("/login"); // Redireciona para a tela de login
         } catch (error) {
-            console.error("Erro no cadastro:", error.message);
+            console.error("Erro no cadastro:", error);
 
             if (error.code === "auth/email-already-in-use") {
                 setErro("Este e-mail já está cadastrado. Faça login ou redefina sua senha.");
