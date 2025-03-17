@@ -7,7 +7,7 @@ import Scaa from "../Componentes/Scaa"; // Adicionando SCAA
 import Cob from "../Componentes/Cob";
 import Fornecedores from "../Componentes/Fornecedores";
 import EsqueciSenha from "../Componentes/EsqueciSenha";
-import PrivateRoute from "../Routes/PrivateRoute";
+import PrivateRoute from "./PrivateRoute";
 
 const Rotas = () => {
     return (
