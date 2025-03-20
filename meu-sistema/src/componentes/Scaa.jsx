@@ -11,16 +11,23 @@ const Scaa = () => {
     const [fornecedorSelecionado, setFornecedorSelecionado] = useState("");
     const [numeroAmostra, setNumeroAmostra] = useState("");
     const [observacoes, setObservacoes] = useState("");
+    const [defeitosLeves, setDefeitosLeves] = useState(0);
+    const [defeitosGraves, setDefeitosGraves] = useState(0);
+
     const [notas, setNotas] = useState({
         fragrancia: 6,
         aroma: 6,
         sabor: 6,
-        saborResidual: 6,
+        finalizacao: 6,
         acidez: 6,
-        doçura: 6,
-        sensacaoBoca: 6,
+        corpo: 6,
+        equilibrio: 6,
+        doçura: 10,
+        uniformidade: 10,
+        xicaraLimpa: 10,
         avaliacaoGeral: 6
     });
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,11 +50,14 @@ const Scaa = () => {
     };
 
     const handleNotaChange = (categoria, valor) => {
-        setNotas((prevNotas) => ({ ...prevNotas, [categoria]: parseInt(valor) }));
+        setNotas((prevNotas) => ({ ...prevNotas, [categoria]: parseFloat(valor) }));
     };
 
     const calcularPontuacaoFinal = () => {
-        return Object.values(notas).reduce((acc, val) => acc + val, 0);
+        let total = Object.values(notas).reduce((acc, val) => acc + val, 0);
+        total -= defeitosLeves * 2; // Penaliza 2 pontos por defeito leve
+        total -= defeitosGraves * 4; // Penaliza 4 pontos por defeito grave
+        return total.toFixed(2);
     };
 
     const handleSalvarAvaliacao = async () => {
@@ -63,6 +73,8 @@ const Scaa = () => {
             numeroAmostra,
             observacoes,
             notas,
+            defeitosLeves,
+            defeitosGraves,
             pontuacaoFinal: calcularPontuacaoFinal(),
             dataCriacao: new Date().toISOString()
         };
@@ -75,16 +87,6 @@ const Scaa = () => {
     return (
         <div className="scaa-container">
             <div className="scaa-header">
-                <div className="correlacao-scaa-cob">
-                    <h3>Correlação SCAA-COB</h3>
-                    <ul>
-                        <li><strong>&gt; 85 pontos SCAA</strong> - Estritamente Mole</li>
-                        <li><strong>80 a 84 pontos SCAA</strong> - Mole</li>
-                        <li><strong>75 a 79 pontos SCAA</strong> - Apenas Mole</li>
-                        <li><strong>&lt; 74 pontos SCAA</strong> - Dura</li>
-                    </ul>
-                </div>
-                <br /><br />
                 <h2>Avaliação Sensorial de Café - SCAA</h2>
                 <button className="close-button" onClick={() => navigate(-1)}>✖</button>
             </div>
@@ -110,7 +112,7 @@ const Scaa = () => {
                 <label>Observações:</label>
                 <textarea value={observacoes} onChange={(e) => setObservacoes(e.target.value)} placeholder="Adicione observações..." />
 
-                {/* Notas de Avaliação com Escala */}
+                {/* Notas de Avaliação */}
                 {Object.keys(notas).map((categoria) => (
                     <div key={categoria} className="nota-container">
                         <label>{categoria.replace(/([A-Z])/g, " $1").trim()}:</label>
@@ -118,20 +120,39 @@ const Scaa = () => {
                             type="range"
                             min="6"
                             max="10"
+                            step="0.5"
                             value={notas[categoria]}
                             onChange={(e) => handleNotaChange(categoria, e.target.value)}
                         />
-                        <div className="escala-notas">
-                            {[6, 7, 8, 9, 10].map((num) => (
-                                <span key={num} className={num === notas[categoria] ? "selecionado" : ""}>{num}</span>
-                            ))}
-                        </div>
-                        <span className="nota-valor">Nota: {notas[categoria]}</span>
+                        <span className="nota-valor">{notas[categoria]}</span>
                     </div>
                 ))}
 
+                {/* Defeitos */}
+                <div className="defeitos">
+                    <label>Defeitos Leves:</label>
+                    <input type="number" min="0" value={defeitosLeves} onChange={(e) => setDefeitosLeves(parseInt(e.target.value) || 0)} />
+
+                    <label>Defeitos Graves:</label>
+                    <input type="number" min="0" value={defeitosGraves} onChange={(e) => setDefeitosGraves(parseInt(e.target.value) || 0)} />
+                </div>
+
                 {/* Pontuação Final */}
-                <p>Pontuação Final: {calcularPontuacaoFinal()}</p>
+                <div className="pontuacao-final">
+                    <h3>Pontuação Final: {calcularPontuacaoFinal()}</h3>
+                    <p>
+                        Qualidade do Café:{" "}
+                        <strong>
+                            {calcularPontuacaoFinal() > 85
+                                ? "Estritamente Mole"
+                                : calcularPontuacaoFinal() >= 80
+                                    ? "Mole"
+                                    : calcularPontuacaoFinal() >= 75
+                                        ? "Apenas Mole"
+                                        : "Dura"}
+                        </strong>
+                    </p>
+                </div>
 
                 <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
             </div>
