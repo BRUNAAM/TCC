@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import "./Cob.css";
@@ -14,6 +15,7 @@ const Cob = () => {
     const [umidade, setUmidade] = useState("");
     const [equivalencias, setEquivalencias] = useState({});
     const [equivalenciaTotal, setEquivalenciaTotal] = useState(0);
+    const navigate = useNavigate(); // Para navegação
 
     const tabelaDefeitos = {
         "Grão Preto": { quantidade: 1, equivalencia: 1 },
@@ -90,9 +92,18 @@ const Cob = () => {
         alert("Avaliação salva com sucesso!");
     };
 
+    const handleFechar = () => {
+        navigate(-1); // Volta para a tela anterior
+    };
+
     return (
         <div className="cob-container">
-            <h2>Avaliação COB</h2>
+            {/* Botão de Fechar */}
+            <div className="cob-header">
+                <h2>Avaliação COB</h2>
+                <button className="close-button" onClick={handleFechar}>✖</button>
+            </div>
+
             <div className="cob-form">
                 <label>Avaliador:</label>
                 <input type="text" value={avaliador} disabled />
