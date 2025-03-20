@@ -18,7 +18,6 @@ const Cadastro = () => {
         setErro("");
         setLoading(true);
 
-        // Validações antes de enviar ao Firebase
         if (nome.trim() === "") {
             setErro("O nome não pode estar vazio.");
             setLoading(false);
@@ -36,24 +35,20 @@ const Cadastro = () => {
         }
 
         try {
-            // Criar usuário no Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
 
-            // Atualiza o nome do usuário no Firebase Auth
             await updateProfile(user, { displayName: nome });
 
-            // Salva os dados do usuário no Firestore (sem a senha)
             await setDoc(doc(db, "usuarios", user.uid), {
                 nome: nome,
                 email: email
             });
 
-            // Armazena o nome do usuário no LocalStorage para exibição nas telas
             localStorage.setItem("usuarioNome", nome);
 
             alert("Cadastro realizado com sucesso!");
-            navigate("/login"); // Redireciona para a tela de login
+            navigate("/login");
         } catch (error) {
             console.error("Erro no cadastro:", error);
 
@@ -71,9 +66,16 @@ const Cadastro = () => {
         }
     };
 
+    const handleClose = () => {
+        navigate(-1); // Volta para a página anterior
+    };
+
     return (
         <div className="cadastro-container">
-            <h2>Cadastro</h2>
+            <div className="cadastro-header">
+                <h2>Cadastro</h2>
+                <button className="close-button" onClick={handleClose}>✖</button>
+            </div>
             <form onSubmit={handleCadastro}>
                 <label>Nome:</label>
                 <input

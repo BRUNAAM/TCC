@@ -1,6 +1,6 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { auth, db } from "../config/firebase";
 import { useState, useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { auth } from "../config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 const PrivateRoute = () => {
@@ -16,9 +16,8 @@ const PrivateRoute = () => {
         return () => unsubscribe();
     }, []);
 
-    // Evita exibir um estado de carregamento visível (melhora UX)
     if (loading) {
-        return null; // Não renderiza nada enquanto verifica a autenticação
+        return <p>Carregando...</p>; // Pode ser um spinner ou uma tela de carregamento
     }
 
     return user ? <Outlet /> : <Navigate to="/login" replace />;
