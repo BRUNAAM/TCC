@@ -7,6 +7,8 @@ import Logado from "../componentes/Logado";
 import Scaa from "../componentes/Scaa";
 import Cob from "../componentes/Cob";
 import Fornecedores from "../componentes/Fornecedores";
+import HistoricoScaa from "../componentes/HistoricoScaa"
+import HistoricoCob from "../componentes/HistoricoCob"
 import PrivateRoute from "./PrivateRoute";
 
 const Rotas = () => {
@@ -25,6 +27,9 @@ const Rotas = () => {
                     <Route path="/scaa" element={<Scaa />} />
                     <Route path="/cob" element={<Cob />} />
                     <Route path="/fornecedores" element={<Fornecedores />} />
+                    <Route path="/historicoScaa" element={<HistoricoScaa />} />
+                    <Route path="/historicoCob" element={<HistoricoCob />} />
+
                 </Route>
             </Routes>
         </Router>
