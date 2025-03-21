@@ -15,12 +15,18 @@ const Scaa = () => {
     const [defeitosGraves, setDefeitosGraves] = useState(0);
     const [torraSelecionada, setTorraSelecionada] = useState("");
 
+    // Atualizamos o estado para incluir o slider "nível".
+    // A ordem das propriedades define a ordem dos sliders:
+    // Dry, Break, AromaFragrancia, sabor, finalizacao, intensidade, acidez, nível, corpo, equilíbrio, doçura, uniformidade, xicaraLimpa, avaliacaoGeral.
     const [notas, setNotas] = useState({
-        fragrancia: 6,
-        aroma: 6,
+        Dry: 6,
+        Break: 6,
+        AromaFragrancia: 6,
         sabor: 6,
         finalizacao: 6,
+        intensidade: 1, // Slider de Intensidade (0: Baixo, 1: Médio, 2: Alto)
         acidez: 6,
+        nivel: 1, // Novo slider Nível (0: Baixo, 1: Médio, 2: Alto)
         corpo: 6,
         equilibrio: 6,
         doçura: 10,
@@ -28,6 +34,7 @@ const Scaa = () => {
         xicaraLimpa: 10,
         avaliacaoGeral: 6
     });
+    const [autoAroma, setAutoAroma] = useState(true);
 
     const navigate = useNavigate();
 
@@ -51,7 +58,33 @@ const Scaa = () => {
     };
 
     const handleNotaChange = (categoria, valor) => {
-        setNotas((prevNotas) => ({ ...prevNotas, [categoria]: parseFloat(valor) }));
+        if (categoria === "Dry" || categoria === "Break") {
+            setNotas((prevNotas) => {
+                const updatedNotas = { ...prevNotas, [categoria]: parseFloat(valor) };
+                if (autoAroma) {
+                    updatedNotas.AromaFragrancia = (updatedNotas.Dry + updatedNotas.Break) / 2;
+                }
+                return updatedNotas;
+            });
+        } else if (categoria === "AromaFragrancia") {
+            // Ao alterar manualmente, desabilitamos o modo automático.
+            setAutoAroma(false);
+            setNotas((prevNotas) => ({ ...prevNotas, AromaFragrancia: parseFloat(valor) }));
+        } else if (categoria === "intensidade" || categoria === "nivel") {
+            // Para os sliders "intensidade" e "nível", utilizamos valores inteiros: 0, 1 ou 2.
+            setNotas((prevNotas) => ({ ...prevNotas, [categoria]: parseInt(valor) }));
+        } else {
+            setNotas((prevNotas) => ({ ...prevNotas, [categoria]: parseFloat(valor) }));
+        }
+    };
+
+    // Função para resetar o AromaFragrancia para o modo automático.
+    const resetAromaFragrancia = () => {
+        setAutoAroma(true);
+        setNotas((prevNotas) => ({
+            ...prevNotas,
+            AromaFragrancia: (prevNotas.Dry + prevNotas.Break) / 2
+        }));
     };
 
     const calcularPontuacaoFinal = () => {
@@ -143,20 +176,56 @@ const Scaa = () => {
                 {/* Notas de Avaliação */}
                 {Object.keys(notas).map((categoria) => (
                     <div key={categoria} className="nota-container">
-                        <label>{categoria.replace(/([A-Z])/g, " $1").trim()}:</label>
-                        <input
-                            type="range"
-                            min="6"
-                            max="10"
-                            step="0.5"
-                            value={notas[categoria]}
-                            onChange={(e) => handleNotaChange(categoria, e.target.value)}
-                        />
-                        <div className="escala-notas">
-                            {[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map((num) => (
-                                <span key={num} className={num === notas[categoria] ? "selecionado" : ""}>{num}</span>
-                            ))}
-                        </div>
+                        <label>
+                            {categoria === "intensidade"
+                                ? "Intensidade"
+                                : categoria === "nivel"
+                                    ? "Nível"
+                                    : categoria.replace(/([A-Z])/g, " $1").trim()}
+                            :
+                        </label>
+                        {["intensidade", "nivel"].includes(categoria) ? (
+                            <>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="2"
+                                    step="1"
+                                    value={notas[categoria]}
+                                    onChange={(e) => handleNotaChange(categoria, e.target.value)}
+                                />
+                                <div className="escala-notas">
+                                    {["Baixo", "Médio", "Alto"].map((label, index) => (
+                                        <span key={index} className={Number(notas[categoria]) === index ? "selecionado" : ""}>
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <input
+                                    type="range"
+                                    min="6"
+                                    max="10"
+                                    step="0.5"
+                                    value={notas[categoria]}
+                                    onChange={(e) => handleNotaChange(categoria, e.target.value)}
+                                />
+                                <div className="escala-notas">
+                                    {[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map((num) => (
+                                        <span key={num} className={num === notas[categoria] ? "selecionado" : ""}>
+                                            {num}
+                                        </span>
+                                    ))}
+                                </div>
+                                {categoria === "AromaFragrancia" && !autoAroma && (
+                                    <button type="button" onClick={resetAromaFragrancia}>
+                                        Resetar para automático
+                                    </button>
+                                )}
+                            </>
+                        )}
                     </div>
                 ))}
 
