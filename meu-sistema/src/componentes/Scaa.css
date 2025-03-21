@@ -150,4 +150,39 @@ button:hover {
         font-size: 14px;
         padding: 8px;
     }
+
+    .torra-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .torra-options {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .torra-option {
+        width: 90px;
+        height: 90px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        transition: transform 0.2s, border 0.2s;
+        border: 3px solid transparent;
+    }
+
+    .torra-option:hover {
+        transform: scale(1.1);
+    }
+
+    .torra-option.selecionado {
+        border: 3px solid yellow;
+        transform: scale(1.1);
+    }
+
 }

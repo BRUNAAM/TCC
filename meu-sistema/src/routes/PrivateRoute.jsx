@@ -17,10 +17,11 @@ const PrivateRoute = () => {
     }, []);
 
     if (loading) {
-        return <p>Carregando...</p>; // Pode ser um spinner ou uma tela de carregamento
+        return <p>Carregando...</p>;
     }
 
-    return user ? <Outlet /> : <Navigate to="/login" replace />;
+    return user ? <Outlet /> : <Navigate to="/login" replace />; // Descobrir o que esta fazendo o Outlet e o         return () => unsubscribe();
+
 };
 
 export default PrivateRoute;

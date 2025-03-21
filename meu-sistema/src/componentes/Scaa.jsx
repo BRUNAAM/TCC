@@ -13,6 +13,7 @@ const Scaa = () => {
     const [observacoes, setObservacoes] = useState("");
     const [defeitosLeves, setDefeitosLeves] = useState(0);
     const [defeitosGraves, setDefeitosGraves] = useState(0);
+    const [torraSelecionada, setTorraSelecionada] = useState("");
 
     const [notas, setNotas] = useState({
         fragrancia: 6,
@@ -55,13 +56,13 @@ const Scaa = () => {
 
     const calcularPontuacaoFinal = () => {
         let total = Object.values(notas).reduce((acc, val) => acc + val, 0);
-        total -= defeitosLeves * 2; // Penaliza 2 pontos por defeito leve
-        total -= defeitosGraves * 4; // Penaliza 4 pontos por defeito grave
+        total -= defeitosLeves * 2;
+        total -= defeitosGraves * 4;
         return total.toFixed(2);
     };
 
     const handleSalvarAvaliacao = async () => {
-        if (!fornecedorSelecionado || !numeroAmostra) {
+        if (!fornecedorSelecionado || !numeroAmostra || !torraSelecionada) {
             alert("Por favor, preencha todos os campos obrigatórios.");
             return;
         }
@@ -71,6 +72,7 @@ const Scaa = () => {
             data,
             fornecedor: fornecedorSelecionado,
             numeroAmostra,
+            torra: torraSelecionada,
             observacoes,
             notas,
             defeitosLeves,
@@ -112,6 +114,32 @@ const Scaa = () => {
                 <label>Observações:</label>
                 <textarea value={observacoes} onChange={(e) => setObservacoes(e.target.value)} placeholder="Adicione observações..." />
 
+                {/* Seleção da Cor da Torra */}
+                <div className="torra-container">
+                    <h3>Selecione a Cor da Torra:</h3>
+                    <div className="torra-options">
+                        {[
+                            { nome: "Torra Clara", cor: "#c89f83" },
+                            { nome: "Torra Média Clara", cor: "#9c6b4a" },
+                            { nome: "Torra Média", cor: "#5d4037" },
+                            { nome: "Torra Escura", cor: "#3e2723" }
+                        ].map((torra) => (
+                            <div
+                                key={torra.nome}
+                                className={`torra-option ${torraSelecionada === torra.nome ? "selecionado" : ""}`}
+                                style={{
+                                    backgroundColor: torra.cor,
+                                    border: torraSelecionada === torra.nome ? "4px solid #FFD700" : "2px solid #ccc",
+                                    cursor: "pointer"
+                                }}
+                                onClick={() => setTorraSelecionada(torra.nome)}
+                            >
+                                {torra.nome}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Notas de Avaliação */}
                 {Object.keys(notas).map((categoria) => (
                     <div key={categoria} className="nota-container">
@@ -124,7 +152,11 @@ const Scaa = () => {
                             value={notas[categoria]}
                             onChange={(e) => handleNotaChange(categoria, e.target.value)}
                         />
-                        <span className="nota-valor">{notas[categoria]}</span>
+                        <div className="escala-notas">
+                            {[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map((num) => (
+                                <span key={num} className={num === notas[categoria] ? "selecionado" : ""}>{num}</span>
+                            ))}
+                        </div>
                     </div>
                 ))}
 
@@ -140,18 +172,6 @@ const Scaa = () => {
                 {/* Pontuação Final */}
                 <div className="pontuacao-final">
                     <h3>Pontuação Final: {calcularPontuacaoFinal()}</h3>
-                    <p>
-                        Qualidade do Café:{" "}
-                        <strong>
-                            {calcularPontuacaoFinal() > 85
-                                ? "Estritamente Mole"
-                                : calcularPontuacaoFinal() >= 80
-                                    ? "Mole"
-                                    : calcularPontuacaoFinal() >= 75
-                                        ? "Apenas Mole"
-                                        : "Dura"}
-                        </strong>
-                    </p>
                 </div>
 
                 <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
