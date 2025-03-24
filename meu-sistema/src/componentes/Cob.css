@@ -1,98 +1,59 @@
-/* ========================= */
-/* Estilos para os Grupos    */
-/* ========================= */
-
-/* Grupo de Identificação */
-.grupo-identificacao {
-    border: 1px solid #007bff;
-    background-color: #e8f0fe;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-/* Grupo de Classificação Física */
-.grupo-classificacao {
-    border: 1px solid #28a745;
-    background-color: #e9f9ee;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-/* Grupo de Categoria / Subcategoria / Grupo / Classe */
-.grupo-categoria {
-    border: 1px solid #ffc107;
-    background-color: #fff8e1;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-/* Grupo de Conclusão */
-.grupo-conclusao {
-    border: 1px solid #17a2b8;
-    background-color: #e2f3f9;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-/* Grupo de Laudo de Classificação */
-.grupo-laudo {
-    border: 1px solid #6c757d;
+/* Estilo global */
+body {
+    font-family: "Times New Roman", Times, serif;
     background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* =================== */
+/* Bloco 1: Identificação */
+/* =================== */
+.grupo-identificacao {
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 5px;
 }
 
-/* Grupo para o Botão Salvar (centralizado) */
-.grupo-salvar {
-    text-align: center;
-    margin-top: 20px;
+.linha-identificacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-/* Atualize o container de defeitos para usar grid */
-.defeitos-checkboxes {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    /* 6 colunas iguais */
-    gap: 10px;
-    /* Espaço entre as células */
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
+.campo {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Cada célula (cada item de defeito) */
-.defeitos-checkboxes>div {
+.campo label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.campo input,
+.campo select {
+    padding: 8px;
     border: 1px solid #ccc;
-    /* Borda para separar cada item */
-    padding: 5px;
-    text-align: center;
-    margin: 0;
-    /* Remove margens para que o grid fique uniforme */
+    border-radius: 5px;
 }
 
-/* Campos de entrada para números menores */
-.defeitos-checkboxes input[type="number"] {
-    width: 50px;
-    /* Menor que o padrão anterior */
-    padding: 2px;
-    text-align: center;
-    border: 1px solid #bbb;
-    border-radius: 3px;
-    margin-right: 0;
+/* =================== */
+/* Bloco 2: Classificação Física */
+/* =================== */
+.grupo-classificacao {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
 }
 
-/* Container dos itens de defeitos usando grid */
+/* Defeitos com Grid */
 .defeitos-checkboxes {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    /* 6 colunas iguais */
     gap: 10px;
     background-color: #fafafa;
     border: 1px solid #ddd;
@@ -101,20 +62,15 @@
     margin-bottom: 15px;
 }
 
-/* Cada célula do grid */
 .defeitos-checkboxes>div {
     border: 1px solid #ccc;
     padding: 5px;
     display: flex;
     flex-direction: column;
-    /* empilha os elementos verticalmente */
     align-items: center;
-    /* centraliza horizontalmente */
     text-align: center;
-    /* centraliza o texto */
 }
 
-/* Estilo para o nome do defeito (label) */
 .defeitos-checkboxes>div label {
     display: block;
     margin-bottom: 5px;
@@ -122,7 +78,6 @@
     font-weight: bold;
 }
 
-/* Campo de número: menor e centralizado */
 .defeitos-checkboxes>div input[type="number"] {
     width: 50px;
     padding: 2px;
@@ -132,7 +87,6 @@
     margin-bottom: 5px;
 }
 
-/* Exibição da equivalência */
 .defeitos-checkboxes>div span {
     display: block;
     font-size: 14px;
@@ -142,7 +96,6 @@
 .total {
     display: flex;
     justify-content: space-between;
-    /* Distribui o espaço entre os itens */
     align-items: center;
     margin-top: 10px;
 }
@@ -158,164 +111,66 @@
 
 .total input[type="number"] {
     width: 40px;
-    /* ajuste para o tamanho desejado */
     padding: 2px;
     font-size: 14px;
     text-align: center;
 }
 
-/* Container que agrupa os 3 quadrados */
-.grupo-categoria {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    /* Espaço entre os quadrados */
-}
-
-/* Cada quadrado individual */
-.grupo-categoria>div {
-    flex: 1;
-    border: 1px solid #ffc107;
-    background-color: #fff8e1;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-/* Título de cada quadrado centralizado */
-.grupo-categoria h4 {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 16px;
-    text-transform: uppercase;
-}
-
-/* Cada checkbox e seu label em bloco, com espaçamento */
-.grupo-categoria label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-/* Ajusta o espaçamento interno dos checkboxes */
-.grupo-categoria input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-/* ===== Seção 3: Categoria / Subcategoria / Grupo / Classe ===== */
-
-/* Container principal da seção 3 em 3 colunas */
-.grupo-categoria {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    border: 1px solid #ffc107;
-    background-color: #fff8e1;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-/* Coluna 1: Categoria */
-.categoria-col {
-    flex: 1;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.categoria-col h4 {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 16px;
-    text-transform: uppercase;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
-}
-
-.categoria-col label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-.categoria-col input[type="text"] {
-    width: 100%;
-    padding: 5px;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-}
-
-/* Coluna 2: Subcategoria: Peneira % */
-.subcategoria-col {
-    flex: 1;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.subcategoria-col h4 {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 16px;
-    text-transform: uppercase;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
-}
-
-.subcategoria-col label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-.subcategoria-col input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-/* Container principal para a seção 3 */
+/* =================== */
+/* Bloco 3: Categoria / Subcategoria / Grupo / Classe */
+/* =================== */
 .grupo-categoria {
     border: 1px solid #ffc107;
     background-color: #fff8e1;
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Espaço para o campo de texto "CATEGORIA" */
-.categoria-titulo {
+/* Campo de categoria acima da tabela */
+.categoria-topo {
     margin-bottom: 20px;
-    /* espaço abaixo do campo */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
 }
 
-.categoria-titulo h4 {
-    margin-bottom: 5px;
+.categoria-topo h4 {
+    text-align: center;
     text-transform: uppercase;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
 }
 
-.categoria-titulo input[type="text"] {
+.categoria-topo label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.categoria-topo input[type="text"] {
     width: 100%;
-    padding: 5px;
+    padding: 8px;
     box-sizing: border-box;
     border: 1px solid #bbb;
     border-radius: 5px;
 }
 
-/* Tabela de 2 linhas x 3 colunas */
+/* Tabela com 6 quadrados (2x3) */
 .tabela-2x3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* 3 colunas */
     grid-template-rows: repeat(2, auto);
-    /* 2 linhas automáticas */
     gap: 10px;
-    /* espaço entre as células */
 }
 
-/* Cada célula */
 .celula {
     border: 1px solid #ddd;
     background-color: #fff;
@@ -323,7 +178,6 @@
     padding: 10px;
 }
 
-/* Título de cada célula */
 .celula h5 {
     text-align: center;
     text-transform: uppercase;
@@ -333,10 +187,8 @@
     padding-bottom: 4px;
 }
 
-/* Ajuste dos labels e inputs dentro das células */
 .celula label {
     display: block;
-    /* cada opção em linha separada */
     margin-bottom: 5px;
     font-size: 13px;
 }
@@ -344,4 +196,50 @@
 .celula input[type="checkbox"],
 .celula input[type="radio"] {
     margin-right: 5px;
+}
+
+/* =================== */
+/* Bloco 4: Conclusão */
+/* =================== */
+.grupo-conclusao {
+    border: 1px solid #17a2b8;
+    background-color: #e2f3f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* =================== */
+/* Bloco 5: Laudo de Classificação */
+/* =================== */
+.grupo-laudo {
+    border: 1px solid #6c757d;
+    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* =================== */
+/* Botão Salvar */
+/* =================== */
+.grupo-salvar {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.grupo-salvar button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.grupo-salvar button:hover {
+    background-color: #218838;
 }
