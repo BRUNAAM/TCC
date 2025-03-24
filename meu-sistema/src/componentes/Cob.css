@@ -1,90 +1,65 @@
-/* -------------------------- */
-/* Estilos gerais */
-/* -------------------------- */
-body {
-    font-family: "Times New Roman", Times, serif;
-    background-color: #f8f9fa;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
+/* ========================= */
+/* Estilos para os Grupos    */
+/* ========================= */
 
-/* Container principal */
-.cob-container {
-    max-width: 800px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-/* Cabeçalho */
-.cob-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #444;
-    padding-bottom: 10px;
+/* Grupo de Identificação */
+.grupo-identificacao {
+    border: 1px solid #007bff;
+    background-color: #e8f0fe;
+    padding: 15px;
     margin-bottom: 20px;
-}
-
-.cob-header h2 {
-    font-size: 22px;
-    text-transform: uppercase;
-    color: #333;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #444;
-}
-
-.close-button:hover {
-    color: red;
-}
-
-/* Blocos de conteúdo (seções) */
-.cob-block {
-    margin-bottom: 20px;
-}
-
-.cob-block h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 18px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
-    text-transform: uppercase;
-}
-
-/* Labels e Inputs */
-.cob-block label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: inline-block;
-}
-
-.cob-block input[type="text"],
-.cob-block input[type="number"],
-.cob-block select,
-.cob-block textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #bbb;
     border-radius: 5px;
-    font-size: 16px;
-    font-family: "Times New Roman", Times, serif;
-    margin-bottom: 10px;
-    box-sizing: border-box;
 }
 
-/* Área de defeitos */
+/* Grupo de Classificação Física */
+.grupo-classificacao {
+    border: 1px solid #28a745;
+    background-color: #e9f9ee;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Grupo de Categoria / Subcategoria / Grupo / Classe */
+.grupo-categoria {
+    border: 1px solid #ffc107;
+    background-color: #fff8e1;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Grupo de Conclusão */
+.grupo-conclusao {
+    border: 1px solid #17a2b8;
+    background-color: #e2f3f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Grupo de Laudo de Classificação */
+.grupo-laudo {
+    border: 1px solid #6c757d;
+    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Grupo para o Botão Salvar (centralizado) */
+.grupo-salvar {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Atualize o container de defeitos para usar grid */
 .defeitos-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    /* 6 colunas iguais */
+    gap: 10px;
+    /* Espaço entre as células */
     background-color: #fafafa;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -92,85 +67,281 @@ body {
     margin-bottom: 15px;
 }
 
-.defeitos-checkboxes div {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+/* Cada célula (cada item de defeito) */
+.defeitos-checkboxes>div {
+    border: 1px solid #ccc;
+    /* Borda para separar cada item */
+    padding: 5px;
+    text-align: center;
+    margin: 0;
+    /* Remove margens para que o grid fique uniforme */
 }
 
-.defeitos-checkboxes label {
-    flex: 1;
-    margin-bottom: 0;
-}
-
+/* Campos de entrada para números menores */
 .defeitos-checkboxes input[type="number"] {
-    width: 80px;
-    margin-right: 10px;
+    width: 50px;
+    /* Menor que o padrão anterior */
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    margin-right: 0;
 }
 
-/* Botões */
-.cob-block button {
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
-    padding: 10px 16px;
-    border: none;
+/* Container dos itens de defeitos usando grid */
+.defeitos-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    /* 6 colunas iguais */
+    gap: 10px;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-.cob-block button:hover {
-    background-color: #0056b3;
-}
-
-/* Caixas quadradas para o laudo (modelo/verso) */
-.quad-box {
-    border: 2px solid #000;
-    /* Borda grossa para simular o quadrado */
+    padding: 15px;
     margin-bottom: 15px;
-    border-radius: 0;
-    /* Cantos retos */
-    padding: 10px;
-    background-color: #fff;
-    position: relative;
 }
 
-.quad-header {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    border-bottom: 1px solid #000;
-    padding-bottom: 4px;
+/* Cada célula do grid */
+.defeitos-checkboxes>div {
+    border: 1px solid #ccc;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    /* empilha os elementos verticalmente */
+    align-items: center;
+    /* centraliza horizontalmente */
+    text-align: center;
+    /* centraliza o texto */
 }
 
-.quad-content label {
+/* Estilo para o nome do defeito (label) */
+.defeitos-checkboxes>div label {
     display: block;
-    margin: 4px 0;
-    font-weight: normal;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Campo de número: menor e centralizado */
+.defeitos-checkboxes>div input[type="number"] {
+    width: 50px;
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+/* Exibição da equivalência */
+.defeitos-checkboxes>div span {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    /* Distribui o espaço entre os itens */
+    align-items: center;
+    margin-top: 10px;
+}
+
+.total div {
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.total input[type="number"] {
+    width: 40px;
+    /* ajuste para o tamanho desejado */
+    padding: 2px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Container que agrupa os 3 quadrados */
+.grupo-categoria {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    /* Espaço entre os quadrados */
+}
+
+/* Cada quadrado individual */
+.grupo-categoria>div {
+    flex: 1;
+    border: 1px solid #ffc107;
+    background-color: #fff8e1;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Título de cada quadrado centralizado */
+.grupo-categoria h4 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+/* Cada checkbox e seu label em bloco, com espaçamento */
+.grupo-categoria label {
+    display: block;
+    margin-bottom: 5px;
     font-size: 14px;
 }
 
-/* Responsividade */
-@media (max-width: 600px) {
-    .cob-container {
-        padding: 15px;
-    }
+/* Ajusta o espaçamento interno dos checkboxes */
+.grupo-categoria input[type="checkbox"] {
+    margin-right: 5px;
+}
 
-    .cob-header h2 {
-        font-size: 18px;
-    }
+/* ===== Seção 3: Categoria / Subcategoria / Grupo / Classe ===== */
 
-    .cob-block input,
-    .cob-block select,
-    .cob-block textarea {
-        font-size: 14px;
-    }
+/* Container principal da seção 3 em 3 colunas */
+.grupo-categoria {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid #ffc107;
+    background-color: #fff8e1;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
 
-    .cob-block button {
-        font-size: 14px;
-        padding: 8px;
-    }
+/* Coluna 1: Categoria */
+.categoria-col {
+    flex: 1;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.categoria-col h4 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.categoria-col label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.categoria-col input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+/* Coluna 2: Subcategoria: Peneira % */
+.subcategoria-col {
+    flex: 1;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.subcategoria-col h4 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.subcategoria-col label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.subcategoria-col input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Container principal para a seção 3 */
+.grupo-categoria {
+    border: 1px solid #ffc107;
+    background-color: #fff8e1;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Espaço para o campo de texto "CATEGORIA" */
+.categoria-titulo {
+    margin-bottom: 20px;
+    /* espaço abaixo do campo */
+}
+
+.categoria-titulo h4 {
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.categoria-titulo input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+}
+
+/* Tabela de 2 linhas x 3 colunas */
+.tabela-2x3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 colunas */
+    grid-template-rows: repeat(2, auto);
+    /* 2 linhas automáticas */
+    gap: 10px;
+    /* espaço entre as células */
+}
+
+/* Cada célula */
+.celula {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* Título de cada célula */
+.celula h5 {
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+}
+
+/* Ajuste dos labels e inputs dentro das células */
+.celula label {
+    display: block;
+    /* cada opção em linha separada */
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.celula input[type="checkbox"],
+.celula input[type="radio"] {
+    margin-right: 5px;
 }

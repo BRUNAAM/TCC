@@ -47,7 +47,7 @@ body {
 
 /* Quadro de correlação */
 .quadro-correlacao {
-    position: absolute;
+    position: unset;
     top: 20px;
     right: 20px;
     background-color: #f0f7f1;

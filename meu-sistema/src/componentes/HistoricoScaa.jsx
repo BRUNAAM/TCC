@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth, db } from "../config/firebase";
 import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import "./HistoricoScaa.css"; // Opcional: para estilização
+import "./HistoricoScaa.css";
 
 const HistoricoScaa = () => {
     const [avaliacoes, setAvaliacoes] = useState([]);

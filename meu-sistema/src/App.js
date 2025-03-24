@@ -7,8 +7,8 @@ import Scaa from "./componentes/Scaa";
 import Cob from "./componentes/Cob";
 import Fornecedores from "./componentes/Fornecedores";
 import EsqueciSenha from "./componentes/EsqueciSenha";
-import HistoricoScaa from "./componentes/HistoricoScaa"
-import HistoricoCob from "./componentes/HistoricoCob"
+import HistoricoScaa from "./componentes/HistoricoScaa";
+import HistoricoCob from "./componentes/HistoricoCob";
 import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {

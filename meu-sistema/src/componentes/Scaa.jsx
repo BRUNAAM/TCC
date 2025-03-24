@@ -218,8 +218,7 @@ const Scaa = () => {
                         ].map((torra) => (
                             <div
                                 key={torra.nome}
-                                className={`torra-option ${torraSelecionada === torra.nome ? "selecionado" : ""
-                                    }`}
+                                className={`torra-option ${torraSelecionada === torra.nome ? "selecionado" : ""}`}
                                 onClick={() => setTorraSelecionada(torra.nome)}
                             >
                                 {torra.nome}
@@ -246,9 +245,7 @@ const Scaa = () => {
                                 {intensidades.slice().reverse().map((label, index) => (
                                     <span
                                         key={index}
-                                        className={
-                                            dry === intensidades.length - 1 - index ? "selected" : ""
-                                        }
+                                        className={dry === intensidades.length - 1 - index ? "selected" : ""}
                                     >
                                         {label}
                                     </span>
@@ -272,11 +269,7 @@ const Scaa = () => {
                                 {intensidades.slice().reverse().map((label, index) => (
                                     <span
                                         key={index}
-                                        className={
-                                            breakValue === intensidades.length - 1 - index
-                                                ? "selected"
-                                                : ""
-                                        }
+                                        className={breakValue === intensidades.length - 1 - index ? "selected" : ""}
                                     >
                                         {label}
                                     </span>
@@ -309,10 +302,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.AromaFragrancia ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.AromaFragrancia ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -331,10 +321,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.sabor ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.sabor ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -353,10 +340,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.finalizacao ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.finalizacao ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -380,11 +364,7 @@ const Scaa = () => {
                             {intensidades.slice().reverse().map((label, index) => (
                                 <span
                                     key={index}
-                                    className={
-                                        nivelAcidez === intensidades.length - 1 - index
-                                            ? "selected"
-                                            : ""
-                                    }
+                                    className={nivelAcidez === intensidades.length - 1 - index ? "selected" : ""}
                                 >
                                     {label}
                                 </span>
@@ -405,10 +385,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.acidez ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.acidez ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -432,11 +409,7 @@ const Scaa = () => {
                             {intensidades.slice().reverse().map((label, index) => (
                                 <span
                                     key={index}
-                                    className={
-                                        nivelCorpo === intensidades.length - 1 - index
-                                            ? "selected"
-                                            : ""
-                                    }
+                                    className={nivelCorpo === intensidades.length - 1 - index ? "selected" : ""}
                                 >
                                     {label}
                                 </span>
@@ -457,10 +430,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.corpo ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.corpo ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -479,10 +449,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.equilibrio ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.equilibrio ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -502,10 +469,7 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
-                            <span
-                                key={num}
-                                className={num === notas.avaliacaoPessoal ? "selecionado" : ""}
-                            >
+                            <span key={num} className={num === notas.avaliacaoPessoal ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -565,7 +529,6 @@ const Scaa = () => {
                             value={qtdLeve}
                             onChange={(e) => setQtdLeve(parseInt(e.target.value) || 0)}
                             placeholder="# cups"
-                            style={{ width: "60px", marginLeft: "10px", marginRight: "10px" }}
                         />
                         <span>= {qtdLeve * 2}</span>
                     </div>
@@ -577,7 +540,6 @@ const Scaa = () => {
                             value={qtdGrave}
                             onChange={(e) => setQtdGrave(parseInt(e.target.value) || 0)}
                             placeholder="# cups"
-                            style={{ width: "60px", marginLeft: "10px", marginRight: "10px" }}
                         />
                         <span>= {qtdGrave * 4}</span>
                     </div>
