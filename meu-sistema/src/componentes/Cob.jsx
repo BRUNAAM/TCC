@@ -207,9 +207,11 @@ const Cob = () => {
         <div className="cob-container">
             {/* Cabeçalho */}
             <div className="cob-header">
-                <h2>Avaliação COB</h2>
+                <h2 className="titulo-cabecalho">AVALIAÇÃO DE CAFÉ - COB</h2>
                 <button className="close-button" onClick={handleFechar}>✖</button>
             </div>
+
+
             {/*Grupo identificação*/}
             <div className="grupo-identificacao">
                 <div className="cob-block">
@@ -252,6 +254,7 @@ const Cob = () => {
                     </div>
                 </div>
             </div>
+
 
 
             {/* Grupo: Classificação Física */}
@@ -442,263 +445,202 @@ const Cob = () => {
                     </div>
                 </div>
             </div>
-
-
-
-
-            {/* Grupo: Conclusão */}
+            {/*4 Grupo Conclusão*/}
             <div className="grupo-conclusao">
                 <div className="cob-block">
                     <h3>4. Conclusão</h3>
-                    <div className="sub-block">
-                        <h4>Dados de Conclusão</h4>
+                    <div className="linha-identificacao">
+                        <div className="campo">
+                            <label>UMIDADE:</label>
+                            <input
+                                type="number"
+                                value={umidade}
+                                onChange={(e) => setUmidade(e.target.value)}
+                                placeholder="Digite a umidade"
+                            />
+                        </div>
 
-                        <label>UMIDADE:</label>
-                        <input
-                            type="number"
-                            value={umidade}
-                            onChange={(e) => setUmidade(e.target.value)}
-                            placeholder="Digite a umidade"
-                        />
+                        <div className="campo">
+                            <label>APARELHO:</label>
+                            <input
+                                type="text"
+                                value={aparelho}
+                                onChange={(e) => setAparelho(e.target.value)}
+                                placeholder="Informe o Aparelho"
+                            />
+                        </div>
 
-                        <label>APARELHO:</label>
-                        <input
-                            type="text"
-                            value={aparelho}
-                            onChange={(e) => setAparelho(e.target.value)}
-                            placeholder="Informe o Aparelho"
-                        />
+                        <div className="campo">
+                            <label>SUBCATEGORIA:</label>
+                            <input
+                                type="text"
+                                value={subcategoria}
+                                onChange={(e) => setSubcategoria(e.target.value)}
+                                placeholder="Preencha a Subcategoria"
+                            />
+                        </div>
 
-                        <label>SUCATEGORIA:</label>
-                        <input
-                            type="text"
-                            value={subcategoria}
-                            onChange={(e) => setSubcategoria(e.target.value)}
-                            placeholder="Preencha a Subcategoria"
-                        />
+                        <div className="campo">
+                            <label>TIPO:</label>
+                            <input
+                                type="text"
+                                value={tipo}
+                                onChange={(e) => setTipo(e.target.value)}
+                                placeholder="Informe o Tipo"
+                            />
+                        </div>
 
-                        <label>TIPO:</label>
-                        <input
-                            type="text"
-                            value={tipo}
-                            onChange={(e) => setTipo(e.target.value)}
-                            placeholder="Informe o Tipo"
-                        />
+                        <div className="campo">
+                            <label>POSTO DE SERVIÇO DE CLASSIFICAÇÃO DE:</label>
+                            <input
+                                type="text"
+                                value={postoServico}
+                                onChange={(e) => setPostoServico(e.target.value)}
+                                placeholder="Informe o Posto de Serviço"
+                            />
+                        </div>
 
-                        <label>OBS.:</label>
-                        <textarea
-                            value={observacoes}
-                            onChange={(e) => setObservacoes(e.target.value)}
-                            placeholder="Digite as observações..."
-                            rows="3"
-                        />
+                        <div className="campo">
+                            <label>ASSINATURA DO AVALIADOR:</label>
+                            <input
+                                type="text"
+                                value={assinaturaAvaliador}
+                                onChange={(e) => setAssinaturaAvaliador(e.target.value)}
+                                placeholder="Assinatura do Avaliador"
+                            />
+                        </div>
 
-                        <label>POSTO DE SERVIÇO DE CLASSIFICAÇÃO DE:</label>
-                        <input
-                            type="text"
-                            value={postoServico}
-                            onChange={(e) => setPostoServico(e.target.value)}
-                            placeholder="Informe o Posto de Serviço"
-                        />
+                        <div className="campo">
+                            <label>CLASSIFICADOR/REG. MAPA NO:</label>
+                            <input
+                                type="text"
+                                value={classificadorMapa}
+                                onChange={(e) => setClassificadorMapa(e.target.value)}
+                                placeholder="Informe o Classificador/Reg. MAPA"
+                            />
+                        </div>
 
-                        <label>ASSINATURA DO AVALIADOR:</label>
-                        <input
-                            type="text"
-                            value={assinaturaAvaliador}
-                            onChange={(e) => setAssinaturaAvaliador(e.target.value)}
-                            placeholder="Assinatura do Avaliador"
-                        />
-
-                        <label>CLASSIFICADOR/REG. MAPA NO:</label>
-                        <input
-                            type="text"
-                            value={classificadorMapa}
-                            onChange={(e) => setClassificadorMapa(e.target.value)}
-                            placeholder="Informe o Classificador/Reg. MAPA"
-                        />
+                        <div className="campo campo-observacoes">
+                            <label>OBSERVAÇÕES:</label>
+                            <textarea
+                                value={observacoes}
+                                onChange={(e) => setObservacoes(e.target.value)}
+                                placeholder="Digite as observações..."
+                                rows="4"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Grupo: Laudo de Classificação */}
+
+
+
+
             <div className="grupo-laudo">
                 <div className="cob-block">
                     <h3>5. LAUDO DE CLASSIFICAÇÃO (Modelo/Verso)</h3>
-                    <div className="sub-block">
-                        <h4>CAFÉ Arábica / Café Robusta</h4>
-                        <p>
-                            ( ) Café Arábica &nbsp; ( ) Café Robusta
-                        </p>
-
-                        <div className="quad-box">
-                            <div className="quad-header">PELO PREPARO:</div>
-                            <div className="quad-content">
-                                <label>
+                    <div className="linha-laudo">
+                        {/* PELO PREPARO */}
+                        <div className="bloco-laudo">
+                            <h4>PELO PREPARO</h4>
+                            {["Via Seca", "Via Úmida"].map((opcao) => (
+                                <label key={opcao}>
                                     <input
-                                        type="radio"
-                                        name="peloPreparo2"
-                                        value="Via Seca"
-                                        checked={peloPreparo === "Via Seca"}
-                                        onChange={(e) => setPeloPreparo(e.target.value)}
+                                        type="checkbox"
+                                        checked={peloPreparo === opcao}
+                                        onChange={() => setPeloPreparo(opcao)}
                                     />
-                                    Via Seca
+                                    {opcao}
                                 </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="peloPreparo2"
-                                        value="Via Úmida"
-                                        checked={peloPreparo === "Via Úmida"}
-                                        onChange={(e) => setPeloPreparo(e.target.value)}
-                                    />
-                                    Via Úmida
-                                </label>
-                            </div>
+                            ))}
                         </div>
 
-                        <div className="quad-box">
-                            <div className="quad-header">PELA SECA:</div>
-                            <div className="quad-content">
-                                <label>
+                        {/* PELA SECA */}
+                        <div className="bloco-laudo">
+                            <h4>PELA SECA</h4>
+                            {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
+                                <label key={opcao}>
                                     <input
-                                        type="radio"
-                                        name="pelaSeca2"
-                                        value="Seca Boa"
-                                        checked={pelaSeca === "Seca Boa"}
-                                        onChange={(e) => setPelaSeca(e.target.value)}
+                                        type="checkbox"
+                                        checked={pelaSeca === opcao}
+                                        onChange={() => setPelaSeca(opcao)}
                                     />
-                                    Seca Boa
+                                    {opcao}
                                 </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="pelaSeca2"
-                                        value="Seca Regular"
-                                        checked={pelaSeca === "Seca Regular"}
-                                        onChange={(e) => setPelaSeca(e.target.value)}
-                                    />
-                                    Seca Regular
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="pelaSeca2"
-                                        value="Seca Má"
-                                        checked={pelaSeca === "Seca Má"}
-                                        onChange={(e) => setPelaSeca(e.target.value)}
-                                    />
-                                    Seca Má
-                                </label>
-                            </div>
+                            ))}
                         </div>
 
-                        <div className="quad-box">
-                            <div className="quad-header">PELO ASPECTO:</div>
-                            <div className="quad-content">
-                                <label>
+                        {/* PELO ASPECTO */}
+                        <div className="bloco-laudo">
+                            <h4>PELO ASPECTO</h4>
+                            {["Bom", "Regular", "Mau"].map((opcao) => (
+                                <label key={opcao}>
                                     <input
-                                        type="radio"
-                                        name="peloAspecto2"
-                                        value="Bom"
-                                        checked={peloAspecto === "Bom"}
-                                        onChange={(e) => setPeloAspecto(e.target.value)}
+                                        type="checkbox"
+                                        checked={peloAspecto === opcao}
+                                        onChange={() => setPeloAspecto(opcao)}
                                     />
-                                    Bom
+                                    {opcao}
                                 </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="peloAspecto2"
-                                        value="Regular"
-                                        checked={peloAspecto === "Regular"}
-                                        onChange={(e) => setPeloAspecto(e.target.value)}
-                                    />
-                                    Regular
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="peloAspecto2"
-                                        value="Mau"
-                                        checked={peloAspecto === "Mau"}
-                                        onChange={(e) => setPeloAspecto(e.target.value)}
-                                    />
-                                    Mau
-                                </label>
-                            </div>
+                            ))}
                         </div>
 
-                        <div className="quad-box">
-                            <div className="quad-header">PELA TORRAÇÃO (Coffea arábica):</div>
-                            <div className="quad-content">
-                                {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
-                                    <label key={opcao}>
-                                        <input
-                                            type="radio"
-                                            name="torraArabica2"
-                                            value={opcao}
-                                            checked={torraArabica === opcao}
-                                            onChange={(e) => setTorraArabica(e.target.value)}
-                                        />
-                                        {opcao}
-                                    </label>
-                                ))}
-                            </div>
+                        {/* TORRAÇÃO ARÁBICA */}
+                        <div className="bloco-laudo">
+                            <h4>TORRAÇÃO (Coffea arábica)</h4>
+                            {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
+                                <label key={opcao}>
+                                    <input
+                                        type="checkbox"
+                                        checked={torraArabica === opcao}
+                                        onChange={() => setTorraArabica(opcao)}
+                                    />
+                                    {opcao}
+                                </label>
+                            ))}
                         </div>
 
-                        <div className="quad-box">
-                            <div className="quad-header">PELA TORRAÇÃO (Coffea canephora):</div>
-                            <div className="quad-content">
-                                {[
-                                    "Torração Excelente",
-                                    "Torração Quase Excelente",
-                                    "Torração Muito Boa",
-                                    "Torração Boa",
-                                    "Torração Regular",
-                                    "Torração Má",
-                                ].map((opcao) => (
-                                    <label key={opcao}>
-                                        <input
-                                            type="radio"
-                                            name="torraCanephora2"
-                                            value={opcao}
-                                            checked={torraCanephora === opcao}
-                                            onChange={(e) => setTorraCanephora(e.target.value)}
-                                        />
-                                        {opcao}
-                                    </label>
-                                ))}
-                            </div>
+                        {/* TORRAÇÃO CANEPHORA */}
+                        <div className="bloco-laudo">
+                            <h4>TORRAÇÃO (Coffea canephora)</h4>
+                            {[
+                                "Torração Excelente",
+                                "Torração Quase Excelente",
+                                "Torração Muito Boa",
+                                "Torração Boa",
+                                "Torração Regular",
+                                "Torração Má",
+                            ].map((opcao) => (
+                                <label key={opcao}>
+                                    <input
+                                        type="checkbox"
+                                        checked={torraCanephora === opcao}
+                                        onChange={() => setTorraCanephora(opcao)}
+                                    />
+                                    {opcao}
+                                </label>
+                            ))}
                         </div>
 
-                        <div className="quad-box">
-                            <div className="quad-header">PELO TEOR DE CAFEÍNA:</div>
-                            <div className="quad-content">
-                                <label>
+                        {/* TEOR DE CAFEÍNA */}
+                        <div className="bloco-laudo">
+                            <h4>TEOR DE CAFEÍNA</h4>
+                            {["CAFÉ", "CAFÉ DESCAFEINADO"].map((opcao) => (
+                                <label key={opcao}>
                                     <input
-                                        type="radio"
-                                        name="teorCafeina2"
-                                        value="CAFÉ"
-                                        checked={teorCafeina === "CAFÉ"}
-                                        onChange={(e) => setTeorCafeina(e.target.value)}
+                                        type="checkbox"
+                                        checked={teorCafeina === opcao}
+                                        onChange={() => setTeorCafeina(opcao)}
                                     />
-                                    CAFÉ
+                                    {opcao}
                                 </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="teorCafeina2"
-                                        value="CAFÉ DESCAFEINADO"
-                                        checked={teorCafeina === "CAFÉ DESCAFEINADO"}
-                                        onChange={(e) => setTeorCafeina(e.target.value)}
-                                    />
-                                    CAFÉ DESCAFEINADO
-                                </label>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
+
 
             {/* Grupo: Botão Salvar */}
             <div className="grupo-salvar">
