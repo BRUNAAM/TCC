@@ -8,20 +8,23 @@ const PrivateRoute = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Escuta mudanças de autenticação
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
             setLoading(false);
         });
 
+        // Limpa o listener ao desmontar o componente
         return () => unsubscribe();
     }, []);
 
     if (loading) {
-        return <p>Carregando...</p>;
+        // Pode personalizar com um spinner, animação ou componente separado
+        return <p>Carregando autenticação...</p>;
     }
 
-    return user ? <Outlet /> : <Navigate to="/login" replace />; // Descobrir o que esta fazendo o Outlet e o         return () => unsubscribe();
-
+    // Se usuário estiver logado, renderiza a rota protegida
+    return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;

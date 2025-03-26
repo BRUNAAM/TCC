@@ -9,36 +9,36 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setErro("");
+        setLoading(true);
 
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
 
-            let usuarioNome = user.displayName || ""; // Se o nome já estiver salvo no Firebase Auth
+            let usuarioNome = user.displayName || "";
 
-            // Buscar nome salvo no Firestore
-            const userDoc = await getDoc(doc(db, "usuarios", user.uid)); // Corrigido de "usuario" para "usuarios"
+            const userDoc = await getDoc(doc(db, "usuarios", user.uid));
             if (userDoc.exists()) {
                 usuarioNome = userDoc.data().nome;
             }
 
-            // Armazena o nome no LocalStorage para acesso em outras telas
             localStorage.setItem("usuarioNome", usuarioNome);
 
-            navigate("/logado"); // Redireciona para a tela Logado
+            navigate("/logado");
         } catch (error) {
-            if (error.code === "auth/user-not-found") {
-                setErro("Usuário não encontrado. Verifique o e-mail e tente novamente.");
-            } else if (error.code === "auth/wrong-password") {
-                setErro("Senha incorreta. Tente novamente.");
-            } else {
-                setErro("Erro ao fazer login. Tente novamente mais tarde.");
-            }
+            const mensagensErro = {
+                "auth/user-not-found": "Usuário não encontrado. Verifique o e-mail.",
+                "auth/wrong-password": "Senha incorreta. Tente novamente.",
+            };
+            setErro(mensagensErro[error.code] || "Erro ao fazer login. Tente novamente.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -47,14 +47,18 @@ const Login = () => {
             <div className="login-box">
                 <h2>FAÇA SEU LOGIN</h2>
                 <form onSubmit={handleLogin}>
+                    <label htmlFor="email">Email</label>
                     <input
+                        id="email"
                         type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
+                    <label htmlFor="senha">Senha</label>
                     <input
+                        id="senha"
                         type="password"
                         placeholder="Senha"
                         value={senha}
@@ -64,9 +68,15 @@ const Login = () => {
 
                     {erro && <p className="erro">{erro}</p>}
 
-                    <button className="login-button" type="submit">ENTRAR</button>
+                    <button className="login-button" type="submit" disabled={loading}>
+                        {loading ? "Entrando..." : "ENTRAR"}
+                    </button>
 
-                    <button className="register-button" onClick={() => navigate("/cadastro")} type="button">
+                    <button
+                        className="register-button"
+                        onClick={() => navigate("/cadastro")}
+                        type="button"
+                    >
                         CRIAR CONTA
                     </button>
 
@@ -74,6 +84,7 @@ const Login = () => {
                         <button
                             className="forgot-password-link"
                             onClick={() => navigate("/esquecisenha")}
+                            type="button"
                         >
                             Esqueci minha senha
                         </button>

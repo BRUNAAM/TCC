@@ -19,10 +19,8 @@ body {
     margin-top: 40px;
     margin-bottom: 10px;
     color: #333 !important;
-    /* forçando a cor correta */
     position: relative;
 }
-
 
 .titulo-cabecalho::after {
     content: "";
@@ -90,7 +88,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Responsivo */
 @media (max-width: 768px) {
     .linha-identificacao {
         flex-direction: column;
@@ -110,7 +107,6 @@ body {
     border-radius: 5px;
 }
 
-/* Defeitos com Grid */
 .defeitos-checkboxes {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -188,7 +184,6 @@ body {
     gap: 20px;
 }
 
-/* Campo de categoria acima da tabela */
 .categoria-topo {
     margin-bottom: 20px;
     background-color: #fff;
@@ -221,7 +216,6 @@ body {
     border-radius: 5px;
 }
 
-/* Tabela com 6 quadrados (2x3) */
 .tabela-2x3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -345,7 +339,7 @@ body {
     background-color: #28a745;
     color: white;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     border: none;
     border-radius: 8px;
@@ -365,6 +359,7 @@ h4 {
     text-transform: uppercase;
     font-weight: bold;
     color: #333;
+    font-size: 20px;
 }
 
 .grupo-identificacao h3,
@@ -384,4 +379,22 @@ h4 {
     text-align: center;
     border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
+}
+
+.espaco-assinatura {
+    margin: 40px auto;
+    text-align: center;
+}
+
+.espaco-assinatura p {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.linha-assinatura {
+    width: 300px;
+    height: 2px;
+    background-color: #000;
+    margin: 0 auto;
 }

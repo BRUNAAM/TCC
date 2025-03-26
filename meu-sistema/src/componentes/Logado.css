@@ -5,9 +5,22 @@
     justify-content: center;
     height: 100vh;
     text-align: center;
+    animation: fadeIn 0.5s ease-in;
 }
 
-h2 {
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logado-container h2 {
     font-size: 28px;
     color: #BF9108;
     margin-bottom: 20px;
@@ -31,12 +44,18 @@ h2 {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s ease-in-out;
+    transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
 }
 
 .botoes-container button:hover {
     background: #e0a817;
     transform: scale(1.05);
+}
+
+.botoes-container button:focus,
+.logout-button:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
 }
 
 .logout-button {
@@ -49,7 +68,7 @@ h2 {
     border: 2px solid #BF9108;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s ease-in-out;
+    transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
 }
 
 .logout-button:hover {
@@ -59,7 +78,7 @@ h2 {
 
 /* Responsividade */
 @media (max-width: 768px) {
-    h2 {
+    .logado-container h2 {
         font-size: 24px;
     }
 
@@ -73,7 +92,7 @@ h2 {
 }
 
 @media (max-width: 480px) {
-    h2 {
+    .logado-container h2 {
         font-size: 20px;
     }
 

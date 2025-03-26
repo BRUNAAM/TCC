@@ -12,7 +12,7 @@ const HistoricoCob = () => {
     const fetchAvaliacoes = async () => {
         if (auth.currentUser) {
             const q = query(
-                collection(db, "avaliacoes_scaa"),
+                collection(db, "avaliacoes_cob"),
                 where("userId", "==", auth.currentUser.uid)
             );
             const querySnapshot = await getDocs(q);
@@ -31,7 +31,7 @@ const HistoricoCob = () => {
     // Função para excluir uma avaliação
     const handleDelete = async (id) => {
         if (window.confirm("Deseja realmente excluir esta avaliação?")) {
-            await deleteDoc(doc(db, "avaliacoes_scaa", id));
+            await deleteDoc(doc(db, "avaliacoes_cob", id));
             fetchAvaliacoes();
         }
     };
@@ -44,7 +44,7 @@ const HistoricoCob = () => {
     return (
         <div className="historico-cob-container">
             <div className="historico-header">
-                <h2>Histórico de Avaliações SCAA</h2>
+                <h2>Histórico de Avaliações COB</h2>
                 <button onClick={() => navigate(-1)}>Voltar</button>
             </div>
 

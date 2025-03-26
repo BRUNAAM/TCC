@@ -19,17 +19,20 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/esquecisenha" element={<EsqueciSenha />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
 
-        {/* Rotas Protegidas */}
+        {/* Rotas Protegidas (requerem autenticação) */}
         <Route element={<PrivateRoute />}>
           <Route path="/logado" element={<Logado />} />
           <Route path="/cob" element={<Cob />} />
           <Route path="/scaa" element={<Scaa />} />
           <Route path="/fornecedores" element={<Fornecedores />} />
-          <Route path="/historicoScaa" element={<HistoricoScaa />} />
-          <Route path="/historicoCob" element={<HistoricoCob />} />
+          <Route path="/historico-scaa" element={<HistoricoScaa />} />
+          <Route path="/historico-cob" element={<HistoricoCob />} />
         </Route>
+
+        {/* Rota padrão para 404 */}
+        <Route path="*" element={<h1>Página não encontrada</h1>} />
       </Routes>
     </Router>
   );

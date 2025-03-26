@@ -7,25 +7,32 @@ import "./Logado.css";
 
 const Logado = () => {
     const [usuarioNome, setUsuarioNome] = useState("");
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const carregarUsuario = async () => {
-            let nome = localStorage.getItem("usuarioNome");
+            try {
+                let nome = localStorage.getItem("usuarioNome");
 
-            if (!nome) {
-                const user = auth.currentUser;
-                if (user) {
-                    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-                    if (userDoc.exists()) {
-                        nome = userDoc.data().nome;
-                        localStorage.setItem("usuarioNome", nome);
+                if (!nome) {
+                    const user = auth.currentUser;
+                    if (user) {
+                        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+                        if (userDoc.exists()) {
+                            nome = userDoc.data().nome;
+                            localStorage.setItem("usuarioNome", nome);
+                        }
                     }
                 }
-            }
 
-            if (nome) {
-                setUsuarioNome(nome);
+                if (nome) {
+                    setUsuarioNome(nome);
+                }
+            } catch (error) {
+                console.error("Erro ao carregar usuário:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -38,20 +45,22 @@ const Logado = () => {
         navigate("/login");
     };
 
+    if (loading) return <p>Carregando...</p>;
+
     return (
-        <div className="logado-container">
+        <main className="logado-container">
             <h2>Bem-vindo, {usuarioNome}!</h2>
 
-            <div className="botoes-container">
+            <nav className="botoes-container" aria-label="Menu de navegação">
                 <button onClick={() => navigate("/cob")}>Avaliação COB</button>
                 <button onClick={() => navigate("/scaa")}>Avaliação SCAA</button>
                 <button onClick={() => navigate("/fornecedores")}>Fornecedores</button>
-                <button onClick={() => navigate("/historicoScaa")}>Historico de Avaliações Scaa</button>
-                <button onClick={() => navigate("/historicoCob")}>Historico de Avaliações Cob</button>
-            </div>
+                <button onClick={() => navigate("/historico-scaa")}>Histórico de Avaliações SCAA</button>
+                <button onClick={() => navigate("/historico-cob")}>Histórico de Avaliações COB</button>
+            </nav>
 
             <button className="logout-button" onClick={handleLogout}>Sair</button>
-        </div>
+        </main>
     );
 };
 
