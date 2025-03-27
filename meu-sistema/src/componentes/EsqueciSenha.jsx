@@ -26,7 +26,7 @@ const EsqueciSenha = () => {
         try {
             await sendPasswordResetEmail(auth, email);
             setMensagem("Um link para redefinir sua senha foi enviado para o seu e-mail.");
-            setTimeout(() => navigate("/Login"), 5000); // Redireciona após 5 segundos
+            setTimeout(() => navigate("/login"), 3000); // Redireciona após 3 segundos
         } catch (error) {
             if (error.code === "auth/user-not-found") {
                 setErro("Este e-mail não está cadastrado.");
@@ -41,18 +41,22 @@ const EsqueciSenha = () => {
     };
 
     return (
-        <div className="">
-            <h2 className="">Recuperar Senha</h2>
-            <form onSubmit={handleResetPassword} className="">
+        <div className="esqueci-container">
+            <div className="esqueci-header">
+                <h2>Recuperar Senha</h2>
+            </div>
+
+            <form onSubmit={handleResetPassword} className="esqueci-form">
                 <input
                     type="email"
                     placeholder="Digite seu e-mail"
-                    className=""
+                    className="esqueci-input"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
-                <button className="enviar" type="submit" disabled={loading}>
+
+                <button className="esqueci-botao" type="submit" disabled={loading}>
                     {loading ? "Enviando..." : "Enviar link de recuperação"}
                 </button>
             </form>
@@ -61,7 +65,10 @@ const EsqueciSenha = () => {
             {erro && <p className="mensagem-erro">{erro}</p>}
 
             <p className="lembrou">
-                Lembrou a senha? <button className="voltar" onClick={() => navigate("/")}>Voltar</button>
+                Lembrou a senha?{" "}
+                <button className="voltar" onClick={() => navigate("/login")}>
+                    Voltar
+                </button>
             </p>
         </div>
     );

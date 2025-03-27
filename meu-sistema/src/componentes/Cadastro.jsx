@@ -13,23 +13,21 @@ const Cadastro = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const validarCampos = () => {
+        if (!nome.trim()) return "O nome não pode estar vazio.";
+        if (!email.includes("@")) return "Digite um e-mail válido.";
+        if (senha.length < 6) return "A senha deve ter pelo menos 6 caracteres.";
+        return null;
+    };
+
     const handleCadastro = async (e) => {
         e.preventDefault();
         setErro("");
         setLoading(true);
 
-        if (nome.trim() === "") {
-            setErro("O nome não pode estar vazio.");
-            setLoading(false);
-            return;
-        }
-        if (!email.includes("@")) {
-            setErro("Digite um e-mail válido.");
-            setLoading(false);
-            return;
-        }
-        if (senha.length < 6) {
-            setErro("A senha deve ter pelo menos 6 caracteres.");
+        const erroValidacao = validarCampos();
+        if (erroValidacao) {
+            setErro(erroValidacao);
             setLoading(false);
             return;
         }
@@ -42,7 +40,8 @@ const Cadastro = () => {
 
             await setDoc(doc(db, "usuarios", user.uid), {
                 nome: nome,
-                email: email
+                email: email,
+                dataCadastro: new Date().toISOString()
             });
 
             localStorage.setItem("usuarioNome", nome);
@@ -52,14 +51,18 @@ const Cadastro = () => {
         } catch (error) {
             console.error("Erro no cadastro:", error);
 
-            if (error.code === "auth/email-already-in-use") {
-                setErro("Este e-mail já está cadastrado. Faça login ou redefina sua senha.");
-            } else if (error.code === "auth/weak-password") {
-                setErro("A senha deve ter pelo menos 6 caracteres.");
-            } else if (error.code === "auth/invalid-email") {
-                setErro("Digite um e-mail válido.");
-            } else {
-                setErro("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                    setErro("Este e-mail já está cadastrado. Faça login ou redefina sua senha.");
+                    break;
+                case "auth/weak-password":
+                    setErro("A senha deve ter pelo menos 6 caracteres.");
+                    break;
+                case "auth/invalid-email":
+                    setErro("Digite um e-mail válido.");
+                    break;
+                default:
+                    setErro("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
             }
         } finally {
             setLoading(false);
@@ -67,7 +70,7 @@ const Cadastro = () => {
     };
 
     const handleClose = () => {
-        navigate(-1); // Volta para a página anterior
+        navigate(-1); // Voltar à página anterior
     };
 
     return (
@@ -76,25 +79,29 @@ const Cadastro = () => {
                 <h2>Cadastro</h2>
                 <button className="close-button" onClick={handleClose}>✖</button>
             </div>
+
             <form onSubmit={handleCadastro}>
-                <label>Nome:</label>
+                <label htmlFor="nome">Nome:</label>
                 <input
+                    id="nome"
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required
                 />
 
-                <label>Email:</label>
+                <label htmlFor="email">Email:</label>
                 <input
+                    id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
 
-                <label>Senha:</label>
+                <label htmlFor="senha">Senha:</label>
                 <input
+                    id="senha"
                     type="password"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}

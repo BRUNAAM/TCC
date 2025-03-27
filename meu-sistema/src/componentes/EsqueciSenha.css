@@ -1,28 +1,34 @@
-.esqueci-senha-container {
+/* Container principal */
+.esqueci-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
 }
 
-h2 {
+/* Cabeçalho */
+.esqueci-header h2 {
     font-size: 26px;
     color: #BF9108;
     margin-bottom: 20px;
 }
 
-.form-container {
+/* Formulário */
+.esqueci-form {
     background: rgba(0, 0, 0, 0.7);
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
     max-width: 400px;
-    width: 90%;
+    width: 100%;
 }
 
-input {
+/* Campo de entrada */
+.esqueci-input {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
@@ -34,7 +40,8 @@ input {
     background-color: #fff;
 }
 
-.enviar {
+/* Botão */
+.esqueci-botao {
     width: 100%;
     padding: 12px;
     font-size: 18px;
@@ -47,22 +54,30 @@ input {
     transition: 0.3s ease-in-out;
 }
 
-.enviar:hover {
+.esqueci-botao:hover {
     background: #e0a817;
     transform: scale(1.05);
 }
 
-.mensagem {
+/* Mensagens */
+.mensagem-sucesso {
     margin-top: 15px;
     font-size: 14px;
     color: #4CAF50;
 }
 
+.mensagem-erro {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ff4d4d;
+}
+
+/* Link de voltar */
 .lembrou {
     margin-top: 20px;
 }
 
-.lembrou button {
+.lembrou .voltar {
     background: none;
     border: none;
     color: #BF9108;
@@ -72,44 +87,44 @@ input {
     text-decoration: underline;
 }
 
-.lembrou button:hover {
+.lembrou .voltar:hover {
     color: #e0a817;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .form-container {
+    .esqueci-form {
         padding: 25px;
     }
 
-    h2 {
+    .esqueci-header h2 {
         font-size: 24px;
     }
 
-    input {
+    .esqueci-input {
         font-size: 14px;
     }
 
-    .enviar {
+    .esqueci-botao {
         font-size: 16px;
     }
 }
 
 @media (max-width: 480px) {
-    .form-container {
+    .esqueci-form {
         padding: 20px;
     }
 
-    h2 {
+    .esqueci-header h2 {
         font-size: 20px;
     }
 
-    input {
+    .esqueci-input {
         font-size: 14px;
         padding: 10px;
     }
 
-    .enviar {
+    .esqueci-botao {
         font-size: 14px;
         padding: 10px;
     }

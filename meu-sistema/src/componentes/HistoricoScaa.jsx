@@ -8,19 +8,16 @@ const HistoricoScaa = () => {
     const [avaliacoes, setAvaliacoes] = useState([]);
     const navigate = useNavigate();
 
-    // Função para buscar as avaliações do usuário autenticado
     const fetchAvaliacoes = async () => {
-        if (auth.currentUser) {
-            const q = query(
-                collection(db, "avaliacoes_scaa"),
-                where("userId", "==", auth.currentUser.uid)
-            );
-            const querySnapshot = await getDocs(q);
-            const avaliacoesList = querySnapshot.docs.map(doc => ({
+        const user = auth.currentUser;
+        if (user) {
+            const q = query(collection(db, "avaliacoes_scaa"), where("userId", "==", user.uid));
+            const snapshot = await getDocs(q);
+            const data = snapshot.docs.map(doc => ({
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
             }));
-            setAvaliacoes(avaliacoesList);
+            setAvaliacoes(data);
         }
     };
 
@@ -28,15 +25,14 @@ const HistoricoScaa = () => {
         fetchAvaliacoes();
     }, []);
 
-    // Função para excluir uma avaliação
     const handleDelete = async (id) => {
-        if (window.confirm("Deseja realmente excluir esta avaliação?")) {
+        const confirm = window.confirm("Deseja realmente excluir esta avaliação?");
+        if (confirm) {
             await deleteDoc(doc(db, "avaliacoes_scaa", id));
             fetchAvaliacoes();
         }
     };
 
-    // Função para imprimir as avaliações
     const handlePrint = () => {
         window.print();
     };
@@ -45,11 +41,10 @@ const HistoricoScaa = () => {
         <div className="historico-scaa-container">
             <div className="historico-header">
                 <h2>Histórico de Avaliações SCAA</h2>
-                <button onClick={() => navigate(-1)}>Voltar</button>
-            </div>
-
-            <div className="historico-actions">
-                <button onClick={handlePrint}>Imprimir Avaliações</button>
+                <div className="botoes-topo">
+                    <button className="botao-voltar" onClick={() => navigate(-1)}>Voltar</button>
+                    <button className="botao-imprimir" onClick={handlePrint}>Imprimir</button>
+                </div>
             </div>
 
             {avaliacoes.length > 0 ? (
@@ -58,29 +53,31 @@ const HistoricoScaa = () => {
                         <tr>
                             <th>Data</th>
                             <th>Fornecedor</th>
-                            <th>N° Amostra</th>
+                            <th>Nº Amostra</th>
                             <th>Torra</th>
-                            <th>Pontuação Final</th>
+                            <th>Pontuação</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {avaliacoes.map(avaliacao => (
-                            <tr key={avaliacao.id}>
-                                <td>{avaliacao.data}</td>
-                                <td>{avaliacao.fornecedor}</td>
-                                <td>{avaliacao.numeroAmostra}</td>
-                                <td>{avaliacao.torra}</td>
-                                <td>{avaliacao.pontuacaoFinal}</td>
+                        {avaliacoes.map(({ id, data, fornecedor, numeroAmostra, torra, pontuacaoFinal }) => (
+                            <tr key={id}>
+                                <td>{new Date(data).toLocaleDateString("pt-BR")}</td>
+                                <td>{fornecedor}</td>
+                                <td>{numeroAmostra}</td>
+                                <td>{torra}</td>
+                                <td>{pontuacaoFinal}</td>
                                 <td>
-                                    <button onClick={() => handleDelete(avaliacao.id)}>Excluir</button>
+                                    <button className="botao-excluir" onClick={() => handleDelete(id)}>
+                                        Excluir
+                                    </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             ) : (
-                <p>Nenhuma avaliação encontrada.</p>
+                <p className="sem-avaliacoes">Nenhuma avaliação encontrada.</p>
             )}
         </div>
     );

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Estilos padrão
 
 const Scaa = () => {
     const [avaliador, setAvaliador] = useState("");
@@ -120,7 +122,7 @@ const Scaa = () => {
 
     const handleSalvarAvaliacao = async () => {
         if (!fornecedorSelecionado || !numeroAmostra || !torraSelecionada) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
+            toast.warning("Por favor, preencha todos os campos obrigatórios.");
             return;
         }
 
@@ -145,8 +147,7 @@ const Scaa = () => {
         };
 
         await addDoc(collection(db, "avaliacoes_scaa"), avaliacao);
-        alert("Avaliação SCAA salva com sucesso!");
-        navigate(-1);
+        toast.success("Avaliação SCAA salva com sucesso!")
     };
 
     // Rótulos invertidos (0..4)
@@ -565,8 +566,37 @@ const Scaa = () => {
 
                 <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
             </div>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                toastStyle={{
+                    color: "white",
+                    //fontWeight: "bold",
+                    fontSize: "18px",
+                }}
+                toastClassName="custom-toast"
+            />
+            <style>
+                {`
+    .custom-toast .Toastify__toast-icon {
+      width: 36px !important;
+      height: 36px !important;
+    }
+  `}
+            </style>
+
         </div>
     );
+
 };
 
 export default Scaa;

@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/esquecisenha" element={<EsqueciSenha />} />
 
         {/* Rotas Protegidas (requerem autenticação) */}
         <Route element={<PrivateRoute />}>

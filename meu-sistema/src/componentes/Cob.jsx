@@ -255,11 +255,12 @@ const Cob = () => {
                         <div className="sub-block">
                             <h4>Defeitos e Equivalências</h4>
                             <label>Defeitos Encontrados:</label>
-                            <div className="defeitos-checkboxes">
+                            <section className="defeitos-grid">
                                 {Object.keys(tabelaDefeitos).map((defeito) => (
-                                    <div key={defeito}>
+                                    <div key={defeito} className="defeitos-checkbox">
                                         <label>{defeito}:</label>
                                         <input
+                                            className="defeitos-input"
                                             type="number"
                                             min="0"
                                             value={defeitos[defeito] || ""}
@@ -270,7 +271,7 @@ const Cob = () => {
                                         <span> Equivalência: {equivalencias[defeito] || 0}</span>
                                     </div>
                                 ))}
-                            </div>
+                            </section>
 
                             <div className="total">
                                 <div>

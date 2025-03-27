@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { db } from "../config/firebase";
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import "./Fornecedores.css";
+import { useNavigate } from "react-router-dom";
+
 
 const Fornecedores = () => {
     const [fornecedores, setFornecedores] = useState([]);
@@ -47,8 +49,10 @@ const Fornecedores = () => {
     };
 
     const handleExcluir = async (id) => {
-        await deleteDoc(doc(db, "fornecedores", id));
-        carregarFornecedores();
+        if (window.confirm("Deseja realmente excluir este fornecedor?")) {
+            await deleteDoc(doc(db, "fornecedores", id));
+            carregarFornecedores();
+        }
     };
 
     const limparCampos = () => {
@@ -60,10 +64,16 @@ const Fornecedores = () => {
         setCep("");
         setTelefone("");
     };
+    const navigate = useNavigate();
 
     return (
         <div className="fornecedores-container">
             <h2>Gerenciar Fornecedores</h2>
+            <div className="fornecedores-header">
+                <h2>Gerenciar Fornecedores</h2>
+                <button className="botao-voltar" onClick={() => navigate(-1)}>✖</button>
+            </div>
+
             <form onSubmit={handleCadastro} className="fornecedor-form">
                 <input type="text" placeholder="Nome Completo" value={nome} onChange={(e) => setNome(e.target.value)} required />
                 <input type="text" placeholder="Rua" value={rua} onChange={(e) => setRua(e.target.value)} required />
@@ -71,7 +81,10 @@ const Fornecedores = () => {
                 <input type="text" placeholder="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} required />
                 <input type="text" placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} required />
                 <input type="text" placeholder="Telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} required />
-                <button type="submit">{idEdicao ? "Atualizar" : "Cadastrar"}</button>
+                <div className="form-actions">
+                    <button type="submit">{idEdicao ? "Atualizar" : "Cadastrar"}</button>
+                    {idEdicao && <button type="button" className="cancelar" onClick={limparCampos}>Cancelar</button>}
+                </div>
             </form>
 
             <table className="fornecedores-table">
@@ -96,14 +109,13 @@ const Fornecedores = () => {
                             <td>{fornecedor.cep}</td>
                             <td>{fornecedor.telefone}</td>
                             <td>
-                                <button onClick={() => handleEditar(fornecedor)}>Editar</button>
-                                <button onClick={() => handleExcluir(fornecedor.id)}>Excluir</button>
+                                <button className="editar" onClick={() => handleEditar(fornecedor)}>Editar</button>
+                                <button className="excluir" onClick={() => handleExcluir(fornecedor.id)}>Excluir</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-
         </div>
     );
 };

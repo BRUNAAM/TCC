@@ -19,7 +19,7 @@ const Rotas = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
-                <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+                <Route path="/esquecisenha" element={<EsqueciSenha />} />
 
                 {/* Rotas protegidas */}
                 <Route element={<PrivateRoute />}>

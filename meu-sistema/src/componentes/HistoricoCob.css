@@ -1,0 +1,120 @@
+/* ===== Container principal ===== */
+.historico-cob-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+/* ===== Cabeçalho ===== */
+.historico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.historico-header h2 {
+    font-size: 24px;
+    color: #BF9108;
+    text-transform: uppercase;
+}
+
+/* ===== Botões topo ===== */
+.botoes-topo button {
+    padding: 10px 16px;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.botao-voltar {
+    background-color: #6c757d;
+    color: white;
+}
+
+.botao-voltar:hover {
+    background-color: #5a6268;
+}
+
+.botao-imprimir {
+    background-color: #28a745;
+    color: white;
+}
+
+.botao-imprimir:hover {
+    background-color: #218838;
+}
+
+/* ===== Tabela de Avaliações ===== */
+.avaliacoes-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.avaliacoes-table th,
+.avaliacoes-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.avaliacoes-table th {
+    background-color: #f5f5f5;
+    color: #333;
+    font-weight: bold;
+}
+
+.avaliacoes-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.botao-excluir {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.botao-excluir:hover {
+    background-color: #b02a37;
+}
+
+/* ===== Mensagem de vazio ===== */
+.sem-avaliacoes {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 768px) {
+    .avaliacoes-table {
+        font-size: 13px;
+    }
+
+    .historico-header h2 {
+        font-size: 20px;
+    }
+
+    .botoes-topo button {
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+}

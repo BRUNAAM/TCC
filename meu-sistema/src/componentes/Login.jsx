@@ -47,7 +47,7 @@ const Login = () => {
             <div className="login-box">
                 <h2>FAÇA SEU LOGIN</h2>
                 <form onSubmit={handleLogin}>
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email"></label>
                     <input
                         id="email"
                         type="email"
@@ -56,7 +56,7 @@ const Login = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                    <label htmlFor="senha">Senha</label>
+                    <label htmlFor="senha"></label>
                     <input
                         id="senha"
                         type="password"
