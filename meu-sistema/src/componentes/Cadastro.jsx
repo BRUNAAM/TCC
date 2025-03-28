@@ -39,18 +39,23 @@ const Cadastro = () => {
             await updateProfile(user, { displayName: nome });
 
             await setDoc(doc(db, "usuarios", user.uid), {
-                nome: nome,
-                email: email,
-                dataCadastro: new Date().toISOString()
+                nome,
+                email,
+                dataCadastro: new Date().toISOString(),
             });
 
             localStorage.setItem("usuarioNome", nome);
 
             alert("Cadastro realizado com sucesso!");
+
+            // Limpa os campos
+            setNome("");
+            setEmail("");
+            setSenha("");
+
             navigate("/login");
         } catch (error) {
             console.error("Erro no cadastro:", error);
-
             switch (error.code) {
                 case "auth/email-already-in-use":
                     setErro("Este e-mail já está cadastrado. Faça login ou redefina sua senha.");
@@ -62,16 +67,14 @@ const Cadastro = () => {
                     setErro("Digite um e-mail válido.");
                     break;
                 default:
-                    setErro("Erro ao cadastrar usuário. Verifique os dados e tente novamente.");
+                    setErro("Ocorreu um erro inesperado. Tente novamente mais tarde.");
             }
         } finally {
             setLoading(false);
         }
     };
 
-    const handleClose = () => {
-        navigate(-1); // Voltar à página anterior
-    };
+    const handleClose = () => navigate(-1);
 
     return (
         <div className="cadastro-container">
@@ -80,13 +83,14 @@ const Cadastro = () => {
                 <button className="close-button" onClick={handleClose}>✖</button>
             </div>
 
-            <form onSubmit={handleCadastro}>
+            <form onSubmit={handleCadastro} className="cadastro-form">
                 <label htmlFor="nome">Nome:</label>
                 <input
                     id="nome"
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
+                    placeholder="Digite seu nome completo"
                     required
                 />
 
@@ -96,6 +100,7 @@ const Cadastro = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Digite seu e-mail"
                     required
                 />
 
@@ -105,6 +110,7 @@ const Cadastro = () => {
                     type="password"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
+                    placeholder="Crie uma senha segura"
                     required
                 />
 
