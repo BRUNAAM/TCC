@@ -1,161 +1,124 @@
+/* Login.css */
+
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #1a1a1a;
+}
+
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .login-box {
-    background: rgba(0, 0, 0, 0.7);
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 15px;
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
     text-align: center;
     max-width: 400px;
-    width: 90%;
-    animation: fadeIn 0.6s ease;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.login-box h2 {
-    font-size: 26px;
-    color: #BF9108;
+.login-logo {
+    width: 160px;
+    height: auto;
     margin-bottom: 20px;
 }
 
-.login-box input {
-    width: 100%;
+.login-title {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-input {
     padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #BF9108;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #000;
-    background-color: #fff;
-    transition: border 0.3s ease, background-color 0.3s ease;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
 }
 
-.login-box input:focus {
-    outline: 2px solid #BF9108;
-    outline-offset: 2px;
-    background-color: #fef5e7;
-}
-
-.erro {
-    color: red;
-    font-size: 14px;
-    margin-bottom: 10px;
+.login-input:focus {
+    border-color: #004080;
+    box-shadow: 0 0 5px rgba(0, 64, 128, 0.4);
 }
 
 .login-button,
 .register-button {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s ease-in-out;
-}
-
-.login-button {
-    margin-top: 10px;
-    color: #000;
-    background: #BF9108;
+    background: linear-gradient(to bottom, #004080, #001f40);
+    color: white;
     border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.login-button:hover {
-    background: #e0a817;
-    transform: scale(1.05);
-}
-
-.register-button {
-    margin-top: 10px;
-    color: #BF9108;
-    background: none;
-    border: 2px solid #BF9108;
-}
-
+.login-button:hover,
 .register-button:hover {
-    background: #BF9108;
-    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.login-button:focus,
-.register-button:focus,
-.forgot-password-link:focus {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
+.login-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 .forgot-password {
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .forgot-password-link {
     background: none;
     border: none;
-    color: #BF9108;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
+    color: #004080;
     text-decoration: underline;
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 10px;
 }
 
 .forgot-password-link:hover {
-    color: #e0a817;
+    color: #001f40;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-    .login-box {
-        padding: 30px;
-    }
-
-    .login-box h2 {
-        font-size: 24px;
-    }
-
-    .login-box input {
-        font-size: 14px;
-    }
-
-    .login-button,
-    .register-button {
-        font-size: 16px;
-    }
+.login-erro {
+    color: red;
+    font-size: 0.9rem;
+    margin: -5px 0 5px 0;
 }
 
-@media (max-width: 480px) {
+/* Responsivo */
+@media (max-width: 500px) {
     .login-box {
-        padding: 20px;
+        padding: 25px;
     }
 
-    .login-box h2 {
-        font-size: 20px;
+    .login-title {
+        font-size: 1.5rem;
     }
 
-    .login-box input {
-        font-size: 14px;
-        padding: 10px;
-    }
-
-    .login-button,
-    .register-button {
-        font-size: 14px;
-        padding: 10px;
+    .login-logo {
+        width: 130px;
     }
 }

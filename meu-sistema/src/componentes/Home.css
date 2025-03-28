@@ -1,102 +1,79 @@
-/* Container principal centralizado */
+/* Home.css */
+
+body {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  color: #1a1a1a;
+  /* Quase preto */
+  background-color: #f4f4f4;
+  /* Cinza claro para limpeza visual */
+}
+
 .home-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    text-align: center;
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Box de conteúdo com fundo escuro e bordas arredondadas */
 .home-content {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
-    max-width: 600px;
-    width: 90%;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Logo */
 .home-logo {
-    width: 150px;
-    margin-bottom: 20px;
+  width: 180px;
+  height: auto;
+  margin-bottom: 20px;
 }
 
-/* Título */
-.home-content h1 {
-    font-size: 28px;
-    margin-bottom: 15px;
-    color: #BF9108;
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #1a1a1a;
 }
 
-/* Texto */
-.home-content p {
-    font-size: 18px;
-    line-height: 1.5;
-    color: #fff;
+p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #333;
 }
 
-/* Botão */
 .home-button {
-    margin-top: 20px;
-    padding: 12px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #000;
-    background: #BF9108;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
+  background: linear-gradient(to bottom, #004080, #001f40);
+  /* Azul escuro elegante */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .home-button:hover {
-    background: #e0a817;
-    transform: scale(1.05);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.home-button:focus {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
-}
+/* Responsivo */
+@media (max-width: 600px) {
+  .home-content {
+    padding: 20px;
+  }
 
-/* Responsividade */
-@media (max-width: 768px) {
-    .home-content {
-        padding: 30px;
-    }
-
-    .home-content h1 {
-        font-size: 24px;
-    }
-
-    .home-content p {
-        font-size: 16px;
-    }
-
-    .home-button {
-        font-size: 16px;
-        padding: 10px 18px;
-    }
-}
-
-@media (max-width: 480px) {
-    .home-content {
-        padding: 20px;
-    }
-
-    .home-content h1 {
-        font-size: 20px;
-    }
-
-    .home-content p {
-        font-size: 14px;
-    }
-
-    .home-button {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
+  .home-button {
+    width: 100%;
+  }
 }

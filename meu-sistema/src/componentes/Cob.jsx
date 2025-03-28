@@ -253,15 +253,14 @@ const Cob = () => {
                     <div className="cob-block">
                         <h3>2. CLASSIFICAÇÃO FÍSICA</h3>
                         <div className="sub-block">
-                            <h4>Defeitos e Equivalências</h4>
-                            <label>Defeitos Encontrados:</label>
+                            <h4 className="def">Defeitos e Equivalências</h4>
                             <section className="defeitos-grid">
                                 {Object.keys(tabelaDefeitos).map((defeito) => (
                                     <div key={defeito} className="defeitos-checkbox">
                                         <label>{defeito}:</label>
                                         <input
                                             className="defeitos-input"
-                                            type="number"
+                                            type="text"
                                             min="0"
                                             value={defeitos[defeito] || ""}
                                             onChange={(e) =>

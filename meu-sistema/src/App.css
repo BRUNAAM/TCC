@@ -1,0 +1,103 @@
+/* App.css - Estilo Global */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    color: #1a1a1a;
+    background-color: #f4f4f4;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+main,
+section,
+div {
+    width: 100%;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+
+button {
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 10px 20px;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Botão padrão de ação */
+.btn-azul {
+    background: linear-gradient(to bottom, #004080, #001f40);
+    color: white;
+}
+
+/* Botão vermelho de fechar */
+.btn-fechar {
+    background-color: #b30000;
+    color: white;
+    box-shadow: 0 0 10px rgba(179, 0, 0, 0.6);
+}
+
+/* Inputs padrão */
+input,
+select,
+textarea {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    outline: none;
+}
+
+/* Responsividade geral */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 0.95rem;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+    }
+}

@@ -4,6 +4,8 @@ import { auth, db } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "./Login.css";
+import logo from "../assets/logo.svg";
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -45,28 +47,29 @@ const Login = () => {
     return (
         <div className="login-container">
             <div className="login-box">
-                <h2>FAÇA SEU LOGIN</h2>
-                <form onSubmit={handleLogin}>
-                    <label htmlFor="email"></label>
+                <img src={logo} alt="Logotipo do sistema" className="login-logo" />
+                <h2 className="login-title">FAÇA SEU LOGIN</h2>
+                <form onSubmit={handleLogin} className="login-form">
                     <input
                         id="email"
                         type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        className="login-input"
                         required
                     />
-                    <label htmlFor="senha"></label>
                     <input
                         id="senha"
                         type="password"
                         placeholder="Senha"
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
+                        className="login-input"
                         required
                     />
 
-                    {erro && <p className="erro">{erro}</p>}
+                    {erro && <p className="login-erro">{erro}</p>}
 
                     <button className="login-button" type="submit" disabled={loading}>
                         {loading ? "Entrando..." : "ENTRAR"}
