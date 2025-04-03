@@ -2,7 +2,7 @@
     max-width: 1000px;
     margin: 40px auto;
     padding: 20px;
-    background-color: #ffffff;
+    background-color: #4d4d4d;
     border-radius: 12px;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.08);
 }
@@ -10,10 +10,10 @@
 .fornecedores-container h2 {
     text-align: center;
     font-size: 28px;
-    color: #333;
+    color: #000000;
     margin-bottom: 30px;
     text-transform: uppercase;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid #000000;
     padding-bottom: 10px;
 }
 
@@ -26,7 +26,7 @@
 
 .fornecedor-form input {
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     border-radius: 8px;
     font-size: 15px;
     transition: border 0.3s ease;
@@ -41,7 +41,7 @@
     grid-column: span 2;
     padding: 12px;
     background-color: #bf9108;
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 16px;
     font-weight: bold;
     border: none;
@@ -63,19 +63,19 @@
 .fornecedores-table th,
 .fornecedores-table td {
     padding: 12px 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #000000;
     text-align: center;
     font-size: 14px;
 }
 
 .fornecedores-table th {
-    background-color: #f0f0f0;
+    background-color: #4d4d4d;
     text-transform: uppercase;
     font-weight: bold;
 }
 
 .fornecedores-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #000000;
 }
 
 .fornecedores-table button {
@@ -85,26 +85,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: bold;
     transition: background 0.3s ease;
 }
 
-.fornecedores-table button:first-child {
-    background-color: #007bff;
-}
-
-.fornecedores-table button:first-child:hover {
-    background-color: #0056b3;
-}
-
-.fornecedores-table button:last-child {
-    background-color: #dc3545;
-}
-
-.fornecedores-table button:last-child:hover {
-    background-color: #b02a37;
-}
 
 /* Responsivo */
 @media (max-width: 600px) {
@@ -127,7 +112,7 @@
 
 .fornecedores-header h2 {
     font-size: 24px;
-    color: #333;
+    color: #000000;
     font-weight: bold;
 }
 

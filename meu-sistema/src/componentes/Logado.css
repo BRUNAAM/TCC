@@ -6,14 +6,13 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    color: #1a1a1a;
 }
 
 .logado-container {
     max-width: 400px;
     margin: 60px auto;
     padding: 40px;
-    background-color: #ffffff;
+    background-color: #4d4d4d;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -22,7 +21,7 @@ body {
 h2 {
     font-size: 1.8rem;
     margin-bottom: 30px;
-    color: #000000;
+    color: #ffffff;
 }
 
 .botoes-container {
@@ -33,7 +32,7 @@ h2 {
 }
 
 .botoes-container button {
-    background: linear-gradient(to bottom, #806d00, #303103);
+    background: linear-gradient(to bottom, #ebc802, #303103);
     color: white;
     border: none;
     border-radius: 10px;

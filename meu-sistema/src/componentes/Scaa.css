@@ -1,6 +1,5 @@
 body {
     font-family: "Times New Roman", Times, serif;
-    background-color: #f8f9fa;
     color: #333;
     margin: 0;
     padding: 0;
@@ -10,7 +9,7 @@ body {
 .scaa-container {
     max-width: 800px;
     margin: 20px auto;
-    background: white;
+    background-color: #4d4d4d;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -22,7 +21,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #444;
+    border-bottom: 2px solid #000000;
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
@@ -30,7 +29,7 @@ body {
 .scaa-header h2 {
     font-size: 22px;
     text-transform: uppercase;
-    color: #333;
+    color: #000000;
 }
 
 .close-button {
@@ -38,7 +37,7 @@ body {
     border: none;
     font-size: 20px;
     cursor: pointer;
-    color: #444;
+    color: #000000;
 }
 
 .close-button:hover {
@@ -53,6 +52,7 @@ body {
     background-color: #f0f7f1;
     border: 2px solid #4caf50;
     border-radius: 8px;
+    margin: 30px;
     padding: 16px;
     width: 220px;
     font-size: 14px;
@@ -61,7 +61,6 @@ body {
 }
 
 .quadro-correlacao h4 {
-    margin: 0 0 10px;
     font-size: 16px;
     color: #2e7d32;
     text-align: center;
@@ -75,7 +74,7 @@ body {
 
 .quadro-correlacao li {
     margin-bottom: 6px;
-    color: #333;
+    color: #000000;
 }
 
 /* Formulário */
@@ -95,7 +94,7 @@ body {
 .scaa-form textarea {
     width: 100%;
     padding: 8px;
-    border: 1px solid #bbb;
+    border: 1px solid #ffffff;
     border-radius: 5px;
     font-size: 16px;
     font-family: "Times New Roman", Times, serif;
@@ -106,7 +105,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 50px;
 }
 
 .nota-container label {
@@ -130,12 +129,12 @@ body {
 
 .escala-notas span {
     font-size: 14px;
-    color: #666;
+    color: #ffffff;
 }
 
 .escala-notas .selecionado {
     font-weight: bold;
-    color: #007bff;
+    color: #ffe600;
 }
 
 /* Torra */
@@ -172,7 +171,7 @@ body {
 .torra-option span {
     margin-top: 8px;
     font-size: 14px;
-    color: #333;
+    color: #000000;
     font-weight: bold;
 }
 
@@ -185,7 +184,8 @@ body {
 /* Efeito de seleção */
 .torra-option.selecionado .grao-svg {
     transform: scale(1.2);
-    outline: 2px solid #FFD700;
+    outline: 2px solid#ffe600;
+    ;
     border-radius: 50%;
 }
 
@@ -228,12 +228,13 @@ body {
 
 .slider-labels span {
     font-size: 14px;
-    color: #666;
+    color: #ffffff;
 }
 
 .slider-labels .selected {
     font-weight: bold;
-    color: #007bff;
+    color: #ffe600;
+    ;
 }
 
 .vertical-slider-single {
@@ -279,7 +280,7 @@ body {
 
 /* Botões */
 button {
-    background-color: #007bff;
+    background: linear-gradient(to bottom, #ebc802, #303103);
     color: white;
     font-size: 16px;
     padding: 10px;
@@ -291,7 +292,8 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .radio-group {
@@ -312,7 +314,7 @@ button:hover {
     .scaa-header {
         position: relative;
         padding: 10px 40px 10px 10px;
-        border-bottom: 2px solid #444;
+        border-bottom: 2px solid #000000;
         margin-bottom: 20px;
         display: flex;
         justify-content: center;
@@ -334,7 +336,7 @@ button:hover {
         right: 10px;
         background: none;
         border: none;
-        color: #444;
+        color: #000000;
         cursor: pointer;
         z-index: 999;
     }

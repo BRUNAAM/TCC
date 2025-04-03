@@ -494,6 +494,18 @@ const Scaa = () => {
                     </div>
                 </div>
 
+                {/* Pontuação das xícaras */}
+                <div className="nota-container">
+                    <label>Pontuação dos atributos de xícaras:</label>
+                    <div className="nota-valor">
+                        {(() => {
+                            const docura = calcularPontuacaoXicara("doçura");
+                            const uniformidade = calcularPontuacaoXicara("uniformidade");
+                            const limpeza = calcularPontuacaoXicara("xicaraLimpa");
+                            return (docura + uniformidade + limpeza).toFixed(2);
+                        })()}
+                    </div>
+                </div>
                 {/* Checkboxes: Doçura, Uniformidade, Limpeza */}
                 <div className="xicaras-container">
                     <div className="xicaras-group">
@@ -560,19 +572,6 @@ const Scaa = () => {
                             placeholder="# cups"
                         />
                         <span>= {qtdGrave * 4}</span>
-                    </div>
-                </div>
-
-                {/* Pontuação das xícaras */}
-                <div className="nota-container">
-                    <label>Pontuação dos atributos de xícaras:</label>
-                    <div className="nota-valor">
-                        {(() => {
-                            const docura = calcularPontuacaoXicara("doçura");
-                            const uniformidade = calcularPontuacaoXicara("uniformidade");
-                            const limpeza = calcularPontuacaoXicara("xicaraLimpa");
-                            return (docura + uniformidade + limpeza).toFixed(2);
-                        })()}
                     </div>
                 </div>
 

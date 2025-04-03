@@ -49,7 +49,7 @@ const Logado = () => {
 
     return (
         <main className="logado-container">
-            <h2>Bem-vindo, {usuarioNome}!</h2>
+            <h2>Bem-vindo (a) <br />{usuarioNome}!</h2>
 
             <nav className="botoes-container" aria-label="Menu de navegação">
                 <button onClick={() => navigate("/cob")}>Avaliação COB</button>
