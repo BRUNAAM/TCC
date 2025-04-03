@@ -11,7 +11,6 @@ body {
     font-family: 'Times New Roman', Times, serif;
     font-weight: bold;
     color: #1a1a1a;
-    background-color: #585757;
     font-size: 1rem;
     line-height: 1.5;
     min-height: 100vh;
@@ -54,7 +53,7 @@ button:hover {
 
 /* Botão padrão de ação */
 .btn-azul {
-    background: linear-gradient(to bottom, #004080, #001f40);
+    background: linear-gradient(to bottom, #806d00, #303103);
     color: white;
 }
 

@@ -22,7 +22,7 @@ body {
 h2 {
     font-size: 1.8rem;
     margin-bottom: 30px;
-    color: #1a1a1a;
+    color: #000000;
 }
 
 .botoes-container {
@@ -33,7 +33,7 @@ h2 {
 }
 
 .botoes-container button {
-    background: linear-gradient(to bottom, #004080, #001f40);
+    background: linear-gradient(to bottom, #806d00, #303103);
     color: white;
     border: none;
     border-radius: 10px;

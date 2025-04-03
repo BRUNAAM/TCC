@@ -7,7 +7,6 @@ body {
   padding: 0;
   color: #1a1a1a;
   /* Quase preto */
-  background-color: #f4f4f4;
   /* Cinza claro para limpeza visual */
 }
 
@@ -21,7 +20,7 @@ body {
 }
 
 .home-content {
-  background-color: #ffffff;
+  background-color: #4d4d4d;
   border: 1px solid #ddd;
   border-radius: 15px;
   padding: 40px;
@@ -40,17 +39,17 @@ body {
 h1 {
   font-size: 2rem;
   margin-bottom: 20px;
-  color: #1a1a1a;
+  color: #ffffff;
 }
 
 p {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin-bottom: 30px;
-  color: #333;
+  color: #000000;
 }
 
 .home-button {
-  background: linear-gradient(to bottom, #004080, #001f40);
+  background: linear-gradient(to bottom, #806d00, #303103);
   /* Azul escuro elegante */
   color: white;
   border: none;

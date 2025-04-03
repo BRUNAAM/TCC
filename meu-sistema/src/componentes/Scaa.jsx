@@ -5,6 +5,8 @@ import { auth, db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Estilos padrão
+import GraoCafe from "./GraoCafe";
+
 
 const Scaa = () => {
     const [avaliador, setAvaliador] = useState("");
@@ -212,17 +214,18 @@ const Scaa = () => {
                     <h3>Selecione a Cor da Torra:</h3>
                     <div className="torra-options">
                         {[
-                            { nome: "Torra Clara" },
-                            { nome: "Torra Média Clara" },
-                            { nome: "Torra Média" },
-                            { nome: "Torra Escura" }
+                            { nome: "Torra Clara", cor: "#a57b70" },
+                            { nome: "Torra Média Clara", cor: "#704e44" },
+                            { nome: "Torra Média", cor: "#553026" },
+                            { nome: "Torra Escura", cor: "#3b1e17" }
                         ].map((torra) => (
                             <div
                                 key={torra.nome}
                                 className={`torra-option ${torraSelecionada === torra.nome ? "selecionado" : ""}`}
                                 onClick={() => setTorraSelecionada(torra.nome)}
                             >
-                                {torra.nome}
+                                <GraoCafe cor={torra.cor} />
+                                <span>{torra.nome}</span>
                             </div>
                         ))}
                     </div>
@@ -232,53 +235,67 @@ const Scaa = () => {
                 <div className="vertical-sliders-container">
                     <div className="vertical-slider-box">
                         <h4>Dry</h4>
-                        <div className="slider-row">
-                            <input
-                                type="range"
-                                className="vertical-slider"
-                                min="0"
-                                max="4"
-                                step="1"
-                                value={dry}
-                                onChange={(e) => setDry(parseInt(e.target.value))}
-                            />
-                            <div className="slider-labels">
-                                {intensidades.slice().reverse().map((label, index) => (
-                                    <span
-                                        key={index}
-                                        className={dry === intensidades.length - 1 - index ? "selected" : ""}
-                                    >
-                                        {label}
-                                    </span>
-                                ))}
+                        <div className="slider-row-with-note">
+                            <div className="slider-row">
+                                <input
+                                    type="range"
+                                    className="vertical-slider"
+                                    min="0"
+                                    max="4"
+                                    step="1"
+                                    value={dry}
+                                    onChange={(e) => setDry(parseInt(e.target.value))}
+                                />
+                                <div className="slider-labels">
+                                    {intensidades.slice().reverse().map((label, index) => (
+                                        <span
+                                            key={index}
+                                            className={dry === intensidades.length - 1 - index ? "selected" : ""}
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
+                            <textarea
+                                className="slider-lateral-note"
+                                placeholder="Observações Dry"
+                            />
                         </div>
                     </div>
+
                     <div className="vertical-slider-box">
                         <h4>Break</h4>
-                        <div className="slider-row">
-                            <input
-                                type="range"
-                                className="vertical-slider"
-                                min="0"
-                                max="4"
-                                step="1"
-                                value={breakValue}
-                                onChange={(e) => setBreakValue(parseInt(e.target.value))}
-                            />
-                            <div className="slider-labels">
-                                {intensidades.slice().reverse().map((label, index) => (
-                                    <span
-                                        key={index}
-                                        className={breakValue === intensidades.length - 1 - index ? "selected" : ""}
-                                    >
-                                        {label}
-                                    </span>
-                                ))}
+                        <div className="slider-row-with-note">
+                            <div className="slider-row">
+                                <input
+                                    type="range"
+                                    className="vertical-slider"
+                                    min="0"
+                                    max="4"
+                                    step="1"
+                                    value={breakValue}
+                                    onChange={(e) => setBreakValue(parseInt(e.target.value))}
+                                />
+                                <div className="slider-labels">
+                                    {intensidades.slice().reverse().map((label, index) => (
+                                        <span
+                                            key={index}
+                                            className={breakValue === intensidades.length - 1 - index ? "selected" : ""}
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
+                            <textarea
+                                className="slider-lateral-note"
+                                placeholder="Observações Break"
+                            />
                         </div>
                     </div>
                 </div>
+
 
                 {/* Notas do Café */}
                 <div className="nota-cafe-container">
@@ -292,7 +309,7 @@ const Scaa = () => {
 
                 {/* Sliders horizontais (AromaFragrancia, Sabor, Finalização, etc.) */}
                 <div className="nota-container">
-                    <label>AromaFragrancia:</label>
+                    <label>Aroma / Fragrancia:</label>
                     <input
                         type="range"
                         min="6"

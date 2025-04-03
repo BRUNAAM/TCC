@@ -624,15 +624,10 @@ const Cob = () => {
                                 </div>
                             </div>
 
-                            {/* Grupo: Botão Salvar*/}
+                            {/* Botão Salvar*/}
                             <div className="grupo-salvar">
                                 <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
                                 <button onClick={gerarPDF}>📄 Gerar PDF</button>
-                            </div>
-                            {/* Espaço para Assinatura do Avaliador */}
-                            <div className="espaco-assinatura">
-                                <p>Assinatura do Avaliador:</p>
-                                <div className="linha-assinatura"></div>
                             </div>
                         </div>
                     </div>

@@ -7,7 +7,6 @@
     height: 100vh;
     text-align: center;
     padding: 20px;
-    background-color: #f9f9f9;
 }
 
 /* Cabeçalho */
@@ -19,7 +18,7 @@
 
 /* Formulário */
 .esqueci-form {
-    background: rgba(0, 0, 0, 0.7);
+    background-color: #4d4d4d;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.4);
@@ -30,6 +29,7 @@
 /* Campo de entrada */
 .esqueci-input {
     width: 100%;
+    width: 380px;
     padding: 12px;
     margin-bottom: 15px;
     border: 1px solid #BF9108;
@@ -47,7 +47,7 @@
     font-size: 18px;
     font-weight: bold;
     color: #000;
-    background: #BF9108;
+    background: linear-gradient(to bottom, #806d00, #303103);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -55,7 +55,7 @@
 }
 
 .esqueci-botao:hover {
-    background: #e0a817;
+    background: linear-gradient(to bottom, #806d00, #303103);
     transform: scale(1.05);
 }
 
@@ -75,6 +75,7 @@
 /* Link de voltar */
 .lembrou {
     margin-top: 20px;
+    color: #000;
 }
 
 .lembrou .voltar {
