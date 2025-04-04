@@ -7,6 +7,7 @@ import "./Cob.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
+// Função para gerar PDF da tela
 const gerarPDF = () => {
     const elemento = document.getElementById("avaliacao-completa");
     html2canvas(elemento).then((canvas) => {
@@ -20,6 +21,87 @@ const gerarPDF = () => {
     });
 };
 
+// ********************************************************************
+// Tabela de classificação conforme a Instrução Normativa
+// Cada objeto contém o valor máximo de equivalência (defeitos) e o rótulo a ser exibido
+const classificationTable = [
+    { defeitos: 4, label: "2-5" },
+    { defeitos: 5, label: "2-10" },
+    { defeitos: 6, label: "2-15" },
+    { defeitos: 7, label: "2-20" },
+    { defeitos: 8, label: "2-25" },
+    { defeitos: 9, label: "2-30" },
+    { defeitos: 10, label: "2-35" },
+    { defeitos: 11, label: "2-40" },
+    { defeitos: 11.05, label: "2-45" },
+    { defeitos: 12, label: "3" },
+    { defeitos: 13, label: "3-5" },
+    { defeitos: 15, label: "3-10" },
+    { defeitos: 17, label: "3-15" },
+    { defeitos: 18, label: "3-20" },
+    { defeitos: 19, label: "3-25" },
+    { defeitos: 20, label: "3-30" },
+    { defeitos: 22, label: "3-35" },
+    { defeitos: 23, label: "3-40" },
+    { defeitos: 25, label: "3-45" },
+    { defeitos: 26, label: "4" },
+    { defeitos: 28, label: "4-5" },
+    { defeitos: 30, label: "4-10" },
+    { defeitos: 32, label: "4-15" },
+    { defeitos: 34, label: "4-20" },
+    { defeitos: 36, label: "4-25" },
+    { defeitos: 38, label: "4-30" },
+    { defeitos: 40, label: "4-35" },
+    { defeitos: 42, label: "4-40" },
+    { defeitos: 44, label: "4-45" },
+    { defeitos: 46, label: "5" },
+    { defeitos: 49, label: "5-5" },
+    { defeitos: 53, label: "5-10" },
+    { defeitos: 57, label: "5-15" },
+    { defeitos: 64, label: "5-25" },
+    { defeitos: 68, label: "5-30" },
+    { defeitos: 71, label: "5-35" },
+    { defeitos: 75, label: "5-40" },
+    { defeitos: 79, label: "5-45" },
+    { defeitos: 86, label: "6" },
+    { defeitos: 93, label: "6-5" },
+    { defeitos: 100, label: "6-10" },
+    { defeitos: 108, label: "6-15" },
+    { defeitos: 115, label: "6-20" },
+    { defeitos: 123, label: "6-25" },
+    { defeitos: 130, label: "6-30" },
+    { defeitos: 138, label: "6-35" },
+    { defeitos: 145, label: "6-40" },
+    { defeitos: 153, label: "6-45" },
+    { defeitos: 160, label: "7" },
+    { defeitos: 180, label: "7-5" },
+    { defeitos: 200, label: "7-10" },
+    { defeitos: 220, label: "7-15" },
+    { defeitos: 240, label: "7-20" },
+    { defeitos: 260, label: "7-25" },
+    { defeitos: 280, label: "7-30" },
+    { defeitos: 300, label: "7-35" },
+    { defeitos: 320, label: "7-40" },
+    { defeitos: 340, label: "7-45" },
+    { defeitos: 360, label: "8" },
+    { defeitos: Infinity, label: "Fora de Tipo" },
+];
+
+// Função que, dado o valor de equivalência (total de defeitos), retorna o rótulo da classificação.
+// Ela percorre o array e mantém o último registro cujo valor de defeitos seja menor ou igual ao valor informado.
+function getClassification(defeitosValue) {
+    let result = classificationTable[0];
+    for (let i = 0; i < classificationTable.length; i++) {
+        if (classificationTable[i].defeitos <= defeitosValue) {
+            result = classificationTable[i];
+        } else {
+            break;
+        }
+    }
+    return result;
+}
+// ********************************************************************
+
 const Cob = () => {
     const [avaliador, setAvaliador] = useState("");
     const [fornecedores, setFornecedores] = useState([]);
@@ -30,6 +112,8 @@ const Cob = () => {
     const [umidade, setUmidade] = useState("");
     const [equivalencias, setEquivalencias] = useState({});
     const [equivalenciaTotal, setEquivalenciaTotal] = useState(0);
+    // "tipo" será definido automaticamente com base na equivalência calculada
+    const [tipo, setTipo] = useState("");
     const [categoria, setCategoria] = useState("");
     const [peneiraSubcategoria, setPeneiraSubcategoria] = useState([]);
     const [grupoBebida, setGrupoBebida] = useState("");
@@ -37,7 +121,6 @@ const Cob = () => {
     const [classeBebida, setClasseBebida] = useState([]);
     const [aparelho, setAparelho] = useState("");
     const [subcategoria, setSubcategoria] = useState("");
-    const [tipo, setTipo] = useState("");
     const [postoServico, setPostoServico] = useState("");
     const [assinaturaAvaliador, setAssinaturaAvaliador] = useState("");
     const [classificadorMapa, setClassificadorMapa] = useState("");
@@ -50,6 +133,7 @@ const Cob = () => {
 
     const navigate = useNavigate();
 
+    // Tabela de defeitos para cálculo de equivalência
     const tabelaDefeitos = {
         "Grão Preto": { quantidade: 1, equivalencia: 1 },
         "Grão Ardido": { quantidade: 2, equivalencia: 1 },
@@ -75,6 +159,12 @@ const Cob = () => {
         carregarAvaliador();
         carregarFornecedores();
     }, []);
+
+    // Sempre que a equivalência total for atualizada, recalcula o tipo de defeito usando a tabela de classificação.
+    useEffect(() => {
+        const classification = getClassification(equivalenciaTotal);
+        setTipo(classification.label);
+    }, [equivalenciaTotal]);
 
     const carregarAvaliador = () => {
         const usuarioNome = localStorage.getItem("usuarioNome");
@@ -192,19 +282,21 @@ const Cob = () => {
         navigate(-1);
     };
 
+    // Soma dos grãos defeituosos digitados (para exibição)
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
-    const totalGeral = totalDefeitos + equivalenciaTotal;
 
     return (
         <div id="avaliacao-completa">
-            {<div className="cob-container">
+            <div className="cob-container">
                 {/* Cabeçalho */}
                 <div className="cob-header">
                     <h2 className="titulo-cabecalho">AVALIAÇÃO DE CAFÉ - COB</h2>
-                    <button className="close-button" onClick={handleFechar}>✖</button>
+                    <button className="close-button" onClick={handleFechar}>
+                        ✖
+                    </button>
                 </div>
 
-                {/*Grupo identificação*/}
+                {/* Grupo identificação */}
                 <div className="grupo-identificacao">
                     <div className="cob-block">
                         <h3>IDENTIFICAÇÃO</h3>
@@ -247,13 +339,12 @@ const Cob = () => {
                     </div>
                 </div>
 
-
                 {/* Grupo: Classificação Física */}
                 <div className="grupo-classificacao">
                     <div className="cob-block">
                         <h3>CLASSIFICAÇÃO FÍSICA</h3>
                         <div className="sub-block">
-                            <h4 className="def">DEFEITOS E EQUIVALENCIA</h4>
+                            <h4 className="def">DEFEITOS E EQUIVALÊNCIA</h4>
                             <section className="defeitos-grid">
                                 {Object.keys(tabelaDefeitos).map((defeito) => (
                                     <div key={defeito} className="defeitos-checkbox">
@@ -283,17 +374,18 @@ const Cob = () => {
                                 </div>
                                 <div>
                                     <label>Tipo de Defeito:</label>
-                                    <input type="number" readOnly value={totalGeral} />
+                                    <input type="text" readOnly value={tipo} />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {/* Grupo Categoria */}
                 <div className="grupo-categoria">
-                    {/* Campo de Categoria acima da tabela */}
                     <div className="categoria-topo">
-                        <h3>CATEGORIA</h3>                        <label>Categoria:</label>
+                        <h3>CATEGORIA</h3>
+                        <label>Categoria:</label>
                         <input
                             type="text"
                             value={categoria}
@@ -301,9 +393,7 @@ const Cob = () => {
                             placeholder="Ex: Tipo de Categoria"
                         />
                     </div>
-                    {/* 2° parte Tabela 2x3 */}
                     <div className="tabela-2x3">
-                        {/* Célula 1: SUBCATEGORIA: PENEIRA % */}
                         <div className="celula">
                             <h5>SUBCATEGORIA: PENEIRA %</h5>
                             {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
@@ -319,26 +409,20 @@ const Cob = () => {
                             ))}
                         </div>
 
-                        {/* Célula 2: CHATO */}
                         <div className="celula">
                             <h5>CHATO</h5>
-                            {/* Exemplo: se quiser 3 radio para Graúdo, Médio, Miúdo */}
                             {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
                                 <label key={tamanho}>
                                     <input
                                         type="radio"
                                         name="chatoTamanho"
                                         value={tamanho}
-                                    // Se tiver um estado para "chato", ex: [chato, setChato]
-                                    // checked={chato === tamanho}
-                                    // onChange={(e) => setChato(e.target.value)}
                                     />
                                     {tamanho}
                                 </label>
                             ))}
                         </div>
 
-                        {/* Célula 3: MOCA */}
                         <div className="celula">
                             <h5>MOCA</h5>
                             {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
@@ -347,16 +431,12 @@ const Cob = () => {
                                         type="radio"
                                         name="mocaTamanho"
                                         value={tamanho}
-                                    // Exemplo de estado "moca": [moca, setMoca]
-                                    // checked={moca === tamanho}
-                                    // onChange={(e) => setMoca(e.target.value)}
                                     />
                                     {tamanho}
                                 </label>
                             ))}
                         </div>
 
-                        {/* Célula 4: GRUPO I: ARÁBICA */}
                         <div className="celula">
                             <h5>GRUPO I: ARÁBICA</h5>
                             {[
@@ -375,7 +455,6 @@ const Cob = () => {
                                         value={opcao}
                                         checked={grupoBebida === "ARABICA" && subClassificacaoBebida === opcao}
                                         onChange={(e) => {
-                                            // Exemplo:
                                             setGrupoBebida("ARABICA");
                                             setSubClassificacaoBebida(e.target.value);
                                         }}
@@ -385,7 +464,6 @@ const Cob = () => {
                             ))}
                         </div>
 
-                        {/* Célula 5: GRUPO II: ROBUSTA */}
                         <div className="celula">
                             <h5>GRUPO II: ROBUSTA</h5>
                             {["Excelente", "Regular", "Boa", "Anormal"].map((opcao) => (
@@ -396,7 +474,6 @@ const Cob = () => {
                                         value={opcao}
                                         checked={grupoBebida === "ROBUSTA" && subClassificacaoBebida === opcao}
                                         onChange={(e) => {
-                                            // Exemplo:
                                             setGrupoBebida("ROBUSTA");
                                             setSubClassificacaoBebida(e.target.value);
                                         }}
@@ -406,7 +483,6 @@ const Cob = () => {
                             ))}
                         </div>
 
-                        {/* Célula 6: CLASSE */}
                         <div className="celula">
                             <h5>CLASSE</h5>
                             {[
@@ -434,7 +510,8 @@ const Cob = () => {
                         </div>
                     </div>
                 </div>
-                {/*4 Grupo Conclusão*/}
+
+                {/* Grupo Conclusão */}
                 <div className="grupo-conclusao">
                     <div className="cob-block">
                         <h3>CONCLUSÃO</h3>
@@ -523,7 +600,6 @@ const Cob = () => {
                                 <div className="cob-block">
                                     <h3>LAUDO DE CLASSIFICAÇÃO</h3>
                                     <div className="linha-laudo">
-                                        {/* PELO PREPARO */}
                                         <div className="bloco-laudo">
                                             <h4>PELO PREPARO</h4>
                                             {["Via Seca", "Via Úmida"].map((opcao) => (
@@ -538,7 +614,6 @@ const Cob = () => {
                                             ))}
                                         </div>
 
-                                        {/* PELA SECA */}
                                         <div className="bloco-laudo">
                                             <h4>PELA SECA</h4>
                                             {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
@@ -553,7 +628,6 @@ const Cob = () => {
                                             ))}
                                         </div>
 
-                                        {/* PELO ASPECTO */}
                                         <div className="bloco-laudo">
                                             <h4>PELO ASPECTO</h4>
                                             {["Bom", "Regular", "Mau"].map((opcao) => (
@@ -568,7 +642,6 @@ const Cob = () => {
                                             ))}
                                         </div>
 
-                                        {/* TORRAÇÃO ARÁBICA */}
                                         <div className="bloco-laudo">
                                             <h4>TORRAÇÃO (Coffea arábica)</h4>
                                             {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
@@ -583,7 +656,6 @@ const Cob = () => {
                                             ))}
                                         </div>
 
-                                        {/* TORRAÇÃO CANEPHORA */}
                                         <div className="bloco-laudo">
                                             <h4>TORRAÇÃO (Coffea canephora)</h4>
                                             {[
@@ -605,7 +677,6 @@ const Cob = () => {
                                             ))}
                                         </div>
 
-                                        {/* TEOR DE CAFEÍNA */}
                                         <div className="bloco-laudo">
                                             <h4>TEOR DE CAFEÍNA</h4>
                                             {["CAFÉ", "CAFÉ DESCAFEINADO"].map((opcao) => (
@@ -623,7 +694,6 @@ const Cob = () => {
                                 </div>
                             </div>
 
-                            {/* Botão Salvar*/}
                             <div className="grupo-salvar">
                                 <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
                                 <button onClick={gerarPDF}>📄 Gerar PDF</button>
@@ -631,11 +701,9 @@ const Cob = () => {
                         </div>
                     </div>
                 </div>
-            </div >}
+            </div>
         </div>
     );
 };
 
 export default Cob;
-
-
