@@ -20,7 +20,7 @@ body {
 }
 
 .home-content {
-  background-color: #4d4d4d;
+  background-color: #032B43;
   border: 1px solid #ddd;
   border-radius: 15px;
   padding: 40px;
@@ -49,7 +49,7 @@ p {
 }
 
 .home-button {
-  background: linear-gradient(to bottom, #ebc802, #303103);
+  background: linear-gradient(to bottom, #FFBA08, #303103);
   /* Azul escuro elegante */
   color: white;
   border: none;

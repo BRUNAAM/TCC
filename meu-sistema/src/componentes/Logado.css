@@ -12,7 +12,7 @@ body {
     max-width: 400px;
     margin: 60px auto;
     padding: 40px;
-    background-color: #4d4d4d;
+    background-color: #032B43;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -32,7 +32,7 @@ h2 {
 }
 
 .botoes-container button {
-    background: linear-gradient(to bottom, #ebc802, #303103);
+    background: linear-gradient(to bottom, #FFBA08, #303103);
     color: white;
     border: none;
     border-radius: 10px;

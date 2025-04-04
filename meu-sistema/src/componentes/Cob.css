@@ -5,7 +5,7 @@ body {
     font-weight: bold;
     margin: 0;
     padding: 0;
-    color: #000000;
+    color: #ffffff;
     font-size: 1rem;
 }
 
@@ -13,7 +13,7 @@ body {
     max-width: 800px;
     margin: 30px auto;
     padding: 20px;
-    background-color: #4d4d4d;
+    background-color: #032B43;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
@@ -28,7 +28,7 @@ body {
 .titulo-cabecalho {
     font-size: 2rem;
     margin-bottom: 10px;
-    color: #000;
+    color: #ffffff;
 }
 
 .close-button {
@@ -53,10 +53,13 @@ body {
     padding: 20px;
     border-radius: 15px;
 }
+h3 {
+    color: #ffffff;
+}
 
 /* Títulos principais dos blocos */
 .cob-block h3,
-.categoria-topo h4,
+.categoria-topo h3,
 .bloco-laudo h3 {
     font-size: 1.6rem;
     text-transform: uppercase;
@@ -66,6 +69,7 @@ body {
 }
 
 .categoria-topo h4 {
+    color: #FFBA08;
     font-size: 1.3rem;
     text-transform: uppercase;
     font-weight: bold;
@@ -73,6 +77,12 @@ body {
     margin-bottom: 20px;
 
 }
+
+h4 {
+    color: #FFBA08;
+}
+
+
 
 
 .sub-block {
@@ -84,11 +94,7 @@ body {
     font-size: 1rem;
 }
 
-h4 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-    color: #000000;
-}
+
 
 h5 {
     font-size: 1.15rem;
@@ -112,6 +118,9 @@ h5 {
 .campo label {
     margin-bottom: 5px;
     font-size: 1rem;
+}
+label{
+    color: #FFBA08;
 }
 
 .campo input,

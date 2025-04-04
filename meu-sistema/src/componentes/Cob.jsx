@@ -207,7 +207,7 @@ const Cob = () => {
                 {/*Grupo identificação*/}
                 <div className="grupo-identificacao">
                     <div className="cob-block">
-                        <h3>1. Identificação</h3>
+                        <h3>IDENTIFICAÇÃO</h3>
                         <div className="linha-identificacao">
                             <div className="campo">
                                 <label>Nome do Avaliador:</label>
@@ -251,9 +251,9 @@ const Cob = () => {
                 {/* Grupo: Classificação Física */}
                 <div className="grupo-classificacao">
                     <div className="cob-block">
-                        <h3>2. CLASSIFICAÇÃO FÍSICA</h3>
+                        <h3>CLASSIFICAÇÃO FÍSICA</h3>
                         <div className="sub-block">
-                            <h4 className="def">Defeitos e Equivalências</h4>
+                            <h4 className="def">DEFEITOS E EQUIVALENCIA</h4>
                             <section className="defeitos-grid">
                                 {Object.keys(tabelaDefeitos).map((defeito) => (
                                     <div key={defeito} className="defeitos-checkbox">
@@ -282,7 +282,7 @@ const Cob = () => {
                                     <input type="number" readOnly value={equivalenciaTotal} />
                                 </div>
                                 <div>
-                                    <label>Total Geral:</label>
+                                    <label>Tipo de Defeito:</label>
                                     <input type="number" readOnly value={totalGeral} />
                                 </div>
                             </div>
@@ -293,8 +293,7 @@ const Cob = () => {
                 <div className="grupo-categoria">
                     {/* Campo de Categoria acima da tabela */}
                     <div className="categoria-topo">
-                        <h4>CATEGORIA</h4>
-                        <label>Categoria:</label>
+                        <h3>CATEGORIA</h3>                        <label>Categoria:</label>
                         <input
                             type="text"
                             value={categoria}
@@ -438,7 +437,7 @@ const Cob = () => {
                 {/*4 Grupo Conclusão*/}
                 <div className="grupo-conclusao">
                     <div className="cob-block">
-                        <h3>4. Conclusão</h3>
+                        <h3>CONCLUSÃO</h3>
                         <div className="linha-identificacao">
                             <div className="campo">
                                 <label>UMIDADE:</label>
@@ -522,7 +521,7 @@ const Cob = () => {
 
                             <div className="grupo-laudo">
                                 <div className="cob-block">
-                                    <h3>5. LAUDO DE CLASSIFICAÇÃO (Modelo/Verso)</h3>
+                                    <h3>LAUDO DE CLASSIFICAÇÃO</h3>
                                     <div className="linha-laudo">
                                         {/* PELO PREPARO */}
                                         <div className="bloco-laudo">

@@ -70,7 +70,6 @@ const Fornecedores = () => {
         <div className="fornecedores-container">
             <h2>Gerenciar Fornecedores</h2>
             <div className="fornecedores-header">
-                <h2>Gerenciar Fornecedores</h2>
                 <button className="botao-voltar" onClick={() => navigate(-1)}>✖</button>
             </div>
 

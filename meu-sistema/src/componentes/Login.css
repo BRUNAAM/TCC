@@ -19,7 +19,7 @@ body {
 }
 
 .login-box {
-    background-color: #4d4d4d;
+    background-color: #032B43;
     border: 1px solid #ddd;
     border-radius: 15px;
     padding: 40px;
@@ -61,7 +61,7 @@ body {
 
 .login-button,
 .register-button {
-    background: linear-gradient(to bottom, #ebc802, #303103);
+    background: linear-gradient(to bottom, #FFBA08, #303103);
     color: white;
     border: none;
     border-radius: 10px;
