@@ -68,10 +68,8 @@ const Fornecedores = () => {
 
     return (
         <div className="fornecedores-container">
+            <button className="botao-voltar" onClick={() => navigate(-1)}>✖</button>
             <h2>Gerenciar Fornecedores</h2>
-            <div className="fornecedores-header">
-                <button className="botao-voltar" onClick={() => navigate(-1)}>✖</button>
-            </div>
 
             <form onSubmit={handleCadastro} className="fornecedor-form">
                 <input type="text" placeholder="Nome Completo" value={nome} onChange={(e) => setNome(e.target.value)} required />

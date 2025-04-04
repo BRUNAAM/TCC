@@ -104,17 +104,3 @@
 }
 
 /* ===== Responsividade ===== */
-@media (max-width: 768px) {
-    .avaliacoes-table {
-        font-size: 13px;
-    }
-
-    .historico-header h2 {
-        font-size: 20px;
-    }
-
-    .botoes-topo button {
-        font-size: 13px;
-        padding: 8px 14px;
-    }
-}

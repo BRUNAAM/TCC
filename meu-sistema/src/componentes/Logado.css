@@ -66,14 +66,3 @@ h2 {
 }
 
 /* Responsivo */
-@media (max-width: 500px) {
-    .logado-container {
-        margin: 30px 15px;
-        padding: 25px;
-    }
-
-    .botoes-container button,
-    .logout-button {
-        width: 100%;
-    }
-}

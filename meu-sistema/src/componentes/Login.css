@@ -108,16 +108,3 @@ body {
 }
 
 /* Responsivo */
-@media (max-width: 500px) {
-    .login-box {
-        padding: 25px;
-    }
-
-    .login-title {
-        font-size: 1.5rem;
-    }
-
-    .login-logo {
-        width: 130px;
-    }
-}

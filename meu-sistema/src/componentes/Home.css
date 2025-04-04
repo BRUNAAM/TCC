@@ -67,12 +67,3 @@ p {
 }
 
 /* Responsivo */
-@media (max-width: 600px) {
-  .home-content {
-    padding: 20px;
-  }
-
-  .home-button {
-    width: 100%;
-  }
-}

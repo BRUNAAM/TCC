@@ -88,18 +88,3 @@
 }
 
 /* Responsivo */
-@media (max-width: 480px) {
-    .cadastro-container {
-        margin: 20px;
-        padding: 20px;
-    }
-
-    .cadastro-header h2 {
-        font-size: 22px;
-    }
-
-    .cadastro-button {
-        font-size: 14px;
-        padding: 10px;
-    }
-}
