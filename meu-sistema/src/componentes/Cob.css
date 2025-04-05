@@ -161,27 +161,3 @@ textarea {
     display: grid;
 }
 
-/* Botões de Salvar */
-.grupo-salvar {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 40px;
-}
-
-.grupo-salvar button {
-    background: linear-gradient(to bottom, #ebc802, #303103);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 10px 20px;
-    font-weight: bold;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.grupo-salvar button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}

@@ -42,3 +42,24 @@ label {
     transform: scale(1.05);
 
 }
+
+.salvar {
+    align-items: center;
+    text-align: center;
+    width: 150px;
+    background: linear-gradient(to bottom, green, black);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Times New Roman', Times, serif;
+    display: block;
+    margin: 0 auto;
+}
+
+.salvar:hover {
+    transform: scale(1.05);
+}

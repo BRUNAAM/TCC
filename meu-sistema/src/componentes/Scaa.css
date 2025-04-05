@@ -5,8 +5,9 @@ body {
     padding: 0;
 }
 
-h3 {
+.pontuacao-final h3 {
     color: #FFBA08;
+    font-size: larger;
 }
 
 /* Container principal */
@@ -84,12 +85,13 @@ h3 {
 .scaa-form select,
 .scaa-form textarea {
     width: 100%;
-    padding: 8px;
     border: 1px solid #ffffff;
     font-size: 16px;
     font-family: "Times New Roman", Times, serif;
     color: #000000;
+
 }
+
 
 /* Notas e sliders */
 .nota-container {
@@ -125,7 +127,7 @@ h3 {
 
 .escala-notas .selecionado {
     font-weight: bold;
-    color: #ffe600;
+    color: #FFBA08;
 }
 
 /* Torra */
@@ -162,7 +164,7 @@ h3 {
 .torra-option span {
     margin-top: 8px;
     font-size: 14px;
-    color: #000000;
+    color: #FFBA08;
     font-weight: bold;
 }
 
@@ -175,7 +177,7 @@ h3 {
 /* Efeito de seleção */
 .torra-option.selecionado .grao-svg {
     transform: scale(1.2);
-    outline: 2px solid#ffe600;
+    outline: 2px solid#FFBA08;
     ;
     border-radius: 50%;
 }
@@ -201,6 +203,7 @@ h3 {
 .slider-row {
     display: flex;
     align-items: center;
+    padding: 10px;
 }
 
 .vertical-slider {
@@ -208,7 +211,10 @@ h3 {
     transform-origin: 50% 50%;
     width: 150px;
     height: 30px;
-    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
 }
 
 .slider-labels {
@@ -225,7 +231,7 @@ h3 {
 
 .slider-labels .selected {
     font-weight: bold;
-    color: #ffe600;
+    color: #FFBA08;
     ;
 }
 
@@ -270,24 +276,15 @@ h3 {
     margin-top: 15px;
 }
 
-.salvar {
+.slider-group {
+    display: flex;
     align-items: center;
-    text-align: center;
-    width: 150px;
-    background: linear-gradient(to bottom, green, black);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 13px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    font-family: 'Times New Roman', Times, serif;
+    /* ou flex-start, se quiser alinhar pelo topo */
+    gap: 20px;
+    /* cria um espaço de 20px entre os itens */
 }
 
-.salvar:hover {
-    transform: scale(1.05);
-}
+
 
 
 /* Responsividade */

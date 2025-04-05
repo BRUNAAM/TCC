@@ -13,6 +13,7 @@ import HistoricoCob from "./componentes/HistoricoCob";
 import PrivateRoute from "./routes/PrivateRoute";
 
 
+
 function App() {
   return (
     <Router>

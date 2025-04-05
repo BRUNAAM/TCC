@@ -4,10 +4,6 @@ import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "./Cob.css";
-import { PDFDocument } from "pdf-lib";
-import download from "downloadjs";
-
-// Função para gerar PDF da tela
 
 const classificationTable = [
     { defeitos: 4, label: "2-5" },
@@ -197,47 +193,6 @@ const Cob = () => {
             setPeneiraSubcategoria((prev) => prev.filter((item) => item !== value));
         }
     };
-
-
-    // Exemplo de função para gerar PDF usando o arquivo COB1.pdf na pasta public
-    const gerarPDFPreenchido = async () => {
-        try {
-            // Carrega o PDF da pasta public
-            // Certifique-se de que COB1.pdf esteja em public/COB1.pdf
-            const existingPdfBytes = await fetch("/COB1.pdf").then((res) =>
-                res.arrayBuffer()
-            );
-            const pdfDoc = await PDFDocument.load(existingPdfBytes);
-            const form = pdfDoc.getForm();
-
-            // Preenche os campos do formulário
-            // Ajuste os nomes dos campos conforme o seu PDF
-            form.getTextField("nomedoAvaliador").setText(avaliador);
-            form.getTextField("dataAvaliacao").setText(
-                new Date().toLocaleDateString("pt-BR")
-            );
-            form.getTextField("fornecedor").setText(fornecedorSelecionado);
-            form.getTextField("numeroAmostra").setText(numeroAmostra);
-            form.getTextField("umidade").setText(umidade);
-            form.getTextField("aparelho").setText(aparelho);
-            form.getTextField("subcategoria").setText(subcategoria);
-            form.getTextField("tipo").setText(tipo);
-            form.getTextField("postoServico").setText(postoServico);
-            form.getTextField("assinaturaAvaliador").setText(assinaturaAvaliador);
-            form.getTextField("classificadorMapa").setText(classificadorMapa);
-
-            // Salva o novo PDF preenchido
-            const pdfBytes = await pdfDoc.save();
-            download(pdfBytes, "laudo-preenchido.pdf", "application/pdf");
-        } catch (error) {
-            console.error("Erro ao gerar PDF preenchido:", error);
-        }
-    };
-
-
-
-
-
 
 
     const handleSalvarAvaliacao = async () => {
@@ -654,11 +609,7 @@ const Cob = () => {
                                 </div>
                             </div>
                         </div>
-
-                        <div className="grupo-salvar">
-                            <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
-                            <button onClick={gerarPDFPreenchido}>📄 Gerar Laudo Preenchido</button>
-                        </div>
+                        <button className="salvar" onClick={handleSalvarAvaliacao}>SALVAR</button>
                     </div>
                 </section>
             </div>
