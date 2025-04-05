@@ -278,9 +278,6 @@ const Cob = () => {
         }
     };
 
-    const handleFechar = () => {
-        navigate(-1);
-    };
 
     // Soma dos grãos defeituosos digitados (para exibição)
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
@@ -291,7 +288,7 @@ const Cob = () => {
                 {/* Cabeçalho */}
                 <div className="cob-header">
                     <h2 className="titulo-cabecalho">AVALIAÇÃO DE CAFÉ - COB</h2>
-                    <button className="close-button" onClick={handleFechar}>
+                    <button className="fechar" onClick={() => navigate(-1)}>
                         ✖
                     </button>
                 </div>

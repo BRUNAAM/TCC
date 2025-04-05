@@ -1,3 +1,4 @@
+import "./App.css"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./componentes/Home";
 import Login from "./componentes/Login";
@@ -10,6 +11,7 @@ import EsqueciSenha from "./componentes/EsqueciSenha";
 import HistoricoScaa from "./componentes/HistoricoScaa";
 import HistoricoCob from "./componentes/HistoricoCob";
 import PrivateRoute from "./routes/PrivateRoute";
+
 
 function App() {
   return (

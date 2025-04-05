@@ -7,12 +7,26 @@ body {
 }
 
 
-.container {
-    max-width: 400px;
-    margin: 60px auto;
-    padding: 40px;
-    background-color: #032B43;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
+label {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-size: large;
+    color: #FFBA08;
+}
+
+.fechar {
+    background: linear-gradient(to bottom, red, #310603);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.fechar:hover {
+    transform: scale(1.05);
+
 }

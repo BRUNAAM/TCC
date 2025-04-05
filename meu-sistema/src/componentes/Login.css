@@ -66,6 +66,7 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .login-button:hover,
@@ -85,15 +86,19 @@ body {
 .forgot-password-link {
     background: none;
     border: none;
-    color: #000000;
+    color: #FFBA08;
     text-decoration: underline;
     font-size: 0.95rem;
     cursor: pointer;
     padding: 5px;
     border-radius: 10px;
+
 }
 
-
+.forgot-password-link:hover {
+    transform: scale(1.05);
+    color: red;
+}
 
 .login-erro {
     color: red;

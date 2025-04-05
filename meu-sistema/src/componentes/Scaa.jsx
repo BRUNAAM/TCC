@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Estilos padrão
 import GraoCafe from "./GraoCafe";
 
 
@@ -124,7 +122,7 @@ const Scaa = () => {
 
     const handleSalvarAvaliacao = async () => {
         if (!fornecedorSelecionado || !numeroAmostra || !torraSelecionada) {
-            toast.warning("Por favor, preencha todos os campos obrigatórios.");
+            alert("Por favor, preencha todos os campos obrigatórios.");
             return;
         }
 
@@ -149,7 +147,7 @@ const Scaa = () => {
         };
 
         await addDoc(collection(db, "avaliacoes_scaa"), avaliacao);
-        toast.success("Avaliação SCAA salva com sucesso!")
+        alert("Avaliação SCAA salva com sucesso!")
     };
 
     // Rótulos invertidos (0..4)
@@ -159,18 +157,18 @@ const Scaa = () => {
         <div className="scaa-container">
             <div className="scaa-header">
                 <h2>Avaliação Sensorial de Café - SCAA</h2>
-                <button className="close-button" onClick={() => navigate(-1)}>
+                <button className="fechar" onClick={() => navigate(-1)}>
                     ✖
                 </button>
             </div>
 
             <div className="quadro-correlacao">
-                <h4>Correlação SCAA-COB</h4>
+                <h4>PONTUAÇÃO</h4>
                 <ul>
-                    <li><strong> 85 pontos:</strong> Estritamente Mole</li>
-                    <li><strong>80 - 84 pontos:</strong> Mole</li>
-                    <li><strong>75 - 79 pontos:</strong> Apenas Mole</li>
-                    <li><strong> 74 pontos:</strong> Duro</li>
+                    <li><strong> 85 pontos :</strong> Estritamente Mole</li>
+                    <li><strong>80 - 84 pontos :</strong> Mole</li>
+                    <li><strong>75 - 79 pontos :</strong> Apenas Mole</li>
+                    <li><strong> 74 pontos :</strong> Duro</li>
                 </ul>
             </div>
 
@@ -580,36 +578,8 @@ const Scaa = () => {
                     <h3>Pontuação Final: {calcularPontuacaoFinal()}</h3>
                 </div>
 
-                <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
+                <button className="salvar" onClick={handleSalvarAvaliacao}>SALVAR</button>
             </div>
-
-            <ToastContainer
-                position="top-right"
-                autoClose={2000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick={false}
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-                toastStyle={{
-                    color: "white",
-                    //fontWeight: "bold",
-                    fontSize: "18px",
-                }}
-                toastClassName="custom-toast"
-            />
-            <style>
-                {`
-    .custom-toast .Toastify__toast-icon {
-      width: 36px !important;
-      height: 36px !important;
-    }
-  `}
-            </style>
-
         </div>
     );
 
