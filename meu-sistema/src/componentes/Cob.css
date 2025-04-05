@@ -31,26 +31,9 @@ body {
     color: #ffffff;
 }
 
-.close-button {
-    background-color: #b30000;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    padding: 8px 14px;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(179, 0, 0, 0.6);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.close-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(179, 0, 0, 0.8);
-}
 
 .cob-block {
-    margin-top: 30px;
-    padding: 20px;
+    padding: 10px;
     border-radius: 15px;
 }
 h3 {
@@ -103,7 +86,6 @@ h5 {
 
 .linha-identificacao,
 .linha-laudo {
-    display: flex;
     flex-wrap: wrap;
     gap: 20px;
     margin-top: 15px;
@@ -121,6 +103,7 @@ h5 {
 }
 label{
     color: #FFBA08;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .campo input,
@@ -131,6 +114,7 @@ textarea {
     border-radius: 10px;
     outline: none;
     background-color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 textarea {
@@ -143,6 +127,10 @@ textarea {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 15px;
     margin-top: 10px;
+}
+
+input {
+    font-size: medium;
 }
 
 .defeitos-checkbox {
@@ -209,6 +197,7 @@ textarea {
 .celula h5 {
     font-size: 1.15rem;
     margin-bottom: 10px;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .celula label {

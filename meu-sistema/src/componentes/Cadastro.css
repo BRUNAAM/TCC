@@ -1,4 +1,12 @@
-/* Estilização geral */
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
 .cadastro-container {
     max-width: 400px;
     margin: 60px auto;
@@ -7,7 +15,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     position: relative;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .cadastro-header {
@@ -23,19 +31,6 @@
     color: #000000;
 }
 
-.close-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    font-weight: bold;
-    color: #ff0000;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.close-button:hover {
-    color: #bb0c0c;
-}
 
 .cadastro-form label {
     display: block;
@@ -58,7 +53,7 @@
 }
 
 .cadastro-form input:focus {
-    border-color: #bf9108;
+    border-color: #FFBA08;
     outline: none;
     background-color: #fff;
 }
@@ -77,14 +72,19 @@
 }
 
 .cadastro-button:hover {
-    background-color: #a67805;
+    background-color: #FFBA08;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
 }
 
 .erro {
-    color: #d9534f;
+    color: #DD0000;
     margin-top: 10px;
     font-size: 14px;
     text-align: center;
 }
+
+
 
 /* Responsivo */

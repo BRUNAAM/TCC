@@ -36,17 +36,7 @@ h3 {
     color: #ffffff;
 }
 
-.close-button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #000000;
-}
 
-.close-button:hover {
-    color: red;
-}
 
 /* Quadro de correlação */
 .quadro-correlacao {
@@ -99,9 +89,9 @@ h3 {
     width: 100%;
     padding: 8px;
     border: 1px solid #ffffff;
-    border-radius: 5px;
     font-size: 16px;
     font-family: "Times New Roman", Times, serif;
+    color: #000000;
 }
 
 /* Notas e sliders */
@@ -283,29 +273,5 @@ h3 {
     margin-top: 15px;
 }
 
-/* Botões */
-button {
-    background: linear-gradient(to bottom, #FFBA08, #303103);
-    color: white;
-    font-size: 16px;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-button:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.radio-group {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 5px;
-}
 
 /* Responsividade */

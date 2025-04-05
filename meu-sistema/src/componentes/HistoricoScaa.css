@@ -49,24 +49,18 @@
 
 .avaliacoes-table th,
 .avaliacoes-table td {
-    border: 1px solid #000000;
+    border: 1px solid #ffffff;
     padding: 10px;
     text-align: center;
 }
 
-.avaliacoes-table th {
-    background-color: #000000;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-
-.avaliacoes-table tr:nth-child(even) {
-    background-color: #fafafa;
+.botao-imprimir {
+    background: linear-gradient(to bottom, green, black);
+    color: white;
 }
 
 .botao-excluir {
-    background-color: #dc3545;
+    background: linear-gradient(to bottom, red, #310603);
     color: rgb(0, 0, 0);
     border: none;
     padding: 6px 12px;
@@ -76,16 +70,17 @@
     transition: 0.3s;
 }
 
-.botao-excluir:hover {
-    background-color: #b02a37;
-}
-
 /* ===== Mensagem de vazio ===== */
 .sem-avaliacoes {
     font-size: 16px;
     color: #666;
     text-align: center;
     margin-top: 40px;
+}
+
+
+th {
+    color: #FFBA08;
 }
 
 /* ===== Responsividade ===== */

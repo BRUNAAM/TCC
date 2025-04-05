@@ -1,3 +1,12 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
 .fornecedores-container {
     position: relative;
     max-width: 1000px;
@@ -40,10 +49,9 @@
 }
 
 .fornecedor-form button {
+    background: linear-gradient(to bottom, #FFBA08, #303103);
     grid-column: span 2;
     padding: 12px;
-    background-color: #bf9108;
-    color: rgb(255, 255, 255);
     font-size: 16px;
     font-weight: bold;
     border: none;
@@ -53,7 +61,8 @@
 }
 
 .fornecedor-form button:hover {
-    background: linear-gradient(to bottom, #FFBA08, #303103);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .fornecedores-table {
@@ -76,9 +85,6 @@
     font-weight: bold;
 }
 
-.fornecedores-table tr:nth-child(even) {
-    background-color: #000000;
-}
 
 .fornecedores-table button {
     margin: 0 5px;
@@ -87,43 +93,17 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    color: rgb(255, 255, 255);
     font-weight: bold;
 }
 
-.botao-voltar {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background-color: #ff0404;
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    outline: none;
-    box-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    transition: background 0.3s ease;
+.editar {
+    background: linear-gradient(to bottom, #13b644, #0e4e09);
 }
 
-/* Removendo qualquer contorno ao focar */
-.botao-voltar:focus,
-.botao-voltar:active {
-    outline: none;
-    box-shadow: none;
-    border: none;
-    background-color: #ff0404;
+.excluir {
+    background: linear-gradient(to bottom, #b61313, #4e0909);
 }
 
-/* Hover com tom mais escuro */
-.botao-voltar:hover {
-    background-color: #d00000;
+th {
+    color: #FFBA08;
 }
-

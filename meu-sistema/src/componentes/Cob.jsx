@@ -299,24 +299,24 @@ const Cob = () => {
                 {/* Grupo identificação */}
                 <div className="grupo-identificacao">
                     <div className="cob-block">
-                        <h3>IDENTIFICAÇÃO</h3>
+                        <h3>Identificação</h3>
                         <div className="linha-identificacao">
                             <div className="campo">
                                 <label>Nome do Avaliador:</label>
                                 <input type="text" value={avaliador} disabled />
                             </div>
-
+                            <br />
                             <div className="campo">
-                                <label>Data:</label>
+                                <label>Data da avaliação:</label>
                                 <input type="text" value={new Date().toLocaleDateString("pt-BR")} disabled />
                             </div>
-
+                            <br />
                             <div className="campo">
-                                <label>Fornecedor:</label>
+                                <label>Nome do Fornecedor / Produtor:</label>
                                 <select
                                     value={fornecedorSelecionado}
-                                    onChange={(e) => setFornecedorSelecionado(e.target.value)}
-                                >
+                                    onChange={(e) => setFornecedorSelecionado(e.target.value)}>
+                                    <br />
                                     <option value="">Selecione um fornecedor</option>
                                     {fornecedores.map((fornecedor) => (
                                         <option key={fornecedor.id} value={fornecedor.nome}>
@@ -325,7 +325,7 @@ const Cob = () => {
                                     ))}
                                 </select>
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>Nº da Amostra:</label>
                                 <input
@@ -338,11 +338,10 @@ const Cob = () => {
                         </div>
                     </div>
                 </div>
-
                 {/* Grupo: Classificação Física */}
                 <div className="grupo-classificacao">
                     <div className="cob-block">
-                        <h3>CLASSIFICAÇÃO FÍSICA</h3>
+                        <h3>CLASSIFICAÇÃO FISICA DO CAFÉ</h3>
                         <div className="sub-block">
                             <h4 className="def">DEFEITOS E EQUIVALÊNCIA</h4>
                             <section className="defeitos-grid">
@@ -365,15 +364,15 @@ const Cob = () => {
 
                             <div className="total">
                                 <div>
-                                    <label>Total Defeitos:</label>
+                                    <label>TOTAL DE DEFEITOS:</label>
                                     <input type="number" readOnly value={totalDefeitos} />
                                 </div>
                                 <div>
-                                    <label>Total Equivalência:</label>
+                                    <label>TOTAL DA EQUIVALÊNCIA:</label>
                                     <input type="number" readOnly value={equivalenciaTotal} />
                                 </div>
                                 <div>
-                                    <label>Tipo de Defeito:</label>
+                                    <label>TIPO DO CAFÉ:</label>
                                     <input type="text" readOnly value={tipo} />
                                 </div>
                             </div>
@@ -395,7 +394,7 @@ const Cob = () => {
                     </div>
                     <div className="tabela-2x3">
                         <div className="celula">
-                            <h5>SUBCATEGORIA: PENEIRA %</h5>
+                            <h5>SUBCATEGORIA: <br />PENEIRA %</h5>
                             {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
                                 <label key={item}>
                                     <input
@@ -525,7 +524,7 @@ const Cob = () => {
                                     placeholder="Digite a umidade"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>APARELHO:</label>
                                 <input
@@ -535,7 +534,7 @@ const Cob = () => {
                                     placeholder="Informe o Aparelho"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>SUBCATEGORIA:</label>
                                 <input
@@ -545,7 +544,7 @@ const Cob = () => {
                                     placeholder="Preencha a Subcategoria"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>TIPO:</label>
                                 <input
@@ -555,7 +554,7 @@ const Cob = () => {
                                     placeholder="Informe o Tipo"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>POSTO DE SERVIÇO DE CLASSIFICAÇÃO DE:</label>
                                 <input
@@ -565,7 +564,7 @@ const Cob = () => {
                                     placeholder="Informe o Posto de Serviço"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>ASSINATURA DO AVALIADOR:</label>
                                 <input
@@ -575,7 +574,7 @@ const Cob = () => {
                                     placeholder="Assinatura do Avaliador"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo">
                                 <label>CLASSIFICADOR/REG. MAPA NO:</label>
                                 <input
@@ -585,7 +584,7 @@ const Cob = () => {
                                     placeholder="Informe o Classificador/Reg. MAPA"
                                 />
                             </div>
-
+                            <br />
                             <div className="campo campo-observacoes">
                                 <label>OBSERVAÇÕES:</label>
                                 <textarea
@@ -595,7 +594,7 @@ const Cob = () => {
                                     rows="4"
                                 />
                             </div>
-
+                            <br />
                             <div className="grupo-laudo">
                                 <div className="cob-block">
                                     <h3>LAUDO DE CLASSIFICAÇÃO</h3>
@@ -613,7 +612,7 @@ const Cob = () => {
                                                 </label>
                                             ))}
                                         </div>
-
+                                        <br />
                                         <div className="bloco-laudo">
                                             <h4>PELA SECA</h4>
                                             {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
@@ -627,7 +626,7 @@ const Cob = () => {
                                                 </label>
                                             ))}
                                         </div>
-
+                                        <br />
                                         <div className="bloco-laudo">
                                             <h4>PELO ASPECTO</h4>
                                             {["Bom", "Regular", "Mau"].map((opcao) => (
@@ -641,7 +640,7 @@ const Cob = () => {
                                                 </label>
                                             ))}
                                         </div>
-
+                                        <br />
                                         <div className="bloco-laudo">
                                             <h4>TORRAÇÃO (Coffea arábica)</h4>
                                             {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
@@ -655,7 +654,7 @@ const Cob = () => {
                                                 </label>
                                             ))}
                                         </div>
-
+                                        <br />
                                         <div className="bloco-laudo">
                                             <h4>TORRAÇÃO (Coffea canephora)</h4>
                                             {[
@@ -676,7 +675,7 @@ const Cob = () => {
                                                 </label>
                                             ))}
                                         </div>
-
+                                        <br />
                                         <div className="bloco-laudo">
                                             <h4>TEOR DE CAFEÍNA</h4>
                                             {["CAFÉ", "CAFÉ DESCAFEINADO"].map((opcao) => (
@@ -693,7 +692,7 @@ const Cob = () => {
                                     </div>
                                 </div>
                             </div>
-
+                            <br />
                             <div className="grupo-salvar">
                                 <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
                                 <button onClick={gerarPDF}>📄 Gerar PDF</button>
