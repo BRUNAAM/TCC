@@ -11,6 +11,7 @@ h3 {
 
 /* Container principal */
 .scaa-container {
+    position: relative;
     max-width: 800px;
     margin: 20px auto;
     background-color: #032B43;

@@ -18,12 +18,24 @@ label {
     background: linear-gradient(to bottom, red, #310603);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 50px;
     padding: 12px;
     font-size: 1rem;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     font-family: 'Times New Roman', Times, serif;
+    position: absolute;
+    /* Posicionamento absoluto em relação ao .esqueci-form */
+    top: 10px;
+    /* Ajuste o valor para definir a distância do topo */
+    right: 10px;
+    /* Ajuste o valor para definir a distância da direita */
+    border: none;
+    /* Tamanho da fonte para o 'X' */
+    font-weight: bold;
+    /* Cor destacada para o botão */
+    cursor: pointer;
+    z-index: 1;
 }
 
 .fechar:hover {

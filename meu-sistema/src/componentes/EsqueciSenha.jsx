@@ -43,33 +43,28 @@ const EsqueciSenha = () => {
     return (
         <div className="esqueci-container">
             <div className="esqueci-header">
-                <h2>Recuperar Senha</h2>
+                <form onSubmit={handleResetPassword} className="esqueci-form">
+                    <h2>Recuperar Senha</h2>
+                    <button className="fechar" onClick={() => navigate("/login")}>
+                        X
+                    </button>
+                    <input
+                        type="email"
+                        placeholder="Digite seu e-mail"
+                        className="esqueci-input"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+
+                    <button className="esqueci-botao" type="submit" disabled={loading}>
+                        {loading ? "Enviando..." : "Enviar link de recuperação"}
+                    </button>
+                </form>
             </div>
-
-            <form onSubmit={handleResetPassword} className="esqueci-form">
-                <input
-                    type="email"
-                    placeholder="Digite seu e-mail"
-                    className="esqueci-input"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-
-                <button className="esqueci-botao" type="submit" disabled={loading}>
-                    {loading ? "Enviando..." : "Enviar link de recuperação"}
-                </button>
-            </form>
-
             {mensagem && <p className="mensagem-sucesso">{mensagem}</p>}
             {erro && <p className="mensagem-erro">{erro}</p>}
 
-            <p className="lembrou">
-                Lembrou a senha?{" "}
-                <button className="voltar" onClick={() => navigate("/login")}>
-                    Voltar
-                </button>
-            </p>
         </div>
     );
 };

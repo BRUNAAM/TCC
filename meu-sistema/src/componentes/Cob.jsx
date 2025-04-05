@@ -4,26 +4,11 @@ import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "./Cob.css";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { PDFDocument } from "pdf-lib";
+import download from "downloadjs";
 
 // Função para gerar PDF da tela
-const gerarPDF = () => {
-    const elemento = document.getElementById("avaliacao-completa");
-    html2canvas(elemento).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save("avaliacao-cafe-cob.pdf");
-    });
-};
 
-// ********************************************************************
-// Tabela de classificação conforme a Instrução Normativa
-// Cada objeto contém o valor máximo de equivalência (defeitos) e o rótulo a ser exibido
 const classificationTable = [
     { defeitos: 4, label: "2-5" },
     { defeitos: 5, label: "2-10" },
@@ -87,8 +72,6 @@ const classificationTable = [
     { defeitos: Infinity, label: "Fora de Tipo" },
 ];
 
-// Função que, dado o valor de equivalência (total de defeitos), retorna o rótulo da classificação.
-// Ela percorre o array e mantém o último registro cujo valor de defeitos seja menor ou igual ao valor informado.
 function getClassification(defeitosValue) {
     let result = classificationTable[0];
     for (let i = 0; i < classificationTable.length; i++) {
@@ -100,7 +83,6 @@ function getClassification(defeitosValue) {
     }
     return result;
 }
-// ********************************************************************
 
 const Cob = () => {
     const [avaliador, setAvaliador] = useState("");
@@ -112,9 +94,8 @@ const Cob = () => {
     const [umidade, setUmidade] = useState("");
     const [equivalencias, setEquivalencias] = useState({});
     const [equivalenciaTotal, setEquivalenciaTotal] = useState(0);
-    // "tipo" será definido automaticamente com base na equivalência calculada
     const [tipo, setTipo] = useState("");
-    const [categoria, setCategoria] = useState("");
+    const [categoria] = useState("");
     const [peneiraSubcategoria, setPeneiraSubcategoria] = useState([]);
     const [grupoBebida, setGrupoBebida] = useState("");
     const [subClassificacaoBebida, setSubClassificacaoBebida] = useState("");
@@ -133,7 +114,6 @@ const Cob = () => {
 
     const navigate = useNavigate();
 
-    // Tabela de defeitos para cálculo de equivalência
     const tabelaDefeitos = {
         "Grão Preto": { quantidade: 1, equivalencia: 1 },
         "Grão Ardido": { quantidade: 2, equivalencia: 1 },
@@ -160,7 +140,6 @@ const Cob = () => {
         carregarFornecedores();
     }, []);
 
-    // Sempre que a equivalência total for atualizada, recalcula o tipo de defeito usando a tabela de classificação.
     useEffect(() => {
         const classification = getClassification(equivalenciaTotal);
         setTipo(classification.label);
@@ -192,8 +171,7 @@ const Cob = () => {
         for (const [key, value] of Object.entries(updatedDefeitos)) {
             if (tabelaDefeitos[key]) {
                 const equivalencia =
-                    Math.floor(value / tabelaDefeitos[key].quantidade) *
-                    tabelaDefeitos[key].equivalencia;
+                    Math.floor(value / tabelaDefeitos[key].quantidade) * tabelaDefeitos[key].equivalencia;
                 updatedEquivalencias[key] = equivalencia;
                 totalEquivalencia += equivalencia;
             }
@@ -219,6 +197,48 @@ const Cob = () => {
             setPeneiraSubcategoria((prev) => prev.filter((item) => item !== value));
         }
     };
+
+
+    // Exemplo de função para gerar PDF usando o arquivo COB1.pdf na pasta public
+    const gerarPDFPreenchido = async () => {
+        try {
+            // Carrega o PDF da pasta public
+            // Certifique-se de que COB1.pdf esteja em public/COB1.pdf
+            const existingPdfBytes = await fetch("/COB1.pdf").then((res) =>
+                res.arrayBuffer()
+            );
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            const form = pdfDoc.getForm();
+
+            // Preenche os campos do formulário
+            // Ajuste os nomes dos campos conforme o seu PDF
+            form.getTextField("nomedoAvaliador").setText(avaliador);
+            form.getTextField("dataAvaliacao").setText(
+                new Date().toLocaleDateString("pt-BR")
+            );
+            form.getTextField("fornecedor").setText(fornecedorSelecionado);
+            form.getTextField("numeroAmostra").setText(numeroAmostra);
+            form.getTextField("umidade").setText(umidade);
+            form.getTextField("aparelho").setText(aparelho);
+            form.getTextField("subcategoria").setText(subcategoria);
+            form.getTextField("tipo").setText(tipo);
+            form.getTextField("postoServico").setText(postoServico);
+            form.getTextField("assinaturaAvaliador").setText(assinaturaAvaliador);
+            form.getTextField("classificadorMapa").setText(classificadorMapa);
+
+            // Salva o novo PDF preenchido
+            const pdfBytes = await pdfDoc.save();
+            download(pdfBytes, "laudo-preenchido.pdf", "application/pdf");
+        } catch (error) {
+            console.error("Erro ao gerar PDF preenchido:", error);
+        }
+    };
+
+
+
+
+
+
 
     const handleSalvarAvaliacao = async () => {
         const auth = getAuth();
@@ -278,42 +298,35 @@ const Cob = () => {
         }
     };
 
-
-    // Soma dos grãos defeituosos digitados (para exibição)
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
 
     return (
         <div id="avaliacao-completa">
             <div className="cob-container">
                 {/* Cabeçalho */}
-                <div className="cob-header">
+                <header className="cob-header">
                     <h2 className="titulo-cabecalho">AVALIAÇÃO DE CAFÉ - COB</h2>
                     <button className="fechar" onClick={() => navigate(-1)}>
                         ✖
                     </button>
-                </div>
+                </header>
 
-                {/* Grupo identificação */}
-                <div className="grupo-identificacao">
+                {/* Seção: Identificação */}
+                <section className="section-identificacao">
                     <div className="cob-block">
                         <h3>Identificação</h3>
-                        <div className="linha-identificacao">
+                        <div className="grid-identificacao">
                             <div className="campo">
                                 <label>Nome do Avaliador:</label>
                                 <input type="text" value={avaliador} disabled />
                             </div>
-                            <br />
                             <div className="campo">
                                 <label>Data da avaliação:</label>
                                 <input type="text" value={new Date().toLocaleDateString("pt-BR")} disabled />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>Nome do Fornecedor / Produtor:</label>
-                                <select
-                                    value={fornecedorSelecionado}
-                                    onChange={(e) => setFornecedorSelecionado(e.target.value)}>
-                                    <br />
+                                <label>Fornecedor / Produtor:</label>
+                                <select value={fornecedorSelecionado} onChange={(e) => setFornecedorSelecionado(e.target.value)}>
                                     <option value="">Selecione um fornecedor</option>
                                     {fornecedores.map((fornecedor) => (
                                         <option key={fornecedor.id} value={fornecedor.nome}>
@@ -322,7 +335,6 @@ const Cob = () => {
                                     ))}
                                 </select>
                             </div>
-                            <br />
                             <div className="campo">
                                 <label>Nº da Amostra:</label>
                                 <input
@@ -334,13 +346,13 @@ const Cob = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-                {/* Grupo: Classificação Física */}
-                <div className="grupo-classificacao">
+                </section>
+
+                {/* Seção: Classificação Física */}
+                <section className="section-classificacao">
                     <div className="cob-block">
-                        <h3>CLASSIFICAÇÃO FISICA DO CAFÉ</h3>
+                        <h3>Classificação Física do Café</h3>
                         <div className="sub-block">
-                            <h4 className="def">DEFEITOS E EQUIVALÊNCIA</h4>
                             <section className="defeitos-grid">
                                 {Object.keys(tabelaDefeitos).map((defeito) => (
                                     <div key={defeito} className="defeitos-checkbox">
@@ -350,170 +362,134 @@ const Cob = () => {
                                             type="text"
                                             min="0"
                                             value={defeitos[defeito] || ""}
-                                            onChange={(e) =>
-                                                handleDefeitoChange(defeito, parseInt(e.target.value) || 0)
-                                            }
+                                            onChange={(e) => handleDefeitoChange(defeito, parseInt(e.target.value) || 0)}
                                         />
-                                        <span> Equivalência: {equivalencias[defeito] || 0}</span>
+                                        <span>Equivalência: {equivalencias[defeito] || 0}</span>
                                     </div>
                                 ))}
                             </section>
-
                             <div className="total">
                                 <div>
-                                    <label>TOTAL DE DEFEITOS:</label>
+                                    <label>Total de Defeitos:</label>
                                     <input type="number" readOnly value={totalDefeitos} />
                                 </div>
                                 <div>
-                                    <label>TOTAL DA EQUIVALÊNCIA:</label>
+                                    <label>Total da Equivalência:</label>
                                     <input type="number" readOnly value={equivalenciaTotal} />
                                 </div>
                                 <div>
-                                    <label>TIPO DO CAFÉ:</label>
+                                    <label>Tipo do Café:</label>
                                     <input type="text" readOnly value={tipo} />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                {/* Grupo Categoria */}
-                <div className="grupo-categoria">
-                    <div className="categoria-topo">
-                        <h3>CATEGORIA</h3>
-                        <label>Categoria:</label>
-                        <input
-                            type="text"
-                            value={categoria}
-                            onChange={(e) => setCategoria(e.target.value)}
-                            placeholder="Ex: Tipo de Categoria"
-                        />
-                    </div>
-                    <div className="tabela-2x3">
-                        <div className="celula">
-                            <h5>SUBCATEGORIA: <br />PENEIRA %</h5>
-                            {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
-                                <label key={item}>
-                                    <input
-                                        type="checkbox"
-                                        value={item}
-                                        checked={peneiraSubcategoria.includes(item)}
-                                        onChange={handlePeneiraChange}
-                                    />
-                                    {item}
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="celula">
-                            <h5>CHATO</h5>
-                            {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                <label key={tamanho}>
-                                    <input
-                                        type="radio"
-                                        name="chatoTamanho"
-                                        value={tamanho}
-                                    />
-                                    {tamanho}
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="celula">
-                            <h5>MOCA</h5>
-                            {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                <label key={tamanho}>
-                                    <input
-                                        type="radio"
-                                        name="mocaTamanho"
-                                        value={tamanho}
-                                    />
-                                    {tamanho}
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="celula">
-                            <h5>GRUPO I: ARÁBICA</h5>
-                            {[
-                                "Estritamente Mole",
-                                "Mole",
-                                "Apenas Mole",
-                                "Duro",
-                                "Riado",
-                                "Rio",
-                                "Rio Zona",
-                            ].map((opcao) => (
-                                <label key={opcao}>
-                                    <input
-                                        type="radio"
-                                        name="subClassificacaoArabica"
-                                        value={opcao}
-                                        checked={grupoBebida === "ARABICA" && subClassificacaoBebida === opcao}
-                                        onChange={(e) => {
-                                            setGrupoBebida("ARABICA");
-                                            setSubClassificacaoBebida(e.target.value);
-                                        }}
-                                    />
-                                    {opcao}
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="celula">
-                            <h5>GRUPO II: ROBUSTA</h5>
-                            {["Excelente", "Regular", "Boa", "Anormal"].map((opcao) => (
-                                <label key={opcao}>
-                                    <input
-                                        type="radio"
-                                        name="subClassificacaoRobusta"
-                                        value={opcao}
-                                        checked={grupoBebida === "ROBUSTA" && subClassificacaoBebida === opcao}
-                                        onChange={(e) => {
-                                            setGrupoBebida("ROBUSTA");
-                                            setSubClassificacaoBebida(e.target.value);
-                                        }}
-                                    />
-                                    {opcao}
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="celula">
-                            <h5>CLASSE</h5>
-                            {[
-                                "Verde Azulado",
-                                "Verde Cana",
-                                "Verde",
-                                "Esverdeada",
-                                "Amarelada",
-                                "Amarela",
-                                "Marron",
-                                "Chumbado",
-                                "Esbranquiçada",
-                                "Discrepante",
-                            ].map((item) => (
-                                <label key={item}>
-                                    <input
-                                        type="checkbox"
-                                        value={item}
-                                        checked={classeBebida.includes(item)}
-                                        onChange={handleClasseChange}
-                                    />
-                                    {item}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Grupo Conclusão */}
-                <div className="grupo-conclusao">
+                {/* Seção: Categoria */}
+                <section className="section-categoria">
                     <div className="cob-block">
-                        <h3>CONCLUSÃO</h3>
-                        <div className="linha-identificacao">
+                        <h3>Categoria</h3>
+                        <div className="categoria-topo">
+                        </div>
+                        <div className="tabela-2x3">
+                            <div className="celula">
+                                <h5>Subcategoria: Peneira %</h5>
+                                {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
+                                    <label key={item}>
+                                        <input type="checkbox"
+                                            value={item}
+                                            checked={peneiraSubcategoria.includes(item)}
+                                            onChange={handlePeneiraChange} />
+                                        {item}
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="celula">
+                                <h5>Chato</h5>
+                                {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
+                                    <label key={tamanho}>
+                                        <input type="radio" name="chatoTamanho" value={tamanho} />
+                                        {tamanho}
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="celula">
+                                <h5>Moca</h5>
+                                {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
+                                    <label key={tamanho}>
+                                        <input type="radio" name="mocaTamanho" value={tamanho} />
+                                        {tamanho}
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="celula">
+                                <h5>Grupo I: Árabica</h5>
+                                {["Estritamente Mole", "Mole", "Apenas Mole", "Duro", "Riado", "Rio", "Rio Zona"].map((opcao) => (
+                                    <label key={opcao}>
+                                        <input
+                                            type="radio"
+                                            name="subClassificacaoArabica"
+                                            value={opcao}
+                                            checked={grupoBebida === "ARABICA" && subClassificacaoBebida === opcao}
+                                            onChange={(e) => {
+                                                setGrupoBebida("ARABICA");
+                                                setSubClassificacaoBebida(e.target.value);
+                                            }}
+                                        />
+                                        {opcao}
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="celula">
+                                <h5>Grupo II: Robusta</h5>
+                                {["Excelente", "Regular", "Boa", "Anormal"].map((opcao) => (
+                                    <label key={opcao}>
+                                        <input
+                                            type="radio"
+                                            name="subClassificacaoRobusta"
+                                            value={opcao}
+                                            checked={grupoBebida === "ROBUSTA" && subClassificacaoBebida === opcao}
+                                            onChange={(e) => {
+                                                setGrupoBebida("ROBUSTA");
+                                                setSubClassificacaoBebida(e.target.value);
+                                            }}
+                                        />
+                                        {opcao}
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="celula">
+                                <h5>Classe</h5>
+                                {[
+                                    "Verde Azulado",
+                                    "Verde Cana",
+                                    "Verde",
+                                    "Esverdeada",
+                                    "Amarelada",
+                                    "Amarela",
+                                    "Marron",
+                                    "Chumbado",
+                                    "Esbranquiçada",
+                                    "Discrepante",
+                                ].map((item) => (
+                                    <label key={item}>
+                                        <input type="checkbox" value={item} checked={classeBebida.includes(item)} onChange={handleClasseChange} />
+                                        {item}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Seção: Conclusão e Laudo */}
+                <section className="section-conclusao">
+                    <div className="cob-block">
+                        <h3>Conclusão</h3>
+                        <div className="grid-conclusao">
                             <div className="campo">
-                                <label>UMIDADE:</label>
+                                <label>Umidade:</label>
                                 <input
                                     type="number"
                                     value={umidade}
@@ -521,9 +497,8 @@ const Cob = () => {
                                     placeholder="Digite a umidade"
                                 />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>APARELHO:</label>
+                                <label>Aparelho:</label>
                                 <input
                                     type="text"
                                     value={aparelho}
@@ -531,9 +506,8 @@ const Cob = () => {
                                     placeholder="Informe o Aparelho"
                                 />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>SUBCATEGORIA:</label>
+                                <label>Subcategoria:</label>
                                 <input
                                     type="text"
                                     value={subcategoria}
@@ -541,9 +515,8 @@ const Cob = () => {
                                     placeholder="Preencha a Subcategoria"
                                 />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>TIPO:</label>
+                                <label>Tipo:</label>
                                 <input
                                     type="text"
                                     value={tipo}
@@ -551,9 +524,8 @@ const Cob = () => {
                                     placeholder="Informe o Tipo"
                                 />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>POSTO DE SERVIÇO DE CLASSIFICAÇÃO DE:</label>
+                                <label>Posto de Serviço:</label>
                                 <input
                                     type="text"
                                     value={postoServico}
@@ -561,9 +533,8 @@ const Cob = () => {
                                     placeholder="Informe o Posto de Serviço"
                                 />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>ASSINATURA DO AVALIADOR:</label>
+                                <label>Assinatura do Avaliador:</label>
                                 <input
                                     type="text"
                                     value={assinaturaAvaliador}
@@ -571,9 +542,8 @@ const Cob = () => {
                                     placeholder="Assinatura do Avaliador"
                                 />
                             </div>
-                            <br />
                             <div className="campo">
-                                <label>CLASSIFICADOR/REG. MAPA NO:</label>
+                                <label>Classificador/Reg. MAPA:</label>
                                 <input
                                     type="text"
                                     value={classificadorMapa}
@@ -581,122 +551,116 @@ const Cob = () => {
                                     placeholder="Informe o Classificador/Reg. MAPA"
                                 />
                             </div>
-                            <br />
-                            <div className="campo campo-observacoes">
-                                <label>OBSERVAÇÕES:</label>
-                                <textarea
-                                    value={observacoes}
-                                    onChange={(e) => setObservacoes(e.target.value)}
-                                    placeholder="Digite as observações..."
-                                    rows="4"
-                                />
-                            </div>
-                            <br />
-                            <div className="grupo-laudo">
-                                <div className="cob-block">
-                                    <h3>LAUDO DE CLASSIFICAÇÃO</h3>
-                                    <div className="linha-laudo">
-                                        <div className="bloco-laudo">
-                                            <h4>PELO PREPARO</h4>
-                                            {["Via Seca", "Via Úmida"].map((opcao) => (
-                                                <label key={opcao}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={peloPreparo === opcao}
-                                                        onChange={() => setPeloPreparo(opcao)}
-                                                    />
-                                                    {opcao}
-                                                </label>
-                                            ))}
-                                        </div>
-                                        <br />
-                                        <div className="bloco-laudo">
-                                            <h4>PELA SECA</h4>
-                                            {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
-                                                <label key={opcao}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={pelaSeca === opcao}
-                                                        onChange={() => setPelaSeca(opcao)}
-                                                    />
-                                                    {opcao}
-                                                </label>
-                                            ))}
-                                        </div>
-                                        <br />
-                                        <div className="bloco-laudo">
-                                            <h4>PELO ASPECTO</h4>
-                                            {["Bom", "Regular", "Mau"].map((opcao) => (
-                                                <label key={opcao}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={peloAspecto === opcao}
-                                                        onChange={() => setPeloAspecto(opcao)}
-                                                    />
-                                                    {opcao}
-                                                </label>
-                                            ))}
-                                        </div>
-                                        <br />
-                                        <div className="bloco-laudo">
-                                            <h4>TORRAÇÃO (Coffea arábica)</h4>
-                                            {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
-                                                <label key={opcao}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={torraArabica === opcao}
-                                                        onChange={() => setTorraArabica(opcao)}
-                                                    />
-                                                    {opcao}
-                                                </label>
-                                            ))}
-                                        </div>
-                                        <br />
-                                        <div className="bloco-laudo">
-                                            <h4>TORRAÇÃO (Coffea canephora)</h4>
-                                            {[
-                                                "Torração Excelente",
-                                                "Torração Quase Excelente",
-                                                "Torração Muito Boa",
-                                                "Torração Boa",
-                                                "Torração Regular",
-                                                "Torração Má",
-                                            ].map((opcao) => (
-                                                <label key={opcao}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={torraCanephora === opcao}
-                                                        onChange={() => setTorraCanephora(opcao)}
-                                                    />
-                                                    {opcao}
-                                                </label>
-                                            ))}
-                                        </div>
-                                        <br />
-                                        <div className="bloco-laudo">
-                                            <h4>TEOR DE CAFEÍNA</h4>
-                                            {["CAFÉ", "CAFÉ DESCAFEINADO"].map((opcao) => (
-                                                <label key={opcao}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={teorCafeina === opcao}
-                                                        onChange={() => setTeorCafeina(opcao)}
-                                                    />
-                                                    {opcao}
-                                                </label>
-                                            ))}
-                                        </div>
+                        </div>
+                        <div className="campo campo-observacoes">
+                            <label>Observações:</label>
+                            <textarea
+                                value={observacoes}
+                                onChange={(e) => setObservacoes(e.target.value)}
+                                placeholder="Digite as observações..."
+                                rows="4"
+                            />
+                        </div>
+
+                        <div className="grupo-laudo">
+                            <div className="cob-block">
+                                <h3>Laudo de Classificação</h3>
+                                <div className="grid-laudo">
+                                    <div className="bloco-laudo">
+                                        <h4>Pelo Preparo</h4>
+                                        {["Via Seca", "Via Úmida"].map((opcao) => (
+                                            <label key={opcao}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={peloPreparo === opcao}
+                                                    onChange={() => setPeloPreparo(opcao)}
+                                                />
+                                                {opcao}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="bloco-laudo">
+                                        <h4>Pela Seca</h4>
+                                        {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
+                                            <label key={opcao}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={pelaSeca === opcao}
+                                                    onChange={() => setPelaSeca(opcao)}
+                                                />
+                                                {opcao}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="bloco-laudo">
+                                        <h4>Pelo Aspecto</h4>
+                                        {["Bom", "Regular", "Mau"].map((opcao) => (
+                                            <label key={opcao}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={peloAspecto === opcao}
+                                                    onChange={() => setPeloAspecto(opcao)}
+                                                />
+                                                {opcao}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="bloco-laudo">
+                                        <h4>Torra (Coffea arábica)</h4>
+                                        {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
+                                            <label key={opcao}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={torraArabica === opcao}
+                                                    onChange={() => setTorraArabica(opcao)}
+                                                />
+                                                {opcao}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="bloco-laudo">
+                                        <h4>Torra (Coffea canephora)</h4>
+                                        {[
+                                            "Torração Excelente",
+                                            "Torração Quase Excelente",
+                                            "Torração Muito Boa",
+                                            "Torração Boa",
+                                            "Torração Regular",
+                                            "Torração Má",
+                                        ].map((opcao) => (
+                                            <label key={opcao}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={torraCanephora === opcao}
+                                                    onChange={() => setTorraCanephora(opcao)}
+                                                />
+                                                {opcao}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="bloco-laudo">
+                                        <h4>Teor de Cafeína</h4>
+                                        {["CAFÉ", "CAFÉ DESCAFEINADO"].map((opcao) => (
+                                            <label key={opcao}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={teorCafeina === opcao}
+                                                    onChange={() => setTeorCafeina(opcao)}
+                                                />
+                                                {opcao}
+                                            </label>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
-                            <br />
-                            <div className="grupo-salvar">
-                                <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
-                                <button onClick={gerarPDF}>📄 Gerar PDF</button>
-                            </div>
+                        </div>
+
+                        <div className="grupo-salvar">
+                            <button onClick={handleSalvarAvaliacao}>Salvar Avaliação</button>
+                            <button onClick={gerarPDFPreenchido}>📄 Gerar Laudo Preenchido</button>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     );
