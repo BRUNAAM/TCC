@@ -144,7 +144,7 @@ const Scaa = () => {
                 <button
                     className="botao-flutuante-pdf"
                     onClick={() => setMostrarPdf(!mostrarPdf)}
-                    title={mostrarPdf ? "Fechar PDF" : "Abrir PDF"}
+                    title={mostrarPdf ? "Fechar PDF" : "Abrir PF"}
                 >
                     📄
                 </button>
