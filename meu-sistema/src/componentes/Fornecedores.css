@@ -14,7 +14,7 @@ body {
     padding: 20px;
     background-color: #032B43;
     border-radius: 12px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0px 0px 15px #000000;
 }
 
 .fornecedores-container h2 {
@@ -44,7 +44,7 @@ body {
 }
 
 .fornecedor-form input:focus {
-    border-color: #bf9108;
+    border-color: #FFBA08;
     outline: none;
 }
 
@@ -62,7 +62,7 @@ body {
 
 .fornecedor-form button:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px #000000;
 }
 
 .fornecedores-table {

@@ -3,7 +3,6 @@ body {
     font-weight: bold;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
 }
 
 .logado-container {
@@ -12,7 +11,7 @@ body {
     padding: 40px;
     background-color: #032B43;
     border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px #000000;
     text-align: center;
 }
 
@@ -32,7 +31,7 @@ h2 {
 
 .botoes-container button {
     background: linear-gradient(to bottom, #FFBA08, #303103);
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 10px;
     padding: 12px;
@@ -45,12 +44,12 @@ h2 {
 
 .botoes-container button:hover {
     transform: scale(1.03);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px #000000;
 }
 
 .logout-button {
     background: linear-gradient(to bottom, red, #310603);
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 10px;
     padding: 12px 24px;

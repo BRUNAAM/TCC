@@ -15,7 +15,7 @@ body {
     padding: 20px;
     background-color: #032B43;
     border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px #000000;
 }
 
 /* Cabeçalho */
@@ -33,7 +33,7 @@ body {
 /* Botão Fechar */
 .fechar {
     background: linear-gradient(to bottom, red, #310603);
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 50px;
     padding: 12px;

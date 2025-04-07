@@ -5,7 +5,7 @@ body {
   font-weight: bold;
   margin: 0;
   padding: 0;
-  color: #1a1a1a;
+  color: #000000;
   /* Quase preto */
   /* Cinza claro para limpeza visual */
 }
@@ -27,7 +27,7 @@ body {
   text-align: center;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px #000000;
 }
 
 .home-logo {
@@ -46,7 +46,7 @@ h1 {
 .home-button {
   background: linear-gradient(to bottom, #FFBA08, #303103);
   /* Azul escuro elegante */
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 10px;
   padding: 12px 24px;
@@ -58,7 +58,7 @@ h1 {
 
 .home-button:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px #000000;
 }
 
 .forgot-password-link:hover {

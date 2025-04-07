@@ -48,21 +48,21 @@ body {
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 14px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     transition: border 0.3s;
 }
 
 .cadastro-form input:focus {
     border-color: #FFBA08;
     outline: none;
-    background-color: #fff;
+    background-color: #ffffff;
 }
 
 .cadastro-button {
     width: 100%;
     padding: 12px;
     background: linear-gradient(to bottom, #FFBA08, #303103);
-    color: white;
+    color: #ffffff;
     font-size: 16px;
     font-weight: bold;
     border: none;
@@ -74,7 +74,7 @@ body {
 .cadastro-button:hover {
     background-color: #FFBA08;
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px #000000;
 
 }
 

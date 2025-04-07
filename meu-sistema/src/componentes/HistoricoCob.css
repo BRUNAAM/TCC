@@ -13,9 +13,9 @@ body {
     padding: 20px;
     background-color: #032B43;
     border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 0 15px #000000;
     color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* ===== Cabeçalho ===== */

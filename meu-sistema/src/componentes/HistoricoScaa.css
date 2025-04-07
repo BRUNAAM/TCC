@@ -5,7 +5,7 @@
     padding: 20px;
     background-color: #032B43;
     border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px #000000;
     font-family: 'Segoe UI', sans-serif;
     color: #ffffff;
 }
@@ -22,7 +22,7 @@
 
 .historico-header h2 {
     font-size: 24px;
-    color: #bf9108;
+    color: #FFBA08;
     text-transform: uppercase;
 }
 
@@ -56,7 +56,7 @@
 
 .botao-imprimir {
     background: linear-gradient(to bottom, green, black);
-    color: white;
+    color: #ffffff;
 }
 
 .botao-excluir {
