@@ -42,11 +42,6 @@ h1 {
   color: #ffffff;
 }
 
-p {
-  font-size: 1.3rem;
-  margin-bottom: 30px;
-  color: #000000;
-}
 
 .home-button {
   background: linear-gradient(to bottom, #FFBA08, #303103);
@@ -68,5 +63,12 @@ p {
 
 .forgot-password-link:hover {
   color: #FFBA08;
+}
+
+
+p {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: small;
+  color: #000000;
 }
 /* Responsivo */
