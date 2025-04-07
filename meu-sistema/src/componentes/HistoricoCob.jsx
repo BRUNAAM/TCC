@@ -54,19 +54,20 @@ const HistoricoCob = () => {
                             <th>Data</th>
                             <th>Fornecedor</th>
                             <th>Nº Amostra</th>
-                            <th>Torra</th>
-                            <th>Pontuação</th>
+                            <th>Tipo do Café</th> {/* novo */}
+                            <th>Tipo de Bebida</th> {/* novo */}
                             <th>Ações</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        {avaliacoes.map(({ id, data, fornecedor, numeroAmostra, torra, pontuacaoFinal }) => (
+                        {avaliacoes.map(({ id, data, fornecedor, numeroAmostra, tipo, grupoBebida, subClassificacaoBebida,  }) => (
                             <tr key={id}>
                                 <td>{new Date(data).toLocaleDateString("pt-BR")}</td>
                                 <td>{fornecedor}</td>
                                 <td>{numeroAmostra}</td>
-                                <td>{torra}</td>
-                                <td>{pontuacaoFinal}</td>
+                                <td>{tipo}</td> {/* mostra o tipo do café */}
+                                <td>{grupoBebida ? `${grupoBebida} - ${subClassificacaoBebida}` : ""}</td> {/* tipo de bebida */}
                                 <td>
                                     <button className="botao-excluir" onClick={() => handleDelete(id)}>
                                         Excluir
@@ -75,6 +76,7 @@ const HistoricoCob = () => {
                             </tr>
                         ))}
                     </tbody>
+
                 </table>
             ) : (
                 <p className="sem-avaliacoes">Nenhuma avaliação encontrada.</p>

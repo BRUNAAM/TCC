@@ -54,18 +54,20 @@ const HistoricoScaa = () => {
                             <th>Data</th>
                             <th>Fornecedor</th>
                             <th>Nº Amostra</th>
-                            <th>Torra</th>
-                            <th>Pontuação</th>
+                            <th>Notas Sensoriais</th>
+                            <th>Obs. Acidez</th>
+                            <th>Pontuação final</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {avaliacoes.map(({ id, data, fornecedor, numeroAmostra, torra, pontuacaoFinal }) => (
+                        {avaliacoes.map(({ id, data, fornecedor, numeroAmostra, notasSensorias, obsAcidez, pontuacaoFinal }) => (
                             <tr key={id}>
                                 <td>{new Date(data).toLocaleDateString("pt-BR")}</td>
                                 <td>{fornecedor}</td>
                                 <td>{numeroAmostra}</td>
-                                <td>{torra}</td>
+                                <td>{notasSensorias}</td>
+                                <td>{obsAcidez}</td>
                                 <td>{pontuacaoFinal}</td>
                                 <td>
                                     <button className="botao-excluir" onClick={() => handleDelete(id)}>

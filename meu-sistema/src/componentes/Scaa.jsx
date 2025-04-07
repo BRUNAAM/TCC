@@ -7,6 +7,7 @@ import GraoCafe from "./GraoCafe";
 
 
 const Scaa = () => {
+    const [mostrarPdf, setMostrarPdf] = useState(false);
     const [avaliador, setAvaliador] = useState("");
     const [data, setData] = useState("");
     const [fornecedores, setFornecedores] = useState([]);
@@ -14,19 +15,13 @@ const Scaa = () => {
     const [numeroAmostra, setNumeroAmostra] = useState("");
     const [observacoes, setObservacoes] = useState("");
     const [torraSelecionada, setTorraSelecionada] = useState("");
-
-    // Notas do café
-    const [notasCafe, setNotasCafe] = useState("");
-
-    // DRY e BREAK – sliders verticais (0..4)
+    const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false);
+    const [obsAcidez, setObsAcidez] = useState("");
+    const [notasSensorias, setnotasSensoriais] = useState("");
     const [dry, setDry] = useState(2);
     const [breakValue, setBreakValue] = useState(2);
-
-    // Níveis informativos para Acidez e Corpo (0..4)
     const [nivelAcidez, setNivelAcidez] = useState(2);
     const [nivelCorpo, setNivelCorpo] = useState(2);
-
-    // Atributos numéricos (6..10) + xícaras (checkbox arrays)
     const [notas, setNotas] = useState({
         AromaFragrancia: 6,
         sabor: 6,
@@ -34,13 +29,11 @@ const Scaa = () => {
         acidez: 6,
         corpo: 6,
         equilibrio: 6,
-        avaliacaoPessoal: 6, // Novo slider
+        avaliacaoPessoal: 6,
         doçura: [false, false, false, false, false],
         uniformidade: [false, false, false, false, false],
         xicaraLimpa: [false, false, false, false, false]
     });
-
-    // Quantidades de defeitos leves e graves (sem checkbox)
     const [qtdLeve, setQtdLeve] = useState(0);
     const [qtdGrave, setQtdGrave] = useState(0);
 
@@ -68,12 +61,10 @@ const Scaa = () => {
         setFornecedores(listaFornecedores);
     };
 
-    // Sliders numéricos 6..10
     const handleNotaChange = (categoria, valor) => {
         setNotas((prev) => ({ ...prev, [categoria]: parseFloat(valor) }));
     };
 
-    // Alterna checkboxes (doçura, uniformidade, xicaraLimpa)
     const toggleCheckbox = (atributo, index) => {
         setNotas((prev) => {
             const newArray = [...prev[atributo]];
@@ -82,14 +73,12 @@ const Scaa = () => {
         });
     };
 
-    // Cálculo xícaras: 10 - (2 × quantidadeMarcada)
     const calcularPontuacaoXicara = (atributo) => {
         const marcados = notas[atributo].filter((v) => v).length;
         const score = 10 - marcados * 2;
         return score < 0 ? 0 : score;
     };
 
-    // Soma doçura + uniformidade + limpeza (máx 30)
     const calcularPontuacaoXicaras = () => {
         return (
             calcularPontuacaoXicara("doçura") +
@@ -98,25 +87,16 @@ const Scaa = () => {
         );
     };
 
-    // Soma sliders + xícaras - defeitos leves/graves
     const calcularPontuacaoFinal = () => {
         let total = 0;
-
-        // Somar sliders numéricos (fora dos arrays)
         Object.keys(notas).forEach((key) => {
             if (!["doçura", "uniformidade", "xicaraLimpa"].includes(key)) {
                 total += notas[key];
             }
         });
-
-        // Somar xícaras
         total += calcularPontuacaoXicaras();
-
-        // Defeitos leves = -2 × qtdLeve
-        // Defeitos graves = -4 × qtdGrave
         total -= qtdLeve * 2;
         total -= qtdGrave * 4;
-
         return total.toFixed(2);
     };
 
@@ -133,7 +113,8 @@ const Scaa = () => {
             numeroAmostra,
             torra: torraSelecionada,
             observacoes,
-            notasCafe,
+            notasSensorias,
+            obsAcidez,
             dry,
             breakValue,
             nivelAcidez,
@@ -147,29 +128,37 @@ const Scaa = () => {
         };
 
         await addDoc(collection(db, "avaliacoes_scaa"), avaliacao);
-        alert("Avaliação SCAA salva com sucesso!")
+        alert("Avaliação SCAA salva com sucesso!");
     };
 
-    // Rótulos invertidos (0..4)
     const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
 
     return (
         <div className="scaa-container">
             <div className="scaa-header">
                 <h2>Avaliação Sensorial de Café - SCAA</h2>
-                <button className="fechar" onClick={() => navigate(-1)}>
-                    ✖
-                </button>
+                <button className="fechar" onClick={() => navigate(-1)}>✖</button>
             </div>
 
-            <div className="quadro-correlacao">
-                <h4>PONTUAÇÃO</h4>
-                <ul>
-                    <li><strong> 85 pontos :</strong> Estritamente Mole</li>
-                    <li><strong>80 - 84 pontos :</strong> Mole</li>
-                    <li><strong>75 - 79 pontos :</strong> Apenas Mole</li>
-                    <li><strong> 74 pontos :</strong> Duro</li>
-                </ul>
+            <div className="pdf-float-container">
+                <button
+                    className="botao-flutuante-pdf"
+                    onClick={() => setMostrarPdf(!mostrarPdf)}
+                    title={mostrarPdf ? "Fechar PDF" : "Abrir PDF"}
+                >
+                    📄
+                </button>
+
+                {mostrarPdf && (
+                    <div className="pdf-janela">
+                        <iframe
+                            src="/documentos/roda de sabores.pdf"
+                            title="Manual SCAA"
+                            width="400"
+                            height="600"
+                        ></iframe>
+                    </div>
+                )}
             </div>
 
             <div className="scaa-form">
@@ -299,8 +288,8 @@ const Scaa = () => {
                 <div className="nota-cafe-container">
                     <label>Notas:</label>
                     <textarea
-                        value={notasCafe}
-                        onChange={(e) => setNotasCafe(e.target.value)}
+                        value={notasSensorias}
+                        onChange={(e) => setnotasSensoriais(e.target.value)}
                         placeholder="Preencha as notas encontradas no café"
                     />
                 </div>
@@ -365,29 +354,58 @@ const Scaa = () => {
 
                 {/* Vertical slider único para Nível de Acidez */}
                 <div className="vertical-sliders-container vertical-slider-single">
-                    <h4>Nível de Acidez</h4>
-                    <div className="slider-row">
-                        <input
-                            type="range"
-                            className="vertical-slider"
-                            min="0"
-                            max="4"
-                            step="1"
-                            value={nivelAcidez}
-                            onChange={(e) => setNivelAcidez(parseInt(e.target.value))}
-                        />
-                        <div className="slider-labels">
-                            {intensidades.slice().reverse().map((label, index) => (
-                                <span
-                                    key={index}
-                                    className={nivelAcidez === intensidades.length - 1 - index ? "selected" : ""}
-                                >
-                                    {label}
-                                </span>
-                            ))}
+                    <div className="titulo-acidez-com-botao">
+                        <h4>Nível de Acidez</h4>
+                        <button
+                            className="botao-info-acidez"
+                            onClick={() => setMostrarTiposAcidez(!mostrarTiposAcidez)}
+                            title="Ver tipos de acidez"
+                        >
+                            ℹ️
+                        </button>
+                    </div>
+
+                    {mostrarTiposAcidez && (
+                        <div className="caixa-tipos-acidez">
+                            <p><strong>Acidez Cítrica:</strong> Limão, laranja, lima, abacaxi. Bastante desejável.</p>
+                            <p><strong>Acidez Fosfórica:</strong> Presente em refrigerantes tipo cola, lembra espumante.</p>
+                            <p><strong>Acidez Málica:</strong> Como a da maçã. Comum em cafés de altitude, especialmente na América Central.</p>
+                            <p><strong>Acidez Lática:</strong> Derivados do leite. Rara no café.</p>
+                            <p><strong>Acidez Tartárica:</strong> Comum nos vinhos, vinda da videira.</p>
+                            <p><strong>Acidez Acética:</strong> Acidez do vinagre. Considerado defeito no café.</p>
                         </div>
+                    )}
+                    <div className="slider-row-with-note">
+                        <div className="slider-row">
+                            <input
+                                type="range"
+                                className="vertical-slider"
+                                min="0"
+                                max="4"
+                                step="1"
+                                value={nivelAcidez}
+                                onChange={(e) => setNivelAcidez(parseInt(e.target.value))}
+                            />
+                            <div className="slider-labels">
+                                {intensidades.slice().reverse().map((label, index) => (
+                                    <span
+                                        key={index}
+                                        className={nivelAcidez === intensidades.length - 1 - index ? "selected" : ""}
+                                    >
+                                        {label}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                        <textarea
+                            className="slider-lateral-note"
+                            placeholder="Observações Acidez"
+                            value={obsAcidez}
+                            onChange={(e) => setObsAcidez(e.target.value)}
+                        />
                     </div>
                 </div>
+
 
                 <div className="nota-container">
                     <label>Acidez:</label>

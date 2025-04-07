@@ -62,6 +62,10 @@ body {
     text-align: center;
 }
 
+h4 {
+    color: #FFBA08;
+}
+
 .quadro-correlacao ul {
     list-style-type: none;
     padding-left: 0;
@@ -283,6 +287,90 @@ body {
     gap: 20px;
     /* cria um espaço de 20px entre os itens */
 }
+
+.pdf-float-container {
+    position: fixed;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.botao-flutuante-pdf {
+    width: 50px;
+    height: 50px;
+    background-color: #553026;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.botao-flutuante-pdf:hover {
+    background-color: #704e44;
+    transform: scale(1.1);
+}
+
+.pdf-janela {
+    background: white;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.titulo-acidez-com-botao {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.botao-info-acidez {
+    background-color: #553026;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botao-info-acidez:hover {
+    background-color: #9dff00;
+}
+
+.caixa-tipos-acidez {
+    background-color: #73ff0077;
+    border-left: 4px solid #ffffff;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    line-height: 1.5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Times New Roman', Times, serif;
+}
+
+p {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: large;
+    color: #000000;
+}
+
+
+
 
 
 
