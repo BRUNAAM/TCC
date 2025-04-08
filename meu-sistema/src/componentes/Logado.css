@@ -15,8 +15,8 @@ body {
     text-align: center;
 }
 
-h2 {
-    font-size: 1.8rem;
+.logado-h2 {
+    font-size: 23px;
     margin-bottom: 30px;
     color: #ffffff;
     font-family: 'Times New Roman', Times, serif;
@@ -53,7 +53,7 @@ h2 {
     border: none;
     border-radius: 10px;
     padding: 12px 24px;
-    font-size: 1rem;
+    font-size: 15px;
     cursor: pointer;
     font-weight: bold;
     transition: transform 0.2s ease, box-shadow 0.2s ease;

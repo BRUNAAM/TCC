@@ -4,7 +4,6 @@ body {
     margin: 0;
     padding: 0;
     color: #ffffff;
-    font-size: 1rem;
 }
 
 /* Container Principal */
@@ -26,8 +25,9 @@ body {
 }
 
 .titulo-cabecalho {
-    font-size: 2rem;
+    font-size: 23px;
     margin-bottom: 10px;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* Botão Fechar */
@@ -58,7 +58,7 @@ body {
 
 h3 {
     color: #ffffff;
-    font-size: 1.6rem;
+    font-size: 20px;
     text-transform: uppercase;
     margin-bottom: 20px;
 }
@@ -81,6 +81,8 @@ textarea {
     border: none;
     outline: none;
     background-color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18;
 }
 
 /* Defeitos */
@@ -142,8 +144,12 @@ textarea {
 }
 
 .celula h5 {
-    font-size: 1.15rem;
+    font-size: 15px;
     margin-bottom: 10px;
+}
+
+h5{
+    font-size: 15px;
 }
 
 /* Grupo Laudo */

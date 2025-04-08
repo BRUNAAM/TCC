@@ -89,7 +89,7 @@ const Login = () => {
                             onClick={() => navigate("/esquecisenha")}
                             type="button"
                         >
-                            Esqueci minha senha
+                            Esqueci minha senha!
                         </button>
                     </p>
                 </form>

@@ -571,13 +571,14 @@ const Scaa = () => {
                         <label>Defeito Leve (-2):</label>
                         <input
                             type="number"
-                            min="0"
+                            min= "0"
                             value={qtdLeve}
                             onChange={(e) => setQtdLeve(parseInt(e.target.value) || 0)}
                             placeholder="# cups"
                         />
-                        <span>= {qtdLeve * 2}</span>
+                        <span> = {qtdLeve * 2}</span>
                     </div>
+                    <br />
                     <div>
                         <label>Defeito Grave (-4):</label>
                         <input
@@ -587,7 +588,7 @@ const Scaa = () => {
                             onChange={(e) => setQtdGrave(parseInt(e.target.value) || 0)}
                             placeholder="# cups"
                         />
-                        <span>= {qtdGrave * 4}</span>
+                        <span> = {qtdGrave * 4}</span>
                     </div>
                 </div>
 

@@ -44,7 +44,7 @@ const EsqueciSenha = () => {
         <div className="esqueci-container">
             <div className="esqueci-header">
                 <form onSubmit={handleResetPassword} className="esqueci-form">
-                    <h2>Recuperar Senha</h2>
+                    <h2>RECUPERAR SENHA</h2>
                     <button className="fechar" onClick={() => navigate("/login")}>
                         X
                     </button>
@@ -58,7 +58,7 @@ const EsqueciSenha = () => {
                     />
 
                     <button className="esqueci-botao" type="submit" disabled={loading}>
-                        {loading ? "Enviando..." : "Enviar link de recuperação"}
+                        {loading ? "ENVIANDO..." : "ENVIAR LINK DE RECUPERAÇÃO "}
                     </button>
                 </form>
             </div>

@@ -8,9 +8,10 @@ body {
 }
 
 .cadastro-container {
+    gap: 20px;
     max-width: 400px;
     margin: 60px auto;
-    padding: 30px;
+    padding: 40px;
     background-color: #032B43;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -23,21 +24,22 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .cadastro-header h2 {
     font-size: 26px;
     font-weight: bold;
-    color: #000000;
+    color: #FFBA08;
 }
 
 
 .cadastro-form label {
     display: block;
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 6px;
     font-weight: bold;
-    color: #000000;
+    color: #FFBA08;
 }
 
 .cadastro-form input {
@@ -63,12 +65,13 @@ body {
     padding: 12px;
     background: linear-gradient(to bottom, #FFBA08, #303103);
     color: #ffffff;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .cadastro-button:hover {

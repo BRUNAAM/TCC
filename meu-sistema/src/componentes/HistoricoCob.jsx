@@ -42,8 +42,8 @@ const HistoricoCob = () => {
             <div className="historico-header">
                 <h2>Histórico de Avaliações COB</h2>
                 <div className="botoes-topo">
-                    <button className="botao-voltar" onClick={() => navigate(-1)}>Voltar</button>
-                    <button className="botao-imprimir" onClick={handlePrint}>Imprimir</button>
+                    <button className="botao-voltar" onClick={() => navigate(-1)}>VOLTAR</button>
+                    <button className="botao-imprimir" onClick={handlePrint}>IMPRIMIR</button>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@ const HistoricoCob = () => {
                                 <td>{grupoBebida ? `${grupoBebida} - ${subClassificacaoBebida}` : ""}</td> {/* tipo de bebida */}
                                 <td>
                                     <button className="botao-excluir" onClick={() => handleDelete(id)}>
-                                        Excluir
+                                        EXCLUIR
                                     </button>
                                 </td>
                             </tr>

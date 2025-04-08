@@ -49,7 +49,7 @@ const Logado = () => {
 
     return (
         <main className="logado-container">
-            <h2>Bem-vindo (a) <br />{usuarioNome}!</h2>
+            <h2 className="logado-h2">Bem-vindo (a) <br />{usuarioNome}!</h2>
 
             <nav className="botoes-container" aria-label="Menu de navegação">
                 <button onClick={() => navigate("/cob")}> Iniciar Avaliação COB</button>
@@ -59,7 +59,7 @@ const Logado = () => {
                 <button onClick={() => navigate("/historico-cob")}>Histórico de Avaliações COB</button>
             </nav>
 
-            <button className="logout-button" onClick={handleLogout}>Sair</button>
+            <button className="logout-button" onClick={handleLogout}>SAIR</button>
         </main>
     );
 };

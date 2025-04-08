@@ -68,7 +68,7 @@ const Fornecedores = () => {
 
     return (
         <div className="fornecedores-container">
-            <button className="botao-voltar" onClick={() => navigate(-1)}>✖</button>
+            <button className="fechar" onClick={() => navigate(-1)}>✖</button>
             <h2>Gerenciar Fornecedores</h2>
 
             <form onSubmit={handleCadastro} className="fornecedor-form">
@@ -79,8 +79,8 @@ const Fornecedores = () => {
                 <input type="text" placeholder="CEP" value={cep} onChange={(e) => setCep(e.target.value)} required />
                 <input type="text" placeholder="Telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} required />
                 <div className="form-actions">
-                    <button type="submit">{idEdicao ? "Atualizar" : "Cadastrar"}</button>
-                    {idEdicao && <button type="button" className="cancelar" onClick={limparCampos}>Cancelar</button>}
+                    <button type="submit">{idEdicao ? "ATUALIZAR" : "CADASTRAR"}</button>
+                    {idEdicao && <button type="button" className="cancelar" onClick={limparCampos}>CANCELAR</button>}
                 </div>
             </form>
 
@@ -106,8 +106,8 @@ const Fornecedores = () => {
                             <td>{fornecedor.cep}</td>
                             <td>{fornecedor.telefone}</td>
                             <td>
-                                <button className="editar" onClick={() => handleEditar(fornecedor)}>Editar</button>
-                                <button className="excluir" onClick={() => handleExcluir(fornecedor.id)}>Excluir</button>
+                                <button className="editar" onClick={() => handleEditar(fornecedor)}>EDITAR</button>
+                                <button className="excluir" onClick={() => handleExcluir(fornecedor.id)}>EXCLUIR</button>
                             </td>
                         </tr>
                     ))}

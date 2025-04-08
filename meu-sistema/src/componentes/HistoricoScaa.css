@@ -6,7 +6,7 @@
     background-color: #032B43;
     border-radius: 12px;
     box-shadow: 0 0 15px #000000;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     color: #ffffff;
 }
 
@@ -30,12 +30,13 @@
 .botoes-topo button {
     padding: 10px 16px;
     margin-left: 10px;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: 0.3s;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 
@@ -52,6 +53,8 @@
     border: 1px solid #ffffff;
     padding: 10px;
     text-align: center;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .botao-imprimir {
@@ -68,6 +71,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: 0.3s;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* ===== Mensagem de vazio ===== */
@@ -83,4 +87,7 @@ th {
     color: #FFBA08;
 }
 
+span{
+    font-size: 18px;
+}
 /* ===== Responsividade ===== */

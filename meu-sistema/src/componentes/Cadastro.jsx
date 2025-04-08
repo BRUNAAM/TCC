@@ -79,12 +79,12 @@ const Cadastro = () => {
     return (
         <div className="cadastro-container">
             <div className="cadastro-header">
-                <h2>Cadastro</h2>
-                <button className="close-button" onClick={handleClose}>✖</button>
+                <h2>CADASTRO</h2>
+                <button className="fechar" onClick={handleClose}>✖</button>
             </div>
 
             <form onSubmit={handleCadastro} className="cadastro-form">
-                <label htmlFor="nome">Nome:</label>
+                <label htmlFor="nome">NOME:</label>
                 <input
                     id="nome"
                     type="text"
@@ -94,7 +94,7 @@ const Cadastro = () => {
                     required
                 />
 
-                <label htmlFor="email">Email:</label>
+                <label htmlFor="email">EMAIL:</label>
                 <input
                     id="email"
                     type="email"
@@ -104,7 +104,7 @@ const Cadastro = () => {
                     required
                 />
 
-                <label htmlFor="senha">Senha:</label>
+                <label htmlFor="senha">SENHA:</label>
                 <input
                     id="senha"
                     type="password"
@@ -115,7 +115,7 @@ const Cadastro = () => {
                 />
 
                 <button className="cadastro-button" type="submit" disabled={loading}>
-                    {loading ? "Cadastrando..." : "Cadastrar"}
+                    {loading ? "Cadastrando..." : "SALVAR"}
                 </button>
 
                 {erro && <p className="erro">{erro}</p>}

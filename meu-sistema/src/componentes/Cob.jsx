@@ -99,7 +99,6 @@ const Cob = () => {
     const [aparelho, setAparelho] = useState("");
     const [subcategoria, setSubcategoria] = useState("");
     const [postoServico, setPostoServico] = useState("");
-    const [assinaturaAvaliador, setAssinaturaAvaliador] = useState("");
     const [classificadorMapa, setClassificadorMapa] = useState("");
     const [peloPreparo, setPeloPreparo] = useState("");
     const [pelaSeca, setPelaSeca] = useState("");
@@ -233,7 +232,6 @@ const Cob = () => {
             subcategoria,
             tipo,
             postoServico,
-            assinaturaAvaliador,
             classificadorMapa,
             peloPreparo,
             pelaSeca,
@@ -349,7 +347,7 @@ const Cob = () => {
                         </div>
                         <div className="tabela-2x3">
                             <div className="celula">
-                                <h5>Subcategoria: Peneira %</h5>
+                                <h5>SUBCATEGORIA % PENEIRA </h5>
                                 {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
                                     <label key={item}>
                                         <input type="checkbox"
@@ -361,7 +359,7 @@ const Cob = () => {
                                 ))}
                             </div>
                             <div className="celula">
-                                <h5>Chato</h5>
+                                <h5>CHATO</h5>
                                 {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
                                     <label key={tamanho}>
                                         <input type="radio" name="chatoTamanho" value={tamanho} />
@@ -370,7 +368,7 @@ const Cob = () => {
                                 ))}
                             </div>
                             <div className="celula">
-                                <h5>Moca</h5>
+                                <h5>MOCA</h5>
                                 {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
                                     <label key={tamanho}>
                                         <input type="radio" name="mocaTamanho" value={tamanho} />
@@ -379,7 +377,7 @@ const Cob = () => {
                                 ))}
                             </div>
                             <div className="celula">
-                                <h5>Grupo I: Árabica</h5>
+                                <h5>GRUPO I: ARABICA</h5>
                                 {["Estritamente Mole", "Mole", "Apenas Mole", "Duro", "Riado", "Rio", "Rio Zona"].map((opcao) => (
                                     <label key={opcao}>
                                         <input
@@ -397,7 +395,7 @@ const Cob = () => {
                                 ))}
                             </div>
                             <div className="celula">
-                                <h5>Grupo II: Robusta</h5>
+                                <h5>GRUPO II: ROBUSTA</h5>
                                 {["Excelente", "Regular", "Boa", "Anormal"].map((opcao) => (
                                     <label key={opcao}>
                                         <input
@@ -415,7 +413,7 @@ const Cob = () => {
                                 ))}
                             </div>
                             <div className="celula">
-                                <h5>Classe</h5>
+                                <h5>CLASSE</h5>
                                 {[
                                     "Verde Azulado",
                                     "Verde Cana",
@@ -488,15 +486,7 @@ const Cob = () => {
                                     placeholder="Informe o Posto de Serviço"
                                 />
                             </div>
-                            <div className="campo">
-                                <label>Assinatura do Avaliador:</label>
-                                <input
-                                    type="text"
-                                    value={assinaturaAvaliador}
-                                    onChange={(e) => setAssinaturaAvaliador(e.target.value)}
-                                    placeholder="Assinatura do Avaliador"
-                                />
-                            </div>
+                        
                             <div className="campo">
                                 <label>Classificador/Reg. MAPA:</label>
                                 <input
@@ -522,7 +512,7 @@ const Cob = () => {
                                 <h3>Laudo de Classificação</h3>
                                 <div className="grid-laudo">
                                     <div className="bloco-laudo">
-                                        <h4>Pelo Preparo</h4>
+                                        <h5>PREPARO</h5>
                                         {["Via Seca", "Via Úmida"].map((opcao) => (
                                             <label key={opcao}>
                                                 <input
@@ -535,7 +525,7 @@ const Cob = () => {
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
-                                        <h4>Pela Seca</h4>
+                                        <h5>SECA </h5>
                                         {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
                                             <label key={opcao}>
                                                 <input
@@ -548,7 +538,7 @@ const Cob = () => {
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
-                                        <h4>Pelo Aspecto</h4>
+                                        <h5>PELO ASPECTO</h5>
                                         {["Bom", "Regular", "Mau"].map((opcao) => (
                                             <label key={opcao}>
                                                 <input
@@ -561,7 +551,7 @@ const Cob = () => {
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
-                                        <h4>Torra (Coffea arábica)</h4>
+                                        <h5>TORRA (COFFEA ARÁBICA)</h5>
                                         {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
                                             <label key={opcao}>
                                                 <input
@@ -574,7 +564,7 @@ const Cob = () => {
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
-                                        <h4>Torra (Coffea canephora)</h4>
+                                        <h5>TORRA (COFFEA CANEPHORA)</h5>
                                         {[
                                             "Torração Excelente",
                                             "Torração Quase Excelente",
@@ -594,8 +584,8 @@ const Cob = () => {
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
-                                        <h4>Teor de Cafeína</h4>
-                                        {["CAFÉ", "CAFÉ DESCAFEINADO"].map((opcao) => (
+                                        <h5>TEOR DE CAFEINA</h5>
+                                        {["Café", "Café descafeinado"].map((opcao) => (
                                             <label key={opcao}>
                                                 <input
                                                     type="checkbox"

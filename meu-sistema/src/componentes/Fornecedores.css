@@ -52,17 +52,21 @@ body {
     background: linear-gradient(to bottom, #FFBA08, #303103);
     grid-column: span 2;
     padding: 12px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s ease;
+    font-family: 'Times New Roman', Times, serif;
+    color: #ffffff;
+
 }
 
 .fornecedor-form button:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px #000000;
+    color: #ffffff;
 }
 
 .fornecedores-table {
@@ -76,7 +80,7 @@ body {
     padding: 12px 10px;
     border: 1px solid #000000;
     text-align: center;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .fornecedores-table th {
@@ -89,7 +93,7 @@ body {
 .fornecedores-table button {
     margin: 0 5px;
     padding: 6px 10px;
-    font-size: 13px;
+    font-size: 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -98,10 +102,14 @@ body {
 
 .editar {
     background: linear-gradient(to bottom, #13b644, #0e4e09);
+    font-family: 'Times New Roman', Times, serif;
+    color: #ffffff;
 }
 
 .excluir {
     background: linear-gradient(to bottom, #b61313, #4e0909);
+    font-family: 'Times New Roman', Times, serif;
+    color: #ffffff;
 }
 
 th {
