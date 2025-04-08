@@ -58,6 +58,7 @@ const Login = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         className="login-input"
                         required
+                        aria-label="Digite seu e-mail"
                     />
                     <input
                         id="senha"
@@ -67,6 +68,7 @@ const Login = () => {
                         onChange={(e) => setSenha(e.target.value)}
                         className="login-input"
                         required
+                        aria-label="Digite sua senha"
                     />
 
                     {erro && <p className="login-erro">{erro}</p>}

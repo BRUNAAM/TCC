@@ -1,11 +1,14 @@
-body {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
+/* index.css ou App.css */
+html, body, #root {
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-}
-
+    height: 100%;
+    width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    background-color: #032B43; /* ou outro fundo padrão do sistema */
+  }
+  
 
 .fechar {
     background: linear-gradient(to bottom, red, #310603);
@@ -57,7 +60,8 @@ body {
     transform: scale(1.05);
 }
 
-input{
+input {
     font-family: 'Times New Roman', Times, serif;
     font-size: 18px;
 }
+

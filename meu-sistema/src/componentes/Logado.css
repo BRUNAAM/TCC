@@ -65,3 +65,61 @@ body {
 }
 
 /* Responsivo */
+/* Centralização total da tela e responsividade */
+@media (max-width: 768px) {
+    .logado-container {
+        max-width: 90%;
+        padding: 25px;
+        margin: 0 auto;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .logado-h2 {
+        font-size: 20px;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .botoes-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .botoes-container button {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .logout-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Ajuste para telas bem pequenas */
+@media (max-width: 480px) {
+    .logado-container {
+        padding: 20px;
+    }
+
+    .logado-h2 {
+        font-size: 18px;
+    }
+
+    .botoes-container button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .logout-button {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+}

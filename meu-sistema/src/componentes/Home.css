@@ -1,11 +1,16 @@
 /* Home.css */
 
+/* Garantir que html e body ocupem toda a altura */
+html,
 body {
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
   margin: 0;
   padding: 0;
-
+  height: 100%;
+  width: 100%;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  background-color: #032B43;
+  /* Fundo padrão escuro para a tela toda */
 }
 
 .home-container {
@@ -14,21 +19,20 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100dvh;
-  /* altura total da viewport no mobile também */
-  padding: 20px;
+  /* Preenchimento total da tela, inclusive mobile */
+  width: 100%;
+  padding: 40px;
   box-sizing: border-box;
 }
 
-
 .home-content {
   background-color: #032B43;
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  padding: 40px;
   text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px #000000;
+  padding: 40px;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 4px 20px #000000;
 }
 
 .home-logo {
@@ -43,10 +47,8 @@ h1 {
   color: #ffffff;
 }
 
-
 .home-button {
   background: linear-gradient(to bottom, #FFBA08, #303103);
-  /* Azul escuro elegante */
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -63,27 +65,19 @@ h1 {
   box-shadow: 0 4px 12px #000000;
 }
 
-.forgot-password-link:hover {
-  color: #FFBA08;
-}
-
-
 .home-p {
-  font-family: 'Times New Roman', Times, serif;
   font-size: 20px;
   color: #7cd8e4;
 }
 
-/* Responsividade*/
-/* Responsividade para telas menores que 768px (celulares e tablets) */
+/* Responsividade */
 @media (max-width: 768px) {
   .home-container {
-    flex-direction: column;
     padding: 20px;
   }
 
   .home-content {
-    padding: 20px;
+    padding: 25px;
     max-width: 90%;
   }
 
@@ -106,10 +100,9 @@ h1 {
   }
 }
 
-/* Ajuste extra para telas bem pequenas (menos de 480px) */
 @media (max-width: 480px) {
   .home-content {
-    padding: 15px;
+    padding: 20px;
   }
 
   h1 {

@@ -13,10 +13,14 @@ body {
     margin: 60px auto;
     padding: 40px;
     background-color: #032B43;
-    border-radius: 12px;
+    border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     position: relative;
     font-family: 'Times New Roman', Times, serif;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px #000000;
+    padding: 40px;
+    
 }
 
 .cadastro-header {

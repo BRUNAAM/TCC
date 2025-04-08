@@ -1,32 +1,39 @@
 /* Login.css */
 
-body {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
+/* Garantir que html, body e root tenham altura total */
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
-    color: #1a1a1a;
+    height: 100%;
+    width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    background-color: #032B43;
+    /* Fundo padrão */
 }
 
 .login-container {
     display: flex;
-    gap: 20px;
-    padding: 40px;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    min-height: 100dvh;
+    /* Preenche toda a altura do dispositivo */
+    width: 100%;
+    padding: 40px;
     box-sizing: border-box;
 }
 
 .login-box {
     background-color: #032B43;
-    border: 1px solid #ffffff;
-    border-radius: 15px;
-    padding: 30px;
     text-align: center;
     max-width: 400px;
     width: 100%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px #000000;
+    padding: 25px;
 }
 
 .login-logo {
@@ -53,7 +60,6 @@ body {
     border-radius: 10px;
     outline: none;
 }
-
 
 .login-button,
 .register-button {
@@ -94,7 +100,6 @@ body {
     border-radius: 10px;
     font-weight: bold;
     font-family: 'Times New Roman', Times, serif;
-
 }
 
 .forgot-password-link:hover {
@@ -108,4 +113,73 @@ body {
     margin: -5px 0 5px 0;
 }
 
-/* Responsivo */
+/* Responsivo para tablets e celulares */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 20px;
+    }
+
+    .login-box {
+        max-width: 90%;
+        padding: 20px;
+    }
+
+    .login-logo {
+        width: 120px;
+        margin-bottom: 15px;
+    }
+
+    .login-title {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .login-input {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .login-button,
+    .register-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .forgot-password-link {
+        font-size: 16px;
+    }
+
+    .login-erro {
+        font-size: 0.8rem;
+    }
+}
+
+/* Ajuste extra para telas pequenas (menos de 480px) */
+@media (max-width: 480px) {
+    .login-box {
+        padding: 15px;
+    }
+
+    .login-title {
+        font-size: 18px;
+    }
+
+    .login-input {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .login-button,
+    .register-button {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .forgot-password-link {
+        font-size: 14px;
+    }
+
+    .login-erro {
+        font-size: 0.75rem;
+    }
+}
