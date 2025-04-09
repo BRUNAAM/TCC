@@ -78,48 +78,50 @@ const Cadastro = () => {
 
     return (
         <div className="cadastro-container">
-            <div className="cadastro-header">
-                <h2>CADASTRO</h2>
-                <button className="fechar" onClick={handleClose}>✖</button>
+            <div className="cadastro-box">
+                <div className="cadastro-header">
+                    <h2>CADASTRO</h2>
+                    <button className="fechar" onClick={handleClose}>✖</button>
+                </div>
+
+                <form onSubmit={handleCadastro} className="cadastro-form">
+                    <label htmlFor="nome">NOME:</label>
+                    <input
+                        id="nome"
+                        type="text"
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        placeholder="Digite seu nome completo"
+                        required
+                    />
+
+                    <label htmlFor="email">EMAIL:</label>
+                    <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Digite seu e-mail"
+                        required
+                    />
+
+                    <label htmlFor="senha">SENHA:</label>
+                    <input
+                        id="senha"
+                        type="password"
+                        value={senha}
+                        onChange={(e) => setSenha(e.target.value)}
+                        placeholder="Crie uma senha segura"
+                        required
+                    />
+
+                    <button className="cadastro-button" type="submit" disabled={loading}>
+                        {loading ? "Cadastrando..." : "SALVAR"}
+                    </button>
+
+                    {erro && <p className="erro">{erro}</p>}
+                </form>
             </div>
-
-            <form onSubmit={handleCadastro} className="cadastro-form">
-                <label htmlFor="nome">NOME:</label>
-                <input
-                    id="nome"
-                    type="text"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    placeholder="Digite seu nome completo"
-                    required
-                />
-
-                <label htmlFor="email">EMAIL:</label>
-                <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Digite seu e-mail"
-                    required
-                />
-
-                <label htmlFor="senha">SENHA:</label>
-                <input
-                    id="senha"
-                    type="password"
-                    value={senha}
-                    onChange={(e) => setSenha(e.target.value)}
-                    placeholder="Crie uma senha segura"
-                    required
-                />
-
-                <button className="cadastro-button" type="submit" disabled={loading}>
-                    {loading ? "Cadastrando..." : "SALVAR"}
-                </button>
-
-                {erro && <p className="erro">{erro}</p>}
-            </form>
         </div>
     );
 };

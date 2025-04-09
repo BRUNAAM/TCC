@@ -11,6 +11,9 @@ body,
     background-color: #032B43;
     color: #ffffff;
 }
+h5{
+    font-size: 15px;
+}
 
 /* Container Principal */
 .cob-container {
@@ -94,7 +97,6 @@ h3 {
 textarea {
     width: 90%;
     padding: 10px;
-    font-size: 1rem;
     border-radius: 10px;
     border: none;
     outline: none;
@@ -167,14 +169,15 @@ textarea {
     align-items: flex-start;
     gap: 10px;
 }
+
 .total input,
 .tipo-cafe-input {
-  width: 150px; /* ou ajuste para 120px se quiser ainda menor */
-  padding: 8px;
-  font-size: 0.95rem;
-  border-radius: 8px;
-  border: 1px solid #ffffff;
-  text-align: center;
+    width: 150px;
+    padding: 8px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    border: 1px solid #ffffff;
+    text-align: center;
 }
 
 
@@ -231,5 +234,19 @@ textarea {
     .defeitos-input {
         width: 50px;
         font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .tabela-2x3 {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 colunas em tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .tabela-2x3 {
+        grid-template-columns: 1fr;
+        /* 1 coluna no celular */
     }
 }

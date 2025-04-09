@@ -4,8 +4,6 @@
     margin: 40px auto;
     padding: 20px;
     background-color: #032B43;
-    border-radius: 12px;
-    box-shadow: 0 0 15px #000000;
     font-family: 'Times New Roman', Times, serif;
     color: #ffffff;
 }
@@ -89,3 +87,86 @@ th {
 
 
 /* ===== Responsividade ===== */
+
+/* ===== Reset para preencher tela ===== */
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #032B43;
+}
+
+/* ===== Ajuste do container para altura total ===== */
+.historico-scaa-container {
+    min-height: 100dvh;
+    box-sizing: border-box;
+}
+
+/* ===== Botões alinhados à direita e responsivos ===== */
+.historico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.botoes-topo {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* Botões padrão */
+.botoes-topo button {
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Times New Roman', Times, serif;
+    transition: 0.3s ease;
+}
+
+/* ===== Responsividade geral ===== */
+@media (max-width: 768px) {
+    .historico-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .botoes-topo button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .botoes-topo button {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .historico-header h2 {
+        font-size: 20px;
+    }
+}
+
+/* ===== Adaptação da tabela para telas pequenas ===== */
+.avaliacoes-table {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+}
+
+.avaliacoes-table table {
+    min-width: 700px;
+    width: 100%;
+    border-collapse: collapse;
+}

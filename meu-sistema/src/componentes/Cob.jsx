@@ -331,7 +331,7 @@ const Cob = () => {
                                     <input type="number" readOnly value={equivalenciaTotal} />
                                 </div>
                                 <div>
-                                    <label>Tipo do Café:</label>
+                                    <label>Tipo do Café: <br /></label>
                                     <input type="text" readOnly value={tipo} />
                                 </div>
                             </div>

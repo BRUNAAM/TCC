@@ -69,7 +69,7 @@ const Fornecedores = () => {
     return (
         <div className="fornecedores-container">
             <button className="fechar" onClick={() => navigate(-1)}>✖</button>
-            <h2>Gerenciar Fornecedores</h2>
+            <h2>Cadastro de Produtores / Fornecedores</h2>
 
             <form onSubmit={handleCadastro} className="fornecedor-form">
                 <input type="text" placeholder="Nome Completo" value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -83,36 +83,38 @@ const Fornecedores = () => {
                     {idEdicao && <button type="button" className="cancelar" onClick={limparCampos}>CANCELAR</button>}
                 </div>
             </form>
+            <div className="tabela-responsiva">
 
-            <table className="fornecedores-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Rua</th>
-                        <th>Bairro</th>
-                        <th>Cidade</th>
-                        <th>CEP</th>
-                        <th>Telefone</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {fornecedores.map((fornecedor) => (
-                        <tr key={fornecedor.id}>
-                            <td>{fornecedor.nome}</td>
-                            <td>{fornecedor.rua}</td>
-                            <td>{fornecedor.bairro}</td>
-                            <td>{fornecedor.cidade}</td>
-                            <td>{fornecedor.cep}</td>
-                            <td>{fornecedor.telefone}</td>
-                            <td>
-                                <button className="editar" onClick={() => handleEditar(fornecedor)}>EDITAR</button>
-                                <button className="excluir" onClick={() => handleExcluir(fornecedor.id)}>EXCLUIR</button>
-                            </td>
+                <table className="fornecedores-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Rua</th>
+                            <th>Bairro</th>
+                            <th>Cidade</th>
+                            <th>CEP</th>
+                            <th>Telefone</th>
+                            <th>Ações</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {fornecedores.map((fornecedor) => (
+                            <tr key={fornecedor.id}>
+                                <td>{fornecedor.nome}</td>
+                                <td>{fornecedor.rua}</td>
+                                <td>{fornecedor.bairro}</td>
+                                <td>{fornecedor.cidade}</td>
+                                <td>{fornecedor.cep}</td>
+                                <td>{fornecedor.telefone}</td>
+                                <td>
+                                    <button className="editar" onClick={() => handleEditar(fornecedor)}>EDITAR</button>
+                                    <button className="excluir" onClick={() => handleExcluir(fornecedor.id)}>EXCLUIR</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

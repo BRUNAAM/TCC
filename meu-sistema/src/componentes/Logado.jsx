@@ -54,7 +54,7 @@ const Logado = () => {
             <nav className="botoes-container" aria-label="Menu de navegação">
                 <button onClick={() => navigate("/cob")}> Iniciar Avaliação COB</button>
                 <button onClick={() => navigate("/scaa")}>Iniciar Avaliação SCAA</button>
-                <button onClick={() => navigate("/fornecedores")}> Cadastro de Fornecedores / Produtores </button>
+                <button onClick={() => navigate("/fornecedores")}> Cadastro de Produtores / Fornecedores</button>
                 <button onClick={() => navigate("/historico-scaa")}>Histórico de Avaliações SCAA</button>
                 <button onClick={() => navigate("/historico-cob")}>Histórico de Avaliações COB</button>
             </nav>

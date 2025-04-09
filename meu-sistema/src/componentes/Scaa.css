@@ -376,8 +376,106 @@ label {
 
 
 
+/* Centralização e tela cheia */
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #032B43;
+}
 
+/* Ajuste geral do container */
+.scaa-container {
+    min-height: 100dvh;
+    width: 100%;
+    box-sizing: border-box;
+}
 
+/* Responsividade: tablets */
+@media (max-width: 1024px) {
+    .quadro-correlacao {
+        width: 100%;
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 15px;
+        font-size: 13px;
+    }
 
+    .grao-svg {
+        width: 40px;
+        height: 50px;
+    }
 
-/* Responsividade */
+    .slider-labels span,
+    .escala-notas span {
+        font-size: 13px;
+    }
+}
+
+/* Responsividade: celulares */
+@media (max-width: 768px) {
+    .scaa-header h2 {
+        font-size: 18px;
+    }
+
+    .grao-svg {
+        width: 35px;
+        height: 45px;
+    }
+
+    .torra-option span {
+        font-size: 16px;
+    }
+
+    .slider-labels span,
+    .escala-notas span {
+        font-size: 12px;
+    }
+
+    .pdf-float-container {
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+    }
+
+    .botao-flutuante-pdf {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+}
+
+/* Responsividade: celulares pequenos */
+@media (max-width: 480px) {
+    .scaa-container {
+        padding: 15px;
+    }
+
+    .torra-option span {
+        font-size: 14px;
+    }
+
+    label,
+    .titulo-acidez-com-botao {
+        font-size: 16px;
+    }
+
+    .caixa-tipos-acidez {
+        font-size: 16px;
+    }
+
+    .slider-labels span,
+    .escala-notas span {
+        font-size: 11px;
+    }
+
+    .vertical-sliders-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}

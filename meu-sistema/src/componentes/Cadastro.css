@@ -154,3 +154,55 @@ body,
         font-size: 13px;
     }
 }
+
+/* Botão de fechar */
+.fechar {
+    background: linear-gradient(to bottom, red, #310603);
+    color: white;
+    border: none;
+    font-size: 18px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fechar:hover {
+    transform: scale(1.1);
+}
+
+/* Responsivo para botão e alinhamento */
+@media (max-width: 768px) {
+    .cadastro-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .fechar {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+
+    .cadastro-button {
+        width: 100%;
+        /* ajusta largura do botão */
+    }
+}
+
+@media (max-width: 480px) {
+    .fechar {
+        width: 26px;
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .cadastro-button {
+        width: 100%;
+    }
+}

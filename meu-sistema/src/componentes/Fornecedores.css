@@ -1,22 +1,29 @@
-body {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
+/* Reset geral */
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #032B43;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
     color: #ffffff;
     font-size: 1rem;
 }
 
+/* Container principal */
 .fornecedores-container {
-    position: relative;
+    min-height: 100dvh;
     max-width: 1000px;
-    margin: 40px auto;
-    padding: 20px;
+    margin: 0 auto;
+    padding: 40px 20px;
     background-color: #032B43;
-    border-radius: 12px;
-    box-shadow: 0px 0px 15px #000000;
+
 }
 
+/* Título */
 .fornecedores-container h2 {
     text-align: center;
     font-size: 28px;
@@ -27,13 +34,13 @@ body {
     padding-bottom: 10px;
 }
 
+/* Formulário */
 .fornecedor-form {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
     margin-bottom: 30px;
 }
-
 
 .fornecedor-form input {
     padding: 12px;
@@ -58,17 +65,15 @@ body {
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s ease;
-    font-family: 'Times New Roman', Times, serif;
     color: #ffffff;
-
 }
 
 .fornecedor-form button:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px #000000;
-    color: #ffffff;
 }
 
+/* Tabela */
 .fornecedores-table {
     width: 100%;
     border-collapse: collapse;
@@ -78,7 +83,7 @@ body {
 .fornecedores-table th,
 .fornecedores-table td {
     padding: 12px 10px;
-    border: 1px solid #000000;
+    border: 1px solid #ffffff;
     text-align: center;
     font-size: 15px;
 }
@@ -87,8 +92,8 @@ body {
     background-color: #032B43;
     text-transform: uppercase;
     font-weight: bold;
+    color: #FFBA08;
 }
-
 
 .fornecedores-table button {
     margin: 0 5px;
@@ -102,16 +107,107 @@ body {
 
 .editar {
     background: linear-gradient(to bottom, #13b644, #0e4e09);
-    font-family: 'Times New Roman', Times, serif;
     color: #ffffff;
 }
 
 .excluir {
     background: linear-gradient(to bottom, #b61313, #4e0909);
-    font-family: 'Times New Roman', Times, serif;
     color: #ffffff;
 }
 
-th {
+/* Responsividade */
+@media (max-width: 768px) {
+    .fornecedores-container {
+        padding: 20px;
+    }
+
+    .fornecedor-form {
+        grid-template-columns: 1fr;
+    }
+
+    .fornecedor-form button {
+        grid-column: span 1;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .fornecedores-table th,
+    .fornecedores-table td {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .fornecedores-table button {
+        font-size: 13px;
+        padding: 5px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fornecedores-container h2 {
+        font-size: 22px;
+    }
+
+    .fornecedor-form input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .fornecedor-form button {
+        font-size: 13px;
+        padding: 8px;
+    }
+}
+
+
+/* ===== Tabela com rolagem horizontal em telas pequenas ===== */
+.tabela-responsiva {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Largura mínima para scroll e visual consistente */
+.fornecedores-table {
+    min-width: 800px;
+    width: 100%;
+    border-collapse: collapse;
+    color: #ffffff;
+}
+
+.fornecedores-table th,
+.fornecedores-table td {
+    padding: 12px 10px;
+    border: 1px solid #ffffff;
+    text-align: center;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.fornecedores-table th {
+    background-color: #032B43;
     color: #FFBA08;
+    text-transform: uppercase;
+}
+
+/* Botões da tabela */
+.fornecedores-table button {
+    padding: 6px 10px;
+    font-size: 14px;
+    margin: 2px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+}
+
+.editar {
+    background: linear-gradient(to bottom, #13b644, #0e4e09);
+}
+
+.excluir {
+    background: linear-gradient(to bottom, #b61313, #4e0909);
 }
