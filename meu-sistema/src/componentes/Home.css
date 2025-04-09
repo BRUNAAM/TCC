@@ -73,7 +73,7 @@ h1 {
 /* Responsividade */
 @media (max-width: 768px) {
   .home-container {
-    padding: 20px;
+    padding: 40px;
   }
 
   .home-content {
@@ -82,8 +82,8 @@ h1 {
   }
 
   .home-logo {
-    width: 120px;
-    margin-bottom: 15px;
+    width: 140px;
+    margin-bottom: 30px;
   }
 
   h1 {
@@ -91,6 +91,7 @@ h1 {
   }
 
   .home-button {
+    margin-bottom: 30px;
     padding: 10px 20px;
     font-size: 14px;
   }

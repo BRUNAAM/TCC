@@ -1,34 +1,47 @@
-body {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
+/* Cadastro.css */
+
+/* Reset global */
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    background-color: #032B43;
     color: #ffffff;
     font-size: 1rem;
 }
 
+/* Container principal */
 .cadastro-container {
-    gap: 20px;
-    max-width: 400px;
-    margin: 60px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+    width: 100%;
     padding: 40px;
+    box-sizing: border-box;
+}
+
+.cadastro-box {
     background-color: #032B43;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
-    font-family: 'Times New Roman', Times, serif;
+    max-width: 400px;
+    width: 100%;
     border-radius: 15px;
     box-shadow: 0 4px 20px #000000;
     padding: 40px;
-    
 }
 
+/* Cabeçalho */
 .cadastro-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
-    font-family: 'Times New Roman', Times, serif;
 }
 
 .cadastro-header h2 {
@@ -37,7 +50,7 @@ body {
     color: #FFBA08;
 }
 
-
+/* Formulário */
 .cadastro-form label {
     display: block;
     font-size: 16px;
@@ -48,7 +61,6 @@ body {
 
 .cadastro-form input {
     width: 100%;
-    width: 360px;
     padding: 12px;
     margin-bottom: 18px;
     border: 1px solid #ccc;
@@ -56,6 +68,7 @@ body {
     font-size: 14px;
     background-color: #ffffff;
     transition: border 0.3s;
+    color: #000;
 }
 
 .cadastro-form input:focus {
@@ -64,12 +77,12 @@ body {
     background-color: #ffffff;
 }
 
+/* Botão */
 .cadastro-button {
-    width: 100%;
-    padding: 12px;
+    width: 110%;
+    padding: 10px;
     background: linear-gradient(to bottom, #FFBA08, #303103);
     color: #ffffff;
-    font-size: 15px;
     font-weight: bold;
     border: none;
     border-radius: 8px;
@@ -82,9 +95,9 @@ body {
     background-color: #FFBA08;
     transform: scale(1.05);
     box-shadow: 0 4px 12px #000000;
-
 }
 
+/* Mensagem de erro */
 .erro {
     color: #DD0000;
     margin-top: 10px;
@@ -92,6 +105,52 @@ body {
     text-align: center;
 }
 
+/* Responsividade */
+@media (max-width: 768px) {
+    .cadastro-container {
+        padding: 20px;
+    }
 
+    .cadastro-box {
+        max-width: 90%;
+        padding: 30px;
+    }
 
-/* Responsivo */
+    .cadastro-header h2 {
+        font-size: 22px;
+    }
+
+    .cadastro-form input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .cadastro-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cadastro-box {
+        padding: 20px;
+    }
+
+    .cadastro-header h2 {
+        font-size: 20px;
+    }
+
+    .cadastro-form input {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .cadastro-button {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .erro {
+        font-size: 13px;
+    }
+}

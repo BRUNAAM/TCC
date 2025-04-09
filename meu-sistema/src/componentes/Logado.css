@@ -1,25 +1,47 @@
-body {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
+/* Logado.css */
+
+/* Reset global para garantir preenchimento da tela */
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    background-color: #032B43;
+    /* Fundo padrão */
 }
 
 .logado-container {
-    max-width: 400px;
-    margin: 60px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+    /* Preenche toda a altura do dispositivo */
+    width: 100%;
     padding: 40px;
+    box-sizing: border-box;
+    
+}
+
+.logado-box {
     background-color: #032B43;
+    max-width: 400px;
+    width: 100%;
     border-radius: 15px;
+    padding: 40px;
     box-shadow: 0 4px 20px #000000;
     text-align: center;
+    
 }
 
 .logado-h2 {
     font-size: 23px;
     margin-bottom: 30px;
     color: #ffffff;
-    font-family: 'Times New Roman', Times, serif;
 }
 
 .botoes-container {
@@ -64,32 +86,20 @@ body {
     box-shadow: 0 0 15px rgba(179, 0, 0, 0.8);
 }
 
-/* Responsivo */
-/* Centralização total da tela e responsividade */
+/* Responsivo para tablets */
 @media (max-width: 768px) {
     .logado-container {
+        padding: 20px;
+    }
+
+    .logado-box {
         max-width: 90%;
         padding: 25px;
-        margin: 0 auto;
-        min-height: 100dvh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
 
     .logado-h2 {
         font-size: 20px;
         margin-bottom: 25px;
-        text-align: center;
-    }
-
-    .botoes-container {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-bottom: 30px;
     }
 
     .botoes-container button {
@@ -105,7 +115,7 @@ body {
 
 /* Ajuste para telas bem pequenas */
 @media (max-width: 480px) {
-    .logado-container {
+    .logado-box {
         padding: 20px;
     }
 

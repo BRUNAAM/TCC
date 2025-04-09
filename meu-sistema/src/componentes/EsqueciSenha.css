@@ -1,8 +1,16 @@
-body {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
+/* EsqueciSenha.css */
+
+/* Reset global */
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    background-color: #032B43;
     color: #ffffff;
     font-size: 1rem;
 }
@@ -10,12 +18,13 @@ body {
 /* Container principal */
 .esqueci-container {
     display: flex;
-    gap: 20px;
-    padding: 40px;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    height: 100vh;
+    align-items: center;
+    min-height: 100dvh;
+    width: 100%;
+    padding: 40px;
+    box-sizing: border-box;
     text-align: center;
 }
 
@@ -27,10 +36,8 @@ body {
 }
 
 /* Formulário */
-
 .esqueci-form {
     position: relative;
-    /* Permite o posicionamento absoluto dos elementos filhos */
     background-color: #032B43;
     padding: 30px;
     border-radius: 12px;
@@ -41,13 +48,11 @@ body {
 
 /* Campo de entrada */
 .esqueci-input {
-    width: 100%;
-    width: 380px;
-    padding: 12px;
+    padding: 10px;
+    width: 90%;
     margin-bottom: 15px;
     border: 1px solid #FFBA08;
     border-radius: 8px;
-    font-size: 16px;
     font-weight: bold;
     color: #000000;
     background-color: #fff;
@@ -88,9 +93,56 @@ body {
 /* Link de voltar */
 .lembrou {
     margin-top: 20px;
-    color: #000000;
+    color: #ffffff;
 }
 
-
-
 /* Responsividade */
+@media (max-width: 768px) {
+    .esqueci-container {
+        padding: 20px;
+    }
+
+    .esqueci-form {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .esqueci-header h2 {
+        font-size: 20px;
+    }
+
+    .esqueci-input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .esqueci-botao {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .esqueci-form {
+        padding: 15px;
+    }
+
+    .esqueci-header h2 {
+        font-size: 18px;
+    }
+
+    .esqueci-input {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .esqueci-botao {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .mensagem-sucesso,
+    .mensagem-erro {
+        font-size: 13px;
+    }
+}
