@@ -4,7 +4,6 @@ import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "./Cob.css";
-import gerarPDFLaudo from '../utils/gerarPDFLaudo';
 
 
 const classificationTable = [
@@ -605,36 +604,9 @@ const Cob = () => {
                             className="salvar"
                             onClick={() => {
                                 handleSalvarAvaliacao();
-                                gerarPDFLaudo({
-                                    avaliador,
-                                    fornecedor: fornecedorSelecionado,
-                                    numeroAmostra,
-                                    observacoes,
-                                    defeitos,
-                                    equivalencias,
-                                    equivalenciaTotal,
-                                    umidade,
-                                    categoria,
-                                    peneiraSubcategoria,
-                                    grupoBebida,
-                                    subClassificacaoBebida,
-                                    classeBebida,
-                                    aparelho,
-                                    subcategoria,
-                                    tipo,
-                                    postoServico,
-                                    classificadorMapa,
-                                    peloPreparo,
-                                    pelaSeca,
-                                    peloAspecto,
-                                    torraArabica,
-                                    torraCanephora,
-                                    teorCafeina,
-                                    data: new Date().toISOString(),
-                                });
                             }}
                         >
-                            SALVAR E GERAR PDF
+                            SALVAR
                         </button>
                     </div>
                 </section>
