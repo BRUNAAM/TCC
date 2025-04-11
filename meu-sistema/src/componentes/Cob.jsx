@@ -4,6 +4,8 @@ import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "./Cob.css";
+import gerarPDFLaudo from '../utils/gerarPDFLaudo';
+
 
 const classificationTable = [
     { defeitos: 4, label: "2-5" },
@@ -486,7 +488,7 @@ const Cob = () => {
                                     placeholder="Informe o Posto de Serviço"
                                 />
                             </div>
-                        
+
                             <div className="campo">
                                 <label>Classificador/Reg. MAPA:</label>
                                 <input
@@ -599,7 +601,41 @@ const Cob = () => {
                                 </div>
                             </div>
                         </div>
-                        <button className="salvar" onClick={handleSalvarAvaliacao}>SALVAR</button>
+                        <button
+                            className="salvar"
+                            onClick={() => {
+                                handleSalvarAvaliacao();
+                                gerarPDFLaudo({
+                                    avaliador,
+                                    fornecedor: fornecedorSelecionado,
+                                    numeroAmostra,
+                                    observacoes,
+                                    defeitos,
+                                    equivalencias,
+                                    equivalenciaTotal,
+                                    umidade,
+                                    categoria,
+                                    peneiraSubcategoria,
+                                    grupoBebida,
+                                    subClassificacaoBebida,
+                                    classeBebida,
+                                    aparelho,
+                                    subcategoria,
+                                    tipo,
+                                    postoServico,
+                                    classificadorMapa,
+                                    peloPreparo,
+                                    pelaSeca,
+                                    peloAspecto,
+                                    torraArabica,
+                                    torraCanephora,
+                                    teorCafeina,
+                                    data: new Date().toISOString(),
+                                });
+                            }}
+                        >
+                            SALVAR E GERAR PDF
+                        </button>
                     </div>
                 </section>
             </div>
