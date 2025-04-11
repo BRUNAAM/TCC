@@ -203,7 +203,7 @@ textarea {
     .campo input,
     .campo select,
     textarea {
-        font-size: 0.95rem;
+        font-size: 15px;
     }
 
     .fechar {
