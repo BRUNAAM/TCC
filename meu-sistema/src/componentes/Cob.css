@@ -11,7 +11,8 @@ body,
     background-color: #032B43;
     color: #ffffff;
 }
-h5{
+
+h5 {
     font-size: 15px;
 }
 
@@ -250,4 +251,29 @@ textarea {
         grid-template-columns: 1fr;
         /* 1 coluna no celular */
     }
+}
+
+@media print {
+
+    .salvar,
+    .fechar {
+        display: none !important;
+    }
+}
+
+#avaliacao-completa {
+    width: 210mm;
+    min-height: 297mm;
+    margin: auto;
+    padding: 20mm;
+    background: white;
+    box-sizing: border-box;
+    font-family: "Times New Roman", serif;
+    font-weight: bold;
+    text-align: justify; /* Ou center, se preferir */
+
+}
+
+.page-break {
+    page-break-before: always;
 }
