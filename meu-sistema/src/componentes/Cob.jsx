@@ -4,8 +4,6 @@ import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "./Cob.css";
-import { gerarPDF } from "../utils/gerarPDF";
-
 
 
 const classificationTable = [
@@ -602,7 +600,6 @@ const Cob = () => {
                                 </div>
                             </div>
                         </div>
-
                         <button
                             className="salvar"
                             onClick={() => {
@@ -611,16 +608,7 @@ const Cob = () => {
                         >
                             SALVAR
                         </button>
-
-                        <button
-                            className="salvar"
-                            onClick={() => gerarPDF("avaliacao-completa", `Avaliacao-${numeroAmostra || "sem-numero"}.pdf`)}>
-                            GERAR PDF
-                        </button>
-
-
                     </div>
-
                 </section>
             </div>
         </div>
