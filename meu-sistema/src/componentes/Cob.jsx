@@ -4,6 +4,8 @@ import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import "./Cob.css";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 
 const classificationTable = [
@@ -246,6 +248,7 @@ const Cob = () => {
         try {
             await addDoc(collection(db, "avaliacoes_cob"), avaliacao);
             alert("Avaliação salva com sucesso!");
+            handlePrintPDF();
         } catch (error) {
             console.error("Erro ao salvar avaliação:", error);
             alert("Erro ao salvar avaliação. Tente novamente mais tarde.");
@@ -253,7 +256,99 @@ const Cob = () => {
     };
 
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
-
+    
+    //
+    const handlePrintPDF = () => {
+        const docPDF = new jsPDF();
+    
+        const titulo = "Avaliação Física de Café - Método COB";
+        const pageWidth = docPDF.internal.pageSize.getWidth();
+        const textX = (pageWidth - docPDF.getTextWidth(titulo)) / 2;
+        docPDF.setFontSize(16);
+        docPDF.setFont("helvetica", "bold");
+        docPDF.text(titulo, textX, 20);
+    
+        const autoTableOptions = (config) => ({
+            ...config,
+            theme: "grid",
+            pageBreak: "avoid",
+            startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : 30,
+        });
+    
+        // 1. Identificação
+        autoTable(docPDF, autoTableOptions({
+            head: [["Identificação", "Valor"]],
+            body: [
+                ["Avaliador", avaliador || "—"],
+                ["Data", new Date().toLocaleDateString("pt-BR")],
+                ["Fornecedor", fornecedorSelecionado || "—"],
+                ["Nº Amostra", numeroAmostra || "—"],
+                ["Umidade", umidade || "—"],
+                ["Aparelho", aparelho || "—"],
+                ["Subcategoria", subcategoria || "—"],
+                ["Tipo", tipo || "—"],
+                ["Posto Serviço", postoServico || "—"],
+                ["Classificador MAPA", classificadorMapa || "—"],
+            ],
+        }));
+    
+        // 2. Defeitos
+        const defeitosBody = Object.entries(defeitos || {}).map(
+            ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
+        );
+    
+        autoTable(docPDF, autoTableOptions({
+            head: [["Defeito", "Quantidade", "Equivalência"]],
+            body: defeitosBody,
+        }));
+    
+        // 3. Totais
+        autoTable(docPDF, autoTableOptions({
+            body: [
+                ["Total de Defeitos", totalDefeitos],
+                ["Total Equivalência", equivalenciaTotal],
+                ["Tipo do Café", tipo || "—"],
+            ],
+            head: [],
+        }));
+    
+        // 4. Categoria
+        autoTable(docPDF, autoTableOptions({
+            head: [["Categoria", "Valor"]],
+            body: [
+                ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
+                ["Grupo da Bebida", grupoBebida || "—"],
+                ["Subclassificação", subClassificacaoBebida || "—"],
+                ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
+            ],
+        }));
+    
+        // 5. Laudo Técnico
+        autoTable(docPDF, autoTableOptions({
+            head: [["Laudo Técnico", "Valor"]],
+            body: [
+                ["Preparo", peloPreparo || "—"],
+                ["Seca", pelaSeca || "—"],
+                ["Aspecto", peloAspecto || "—"],
+                ["Torra Arábica", torraArabica || "—"],
+                ["Torra Canephora", torraCanephora || "—"],
+                ["Teor Cafeína", teorCafeina || "—"],
+            ],
+        }));
+    
+        // 6. Observações
+        autoTable(docPDF, autoTableOptions({
+            body: [["Observações", observacoes || "—"]],
+            head: [],
+        }));
+    
+        const blob = docPDF.output("blob");
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+    };
+    
+    //
+    
     return (
         <div id="avaliacao-completa">
             <div className="cob-container">

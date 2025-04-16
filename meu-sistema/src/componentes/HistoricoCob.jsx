@@ -6,6 +6,8 @@ import "./HistoricoCob.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Printer } from "lucide-react";
+import logo from "../assets/logopdf.png"; // Importa o logo
+
 
 const HistoricoCob = () => {
     const [avaliacoes, setAvaliacoes] = useState([]);
@@ -21,7 +23,6 @@ const HistoricoCob = () => {
                 id: doc.id,
                 ...doc.data(),
             }));
-            console.log(data)
             setAvaliacoes(data);
         }
     };
@@ -42,29 +43,56 @@ const HistoricoCob = () => {
         window.print();
     };
 
+const handlePrintPDF = async (id) => {
+    try {
+        const docRef = doc(db, "avaliacoes_cob", id);
+        const docSnap = await getDoc(docRef);
 
-    const handlePrintPDF = async (id) => {
-        try {
-            const docRef = doc(db, "avaliacoes_cob", id);
-            const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            alert("Documento não encontrado.");
+            return;
+        }
 
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const docPDF = new jsPDF();
-              
-                // Título centralizado
-                const titulo = "Avaliação Física de Café - Método COB";
-                const pageWidth = docPDF.internal.pageSize.getWidth();
-                const textX = (pageWidth - docPDF.getTextWidth(titulo)) / 2;
-                docPDF.setFontSize(16);
-                docPDF.setFont("helvetica", "bold");
-                docPDF.text(titulo, textX, 20);
-              
-                // Seção 1: Identificação
-                autoTable(docPDF, {
-                  startY: 30,
-                  head: [["Identificação", "Valor"]],
-                  body: [
+        const data = docSnap.data();
+        const img = new Image();
+        img.src = logo;
+
+        img.onload = () => {
+            const docPDF = new jsPDF();
+
+            // Margens compatíveis com autoTable
+            const marginX = 14;
+            const boxX = marginX;
+            const boxY = 10;
+            const boxWidth = 210 - 2 * marginX;
+            const boxHeight = 30;
+
+            // Quadro com logo + título
+            docPDF.setDrawColor(0);
+            docPDF.rect(boxX, boxY, boxWidth, boxHeight);
+
+            const logoWidth = 25;
+            const logoHeight = 25;
+            docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
+
+            const titulo = "Avaliação Física de Café - Método COB";
+            docPDF.setFontSize(14);
+            docPDF.setFont("helvetica", "bold");
+            docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
+
+            // Posição inicial para as tabelas
+            const autoTableOptions = (config) => ({
+                ...config,
+                theme: "grid",
+                pageBreak: "avoid",
+                margin: { left: marginX, right: marginX },
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+            });
+
+            // Seção 1: Identificação
+            autoTable(docPDF, autoTableOptions({
+                head: [["Identificação", "Valor"]],
+                body: [
                     ["Avaliador", data.avaliador || "—"],
                     ["Data", new Date(data.data).toLocaleDateString("pt-BR")],
                     ["Fornecedor", data.fornecedor || "—"],
@@ -75,82 +103,68 @@ const HistoricoCob = () => {
                     ["Tipo", data.tipo || "—"],
                     ["Posto Serviço", data.postoServico || "—"],
                     ["Classificador MAPA", data.classificadorMapa || "—"],
-                  ],
-                  theme: "grid", pageBreak: 'avoid'
-                });
-              
-                // Seção 2: Defeitos
-                const defeitosBody = Object.entries(data.defeitos || {}).map(
-                  ([nome, qtd]) => [nome, qtd, data.equivalencias?.[nome] || 0]
-                );
-              
-                autoTable(docPDF, {
-                  startY: docPDF.lastAutoTable.finalY + 10,
-                  head: [["Defeito", "Quantidade", "Equivalência"]],
-                  body: defeitosBody,
-                  theme: "grid", pageBreak: 'avoid'
-                });
-              
-                // Totais e tipo
-                autoTable(docPDF, {
-                  startY: docPDF.lastAutoTable.finalY + 10,
-                  body: [
+                ],
+            }));
+
+            // Seção 2: Defeitos
+            const defeitosBody = Object.entries(data.defeitos || {}).map(
+                ([nome, qtd]) => [nome, qtd, data.equivalencias?.[nome] || 0]
+            );
+
+            autoTable(docPDF, autoTableOptions({
+                head: [["Defeito", "Quantidade", "Equivalência"]],
+                body: defeitosBody,
+            }));
+
+            // Seção 3: Totais e tipo
+            autoTable(docPDF, autoTableOptions({
+                body: [
                     ["Total de Equivalência", data.equivalenciaTotal || 0],
                     ["Tipo do Café", data.tipo || "—"],
-                  ],
-                  head: [],
-                  theme: "grid",pageBreak: 'avoid'
-                });
-              
-                // Categoria
-                autoTable(docPDF, {
-                  startY: docPDF.lastAutoTable.finalY + 10,
-                  head: [["Categoria", "Valor"]],
-                  body: [
+                ],
+                head: [],
+            }));
+
+            // Seção 4: Categoria
+            autoTable(docPDF, autoTableOptions({
+                head: [["Categoria", "Valor"]],
+                body: [
                     ["Peneira/Subcategoria", data.peneiraSubcategoria?.join(", ") || "—"],
                     ["Grupo da Bebida", data.grupoBebida || "—"],
                     ["Subclassificação", data.subClassificacaoBebida || "—"],
                     ["Classe da Bebida", data.classeBebida?.join(", ") || "—"],
-                  ],
-                  theme: "grid",pageBreak: 'avoid'
-                });
-              
-                // Laudo Técnico
-                autoTable(docPDF, {
-                  startY: docPDF.lastAutoTable.finalY + 10,
-                  head: [["Laudo Técnico", "Valor"]],
-                  body: [
+                ],
+            }));
+
+            // Seção 5: Laudo Técnico
+            autoTable(docPDF, autoTableOptions({
+                head: [["Laudo Técnico", "Valor"]],
+                body: [
                     ["Preparo", data.peloPreparo || "—"],
                     ["Seca", data.pelaSeca || "—"],
                     ["Aspecto", data.peloAspecto || "—"],
                     ["Torra Arábica", data.torraArabica || "—"],
                     ["Torra Canephora", data.torraCanephora || "—"],
                     ["Teor Cafeína", data.teorCafeina || "—"],
-                  ],
-                  theme: "grid",pageBreak: 'avoid'
-                });
-              
-                // Observações
-                autoTable(docPDF, {
-                  startY: docPDF.lastAutoTable.finalY + 10,
-                  body: [["Observações", data.observacoes || "—"]],
-                  theme: "grid",pageBreak: 'avoid',
-                  head: [],
-                });
-              
-                // Abrir PDF
-                const blob = docPDF.output("blob");
-                const url = URL.createObjectURL(blob);
-                window.open(url, "_blank");
-              } else {
-                alert("Documento não encontrado.");
-              }
-              
-        } catch (error) {
-            console.error("Erro ao gerar PDF:", error);
-            alert("Erro ao gerar PDF.");
-        }
-    };
+                ],
+            }));
+
+            // Seção 6: Observações
+            autoTable(docPDF, autoTableOptions({
+                body: [["Observações", data.observacoes || "—"]],
+                head: [],
+            }));
+
+            // Abrir PDF em nova aba
+            const blob = docPDF.output("blob");
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
+        };
+    } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        alert("Erro ao gerar PDF.");
+    }
+};
 
     return (
         <div className="historico-cob-container">
@@ -189,9 +203,6 @@ const HistoricoCob = () => {
                                     </button>
                                 </td>
                                 <td>
-                                    <button className="botao-excluir" onClick={() => handleDelete(id)}>
-                                        EXCLUIR
-                                    </button>
                                     <button className="botao-imprimir-individual" onClick={() => handlePrintPDF(id)}>
                                         <Printer size={16} /> {/* ícone opcional */}
                                     </button>
