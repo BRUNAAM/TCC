@@ -101,6 +101,7 @@ const Cob = () => {
     const [classeBebida, setClasseBebida] = useState([]);
     const [aparelho, setAparelho] = useState("");
     const [subcategoria, setSubcategoria] = useState("");
+    const [tipoCafe, setTipoCafe] = useState({ grupo: "", tamanho: "" });
     const [postoServico, setPostoServico] = useState("");
     const [classificadorMapa, setClassificadorMapa] = useState("");
     const [peloPreparo, setPeloPreparo] = useState("");
@@ -206,8 +207,8 @@ const Cob = () => {
             return;
         }
 
-        if (!fornecedorSelecionado || !numeroAmostra || !umidade) {
-            alert("Preencha todos os campos obrigatórios (Fornecedor, Nº Amostra, Umidade).");
+        if (!fornecedorSelecionado || !numeroAmostra || !umidade || !classificadorMapa) {
+            alert("Preencha todos os campos obrigatórios: Fornecedor, Nº Amostra, Umidade e Classificador/Reg. MAPA.");
             return;
         }
 
@@ -234,6 +235,7 @@ const Cob = () => {
             aparelho,
             subcategoria,
             tipo,
+            tipoCafe: tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "",
             postoServico,
             classificadorMapa,
             peloPreparo,
@@ -256,25 +258,27 @@ const Cob = () => {
     };
 
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
-    
+
     //
     const handlePrintPDF = () => {
         const docPDF = new jsPDF();
-    
+
+
+
         const titulo = "Avaliação Física de Café - Método COB";
         const pageWidth = docPDF.internal.pageSize.getWidth();
         const textX = (pageWidth - docPDF.getTextWidth(titulo)) / 2;
         docPDF.setFontSize(16);
         docPDF.setFont("helvetica", "bold");
         docPDF.text(titulo, textX, 20);
-    
+
         const autoTableOptions = (config) => ({
             ...config,
             theme: "grid",
             pageBreak: "avoid",
             startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : 30,
         });
-    
+
         // 1. Identificação
         autoTable(docPDF, autoTableOptions({
             head: [["Identificação", "Valor"]],
@@ -287,21 +291,22 @@ const Cob = () => {
                 ["Aparelho", aparelho || "—"],
                 ["Subcategoria", subcategoria || "—"],
                 ["Tipo", tipo || "—"],
+                ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
                 ["Posto Serviço", postoServico || "—"],
                 ["Classificador MAPA", classificadorMapa || "—"],
             ],
         }));
-    
+
         // 2. Defeitos
         const defeitosBody = Object.entries(defeitos || {}).map(
             ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
         );
-    
+
         autoTable(docPDF, autoTableOptions({
             head: [["Defeito", "Quantidade", "Equivalência"]],
             body: defeitosBody,
         }));
-    
+
         // 3. Totais
         autoTable(docPDF, autoTableOptions({
             body: [
@@ -311,7 +316,7 @@ const Cob = () => {
             ],
             head: [],
         }));
-    
+
         // 4. Categoria
         autoTable(docPDF, autoTableOptions({
             head: [["Categoria", "Valor"]],
@@ -322,7 +327,7 @@ const Cob = () => {
                 ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
             ],
         }));
-    
+
         // 5. Laudo Técnico
         autoTable(docPDF, autoTableOptions({
             head: [["Laudo Técnico", "Valor"]],
@@ -335,20 +340,40 @@ const Cob = () => {
                 ["Teor Cafeína", teorCafeina || "—"],
             ],
         }));
-    
+
         // 6. Observações
         autoTable(docPDF, autoTableOptions({
             body: [["Observações", observacoes || "—"]],
             head: [],
         }));
-    
+
+
+
+
+        // 7. Assinatura do Avaliador
+        docPDF.setFont("helvetica", "normal");
+        docPDF.setFontSize(12);
+
+        const assinaturaY = docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 30 : 270;
+
+        // Assinatura centralizada com linha menor
+        const linhaLargura = 80; // largura da linha da assinatura
+        const linhaInicioX = (pageWidth - linhaLargura) / 2;
+
+        docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
+
+        // Centralizar textos abaixo da linha
+        docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
+        docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 14, { align: "center" });
+
+        // Gerar e abrir PDF
         const blob = docPDF.output("blob");
         const url = URL.createObjectURL(blob);
         window.open(url, "_blank");
     };
-    
+
     //
-    
+
     return (
         <div id="avaliacao-completa">
             <div className="cob-container">
@@ -457,20 +482,35 @@ const Cob = () => {
                             <div className="celula">
                                 <h5>CHATO</h5>
                                 {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                    <label key={tamanho}>
-                                        <input type="radio" name="chatoTamanho" value={tamanho} />
+                                    <label key={`chato-${tamanho}`}>
+                                        <input
+                                            type="radio"
+                                            name="tipoCafe"
+                                            value={tamanho}
+                                            checked={tipoCafe.grupo === "CHATO" && tipoCafe.tamanho === tamanho}
+                                            onChange={() => setTipoCafe({ grupo: "CHATO", tamanho })}
+                                        />
                                         {tamanho}
                                     </label>
                                 ))}
+
                             </div>
                             <div className="celula">
                                 <h5>MOCA</h5>
                                 {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                    <label key={tamanho}>
-                                        <input type="radio" name="mocaTamanho" value={tamanho} />
+                                    <label key={`moca-${tamanho}`}>
+                                        <input
+                                            type="radio"
+                                            name="tipoCafe"
+                                            value={tamanho}
+                                            checked={tipoCafe.grupo === "MOCA" && tipoCafe.tamanho === tamanho}
+                                            onChange={() => setTipoCafe({ grupo: "MOCA", tamanho })}
+                                        />
                                         {tamanho}
                                     </label>
                                 ))}
+
+
                             </div>
                             <div className="celula">
                                 <h5>GRUPO I: ARABICA</h5>
