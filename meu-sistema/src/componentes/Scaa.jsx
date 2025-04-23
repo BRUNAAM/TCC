@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import GraoCafe from "./GraoCafe";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import logo from "../assets/logopdf.png"; // se quiser incluir o logo
+
 
 
 const Scaa = () => {
@@ -36,7 +40,7 @@ const Scaa = () => {
     });
     const [qtdLeve, setQtdLeve] = useState(0);
     const [qtdGrave, setQtdGrave] = useState(0);
-
+    const totalDescontos = qtdLeve * 2 + qtdGrave * 4;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -127,9 +131,139 @@ const Scaa = () => {
             dataCriacao: new Date().toISOString()
         };
 
-        await addDoc(collection(db, "avaliacoes_scaa"), avaliacao);
-        alert("Avaliação SCAA salva com sucesso!");
+        try {
+            await addDoc(collection(db, "avaliacoes_scaa"), avaliacao);
+            alert("Avaliação salva com sucesso!");
+            handlePrintPDF();
+        } catch (error) {
+            console.error("Erro ao salvar avaliação:", error);
+            alert("Erro ao salvar avaliação. Tente novamente mais tarde.");
+        }
     };
+
+    const handlePrintPDF = () => {
+        const docPDF = new jsPDF();
+
+        // Cabeçalho com logo e título
+        const marginX = 14;
+        const boxX = marginX;
+        const boxY = 10;
+        const boxWidth = 210 - 2 * marginX;
+        const boxHeight = 30;
+
+        const img = new Image();
+        img.src = logo;
+
+        img.onload = () => {
+            docPDF.rect(boxX, boxY, boxWidth, boxHeight);
+            const logoWidth = 25;
+            const logoHeight = 25;
+            docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
+
+            const titulo = "Avaliação Sensorial de Café - Método SCAA";
+            docPDF.setFont("helvetica", "bold");
+            docPDF.setFontSize(14);
+            docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
+
+            const autoTableOptions = (config) => ({
+                ...config,
+                theme: "grid",
+                margin: { left: marginX, right: marginX },
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+            });
+
+            // Seção: Identificação
+            autoTable(docPDF, autoTableOptions({
+                head: [["Identificação", "Valor"]],
+                body: [
+                    ["Avaliador", avaliador || "—"],
+                    ["Data", new Date(data).toLocaleDateString("pt-BR")],
+                    ["Fornecedor", fornecedorSelecionado || "—"],
+                    ["Nº Amostra", numeroAmostra || "—"],
+                    ["Torra", torraSelecionada || "—"],
+                    [{ content: "Pontuação Final", styles: { fontStyle: 'bold' } }, { content: calcularPontuacaoFinal(), styles: { fontStyle: 'bold' } }],
+                    [{ content: "Notas Sensoriais", styles: { fontStyle: 'bold' } }, { content: notasSensorias || "—", styles: { fontStyle: 'bold' } }],
+                ],
+            }));
+
+
+            // Seção: Notas Sensoriais
+            // Seção: Notas Sensoriais (com observação de acidez logo após acidez)
+            const corpoNotas = [
+                ["Aroma / Fragrância", notas.AromaFragrancia],
+                ["Sabor", notas.sabor],
+                ["Finalização", notas.finalizacao],
+                ["Acidez", notas.acidez],
+            ];
+
+            if (obsAcidez) {
+                corpoNotas.push(["Tipo de Acidez", obsAcidez]);
+            }
+
+            corpoNotas.push(
+                ["Corpo", notas.corpo],
+                ["Equilíbrio", notas.equilibrio],
+                ["Avaliação Pessoal", notas.avaliacaoPessoal]
+            );
+
+            autoTable(docPDF, autoTableOptions({
+                head: [["Atributo Sensorial", "Nota"]],
+                body: corpoNotas,
+            }));
+
+            // Seção: Critérios Técnicos
+            const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
+
+            autoTable(docPDF, autoTableOptions({
+                head: [["Critério", "Valor"]],
+                body: [
+                    ["Dry", intensidades[dry] || "—"],
+                    ["Break", intensidades[breakValue] || "—"],
+                    ["Nível de Acidez", intensidades[nivelAcidez] || "—"],
+                    ["Nível de Corpo", intensidades[nivelCorpo] || "—"],
+                    ["Defeitos Leves", `-${qtdLeve * 2}`],
+                    ["Defeitos Graves", `-${qtdGrave * 4}`],
+                    ["Total de Pontos Descontados", `-${totalDescontos}`]
+                ],
+            }));
+
+
+            // Observações em nova página
+            docPDF.addPage(); // quebra de página
+
+            autoTable(docPDF, {
+                theme: "grid",
+                startY: 20,
+                margin: { left: marginX, right: marginX },
+                head: [["Observações", "Conteúdo"]],
+                body: [
+                    ["Observações Gerais", observacoes || "—"]
+                ],
+            });
+
+
+            // Campo de Assinatura
+            const assinaturaY = docPDF.lastAutoTable.finalY + 30;
+            const pageWidth = docPDF.internal.pageSize.getWidth();
+            const linhaLargura = 80;
+            const linhaInicioX = (pageWidth - linhaLargura) / 2;
+
+            // Linha de assinatura
+            docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
+
+            // Nome do avaliador abaixo da linha
+            docPDF.setFont("helvetica", "normal");
+            docPDF.setFontSize(12);
+            docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
+
+            docPDF.save(`avaliacao_scaa_${fornecedorSelecionado}_${numeroAmostra}.pdf`);
+        };
+
+
+    };
+
+
+
 
     const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
 
@@ -571,7 +705,7 @@ const Scaa = () => {
                         <label>Defeito Leve (-2):</label>
                         <input
                             type="number"
-                            min= "0"
+                            min="0"
                             value={qtdLeve}
                             onChange={(e) => setQtdLeve(parseInt(e.target.value) || 0)}
                             placeholder="# cups"
@@ -597,7 +731,15 @@ const Scaa = () => {
                     <h3>Pontuação Final: {calcularPontuacaoFinal()}</h3>
                 </div>
 
-                <button className="salvar" onClick={handleSalvarAvaliacao}>SALVAR</button>
+                <button
+                    className="salvar"
+                    onClick={() => {
+                        handleSalvarAvaliacao();
+                    }}
+                >
+                    SALVAR
+                </button>
+
             </div>
         </div>
     );
