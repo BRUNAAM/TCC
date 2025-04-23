@@ -46,29 +46,11 @@ body {
 
 
 
-.botao-imprimir {
-    background: linear-gradient(to bottom, green, black);
-    color: white;
-}
-
-
-
 /* ===== Tabela de Avaliações ===== */
 .avaliacoes-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 15px;
-}
-
-.botao-excluir {
-    background: linear-gradient(to bottom, red, #310603);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
 

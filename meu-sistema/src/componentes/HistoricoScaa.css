@@ -55,22 +55,7 @@
     font-family: 'Times New Roman', Times, serif;
 }
 
-.botao-imprimir {
-    background: linear-gradient(to bottom, green, black);
-    color: #ffffff;
-}
 
-.botao-excluir {
-    background: linear-gradient(to bottom, red, #310603);
-    color: rgb(0, 0, 0);
-    border: none;
-    padding: 6px 12px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-family: 'Times New Roman', Times, serif;
-}
 
 /* ===== Mensagem de vazio ===== */
 .sem-avaliacoes {

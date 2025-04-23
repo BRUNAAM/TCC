@@ -6,7 +6,9 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import GraoCafe from "./GraoCafe";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import logo from "../assets/logopdf.png"; // se quiser incluir o logo
+import logo from "../assets/logopdf.png";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 
 
@@ -303,17 +305,28 @@ const Scaa = () => {
                 <input type="date" value={data} disabled />
 
                 <label>Fornecedor:</label>
-                <select
-                    value={fornecedorSelecionado}
-                    onChange={(e) => setFornecedorSelecionado(e.target.value)}
-                >
-                    <option value="">Selecione um fornecedor</option>
-                    {fornecedores.map((f) => (
-                        <option key={f.id} value={f.nome}>
-                            {f.nome}
-                        </option>
-                    ))}
-                </select>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <select
+                        value={fornecedorSelecionado}
+                        onChange={(e) => setFornecedorSelecionado(e.target.value)}
+                    >
+                        <option value="">Selecione um fornecedor</option>
+                        {fornecedores.map((f) => (
+                            <option key={f.id} value={f.nome}>
+                                {f.nome}
+                            </option>
+                        ))}
+                    </select>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/fornecedores")}
+                        className="botao-icone"
+                    >
+                        <i className="bi bi-folder-plus"></i>
+                        Novo
+                    </button>
+                </div>
+
 
                 <label>N° da Amostra:</label>
                 <input
@@ -495,7 +508,7 @@ const Scaa = () => {
                             onClick={() => setMostrarTiposAcidez(!mostrarTiposAcidez)}
                             title="Ver tipos de acidez"
                         >
-                            ℹ️
+                            <i className="bi bi-info-circle-fill"></i>
                         </button>
                     </div>
 

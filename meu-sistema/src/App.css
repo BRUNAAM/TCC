@@ -1,14 +1,17 @@
 /* index.css ou App.css */
-html, body, #root {
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
     font-family: 'Times New Roman', Times, serif;
     font-weight: bold;
-    background-color: #032B43; /* ou outro fundo padrão do sistema */
-  }
-  
+    background-color: #032B43;
+    /* ou outro fundo padrão do sistema */
+}
+
 
 .fechar {
     background: linear-gradient(to bottom, red, #310603);
@@ -65,3 +68,65 @@ input {
     font-size: 18px;
 }
 
+.botao-icone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: linear-gradient(to bottom, #FFBA08, #303103);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.botao-icone:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.botao-icone i {
+    font-size: 1rem;
+}
+
+
+/* ===== Estilo base para todos os botões de ação ===== */
+.botao-acao {
+    width: px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease;
+    padding: 0;
+}
+
+/* ===== Botão Excluir ===== */
+.botao-excluir {
+    background: linear-gradient(to bottom, red, #310603);
+    color: white;
+}
+
+.botao-excluir:hover {
+    background: linear-gradient(to bottom, #ff1a1a, #220000);
+    transform: scale(1.1);
+}
+
+/* ===== Botão Imprimir ===== */
+.botao-imprimir-individual {
+    background: linear-gradient(to bottom, #0d6efd, #032B43);
+    color: white;
+}
+
+.botao-imprimir-individual:hover {
+    background: linear-gradient(to bottom, #2196f3, #000814);
+    transform: scale(1.1);
+}

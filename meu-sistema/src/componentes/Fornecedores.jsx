@@ -31,7 +31,16 @@ const Fornecedores = () => {
             const fornecedorRef = doc(db, "fornecedores", idEdicao);
             await updateDoc(fornecedorRef, { nome, rua, bairro, cidade, cep, telefone });
         } else {
-            await addDoc(collection(db, "fornecedores"), { nome, rua, bairro, cidade, cep, telefone });
+            await addDoc(collection(db, "fornecedores"), {
+                nome,
+                rua,
+                bairro,
+                cidade,
+                cep,
+                telefone
+            });
+
+            navigate("/cob", { state: { fornecedorRecemCadastrado: nome } });
         }
 
         limparCampos();

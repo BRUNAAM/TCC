@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import "./HistoricoScaa.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Printer } from "lucide-react";
 import logo from "../assets/logopdf.png";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 
 const HistoricoScaa = () => {
@@ -59,30 +60,30 @@ const HistoricoScaa = () => {
 
             img.onload = () => {
                 const docPDF = new jsPDF();
-    
+
                 // Margens padrão do autoTable
                 const marginX = 14;
-    
+
                 // Cabeçalho: quadro com logo + título
                 const boxX = marginX;
                 const boxY = 10;
                 const boxWidth = 210 - 2 * marginX; // largura total da página A4 com margens
                 const boxHeight = 30;
-    
+
                 docPDF.setDrawColor(0); // cor da borda
                 docPDF.rect(boxX, boxY, boxWidth, boxHeight); // desenha o quadro
-    
+
                 // Logo alinhado à esquerda dentro do quadro
                 const logoWidth = 25;
                 const logoHeight = 25;
                 docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
-    
+
                 // Título ao lado do logo
                 const titulo = "Avaliação Sensorial de Café - Método SCAA";
                 docPDF.setFontSize(14);
                 docPDF.setFont("helvetica", "bold");
                 docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
-    
+
                 // Configuração padrão para todas as tabelas
                 const autoTableOptions = (config) => ({
                     ...config,
@@ -104,8 +105,8 @@ const HistoricoScaa = () => {
                         [
                             { content: "Pontuação Final" },
                             { content: data.pontuacaoFinal || "—", styles: { fontStyle: "bold" } }
-                          ],
-                                              ],
+                        ],
+                    ],
                 }));
 
                 // Seção: Notas Sensoriais principais
@@ -192,15 +193,15 @@ const HistoricoScaa = () => {
                                 <td>{notasSensorias}</td>
                                 <td>{obsAcidez}</td>
                                 <td>{pontuacaoFinal}</td>
-                                <td>
-                                    <button className="botao-excluir" onClick={() => handleDelete(id)}>
-                                        EXCLUIR
-                                    </button>
-                                </td>
-                                <td>
-                                    <button className="botao-imprimir-individual" onClick={() => handlePrintPDF(id)}>
-                                        <Printer size={16} /> {/* ícone opcional */}
-                                    </button>
+                                <td className="celula-acoes">
+                                    <div className="acoes-botoes">
+                                        <button className="botao-excluir" onClick={() => handleDelete(id)} title="Excluir avaliação">
+                                            <i className="bi bi-trash3"></i>
+                                        </button>
+                                        <button className="botao-imprimir-individual" onClick={() => handlePrintPDF(id)} title="Imprimir avaliação">
+                                            <i className="bi bi-printer"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

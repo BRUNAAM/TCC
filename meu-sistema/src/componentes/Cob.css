@@ -103,6 +103,7 @@ textarea {
     background-color: #ffffff;
     color: #000000;
     font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
 }
 
 /* Defeitos */
@@ -203,7 +204,7 @@ textarea {
     .campo input,
     .campo select,
     textarea {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .fechar {

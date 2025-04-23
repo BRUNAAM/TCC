@@ -6,6 +6,7 @@ import { getAuth } from "firebase/auth";
 import "./Cob.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 
 const classificationTable = [
@@ -400,15 +401,30 @@ const Cob = () => {
                             </div>
                             <div className="campo">
                                 <label>Fornecedor / Produtor:</label>
-                                <select value={fornecedorSelecionado} onChange={(e) => setFornecedorSelecionado(e.target.value)}>
-                                    <option value="">Selecione um fornecedor</option>
-                                    {fornecedores.map((fornecedor) => (
-                                        <option key={fornecedor.id} value={fornecedor.nome}>
-                                            {fornecedor.nome}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                    <select
+                                        value={fornecedorSelecionado}
+                                        onChange={(e) => setFornecedorSelecionado(e.target.value)}
+                                    >
+                                        <option value="">Selecione um fornecedor</option>
+                                        {fornecedores.map((fornecedor) => (
+                                            <option key={fornecedor.id} value={fornecedor.nome}>
+                                                {fornecedor.nome}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/fornecedores")}
+                                        className="botao-icone"
+                                    >
+                                        <i className="bi bi-folder-plus"></i>
+                                        Novo
+                                    </button>
+
+                                </div>
                             </div>
+
                             <div className="campo">
                                 <label>Nº da Amostra:</label>
                                 <input
