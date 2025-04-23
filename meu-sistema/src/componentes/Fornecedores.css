@@ -15,12 +15,12 @@ body,
 
 /* Container principal */
 .fornecedores-container {
-    min-height: 100dvh;
     max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 20px;
+    margin: 40px auto;
+    padding: 20px;
     background-color: #032B43;
-
+    font-family: 'Times New Roman', Times, serif;
+    color: #ffffff;
 }
 
 /* Título */
@@ -77,7 +77,9 @@ body,
 .fornecedores-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    font-size: 15px;
+    min-width: 800px;
+    border: 1px solid #ffffff;
 }
 
 .fornecedores-table th,
@@ -86,6 +88,7 @@ body,
     border: 1px solid #ffffff;
     text-align: center;
     font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 .fornecedores-table th {
@@ -95,25 +98,7 @@ body,
     color: #FFBA08;
 }
 
-.fornecedores-table button {
-    margin: 0 5px;
-    padding: 6px 10px;
-    font-size: 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
 
-.editar {
-    background: linear-gradient(to bottom, #13b644, #0e4e09);
-    color: #ffffff;
-}
-
-.excluir {
-    background: linear-gradient(to bottom, #b61313, #4e0909);
-    color: #ffffff;
-}
 
 /* Responsividade */
 @media (max-width: 768px) {
@@ -159,55 +144,11 @@ body,
     }
 }
 
-
-/* ===== Tabela com rolagem horizontal em telas pequenas ===== */
+/* Tabela com rolagem horizontal */
 .tabela-responsiva {
     width: 100%;
     overflow-x: auto;
     margin-top: 20px;
     border-radius: 8px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Largura mínima para scroll e visual consistente */
-.fornecedores-table {
-    min-width: 800px;
-    width: 100%;
-    border-collapse: collapse;
-    color: #ffffff;
-}
-
-.fornecedores-table th,
-.fornecedores-table td {
-    padding: 12px 10px;
-    border: 1px solid #ffffff;
-    text-align: center;
-    font-size: 15px;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-.fornecedores-table th {
-    background-color: #032B43;
-    color: #FFBA08;
-    text-transform: uppercase;
-}
-
-/* Botões da tabela */
-.fornecedores-table button {
-    padding: 6px 10px;
-    font-size: 14px;
-    margin: 2px;
-    border-radius: 6px;
-    cursor: pointer;
-    border: none;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
-}
-
-.editar {
-    background: linear-gradient(to bottom, #13b644, #0e4e09);
-}
-
-.excluir {
-    background: linear-gradient(to bottom, #b61313, #4e0909);
 }

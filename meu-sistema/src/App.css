@@ -94,25 +94,39 @@ input {
 
 
 /* ===== Estilo base para todos os botões de ação ===== */
-.botao-acao {
-    width: px;
+.celula-acoes {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.acoes-botoes {
+    display: flex;
+    flex-direction: row;
+    /* lado a lado */
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* espaço entre os botões */
+}
+
+.acoes-botoes button {
+    width: 40px;
     height: 40px;
-    border: none;
-    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-family: 'Times New Roman', Times, serif;
-    cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease;
     padding: 0;
 }
+
+
 
 /* ===== Botão Excluir ===== */
 .botao-excluir {
     background: linear-gradient(to bottom, red, #310603);
     color: white;
+    width: 40px;
+    height: 40px;
 }
 
 .botao-excluir:hover {
@@ -124,9 +138,81 @@ input {
 .botao-imprimir-individual {
     background: linear-gradient(to bottom, #0d6efd, #032B43);
     color: white;
+    width: 40px;
+    height: 40px;
 }
 
 .botao-imprimir-individual:hover {
     background: linear-gradient(to bottom, #2196f3, #000814);
+    transform: scale(1.1);
+}
+
+
+.botao-voltar:hover,
+.botao-imprimir:hover {
+    transform: scale(1.05);
+}
+
+.botao-editar {
+    background: linear-gradient(to bottom, #ffc107, #ff8800);
+    /* laranja */
+    border: none;
+    color: #000;
+    font-size: 1.2rem;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.botao-editar:hover {
+    background: linear-gradient(to bottom, #ffb300, #ff6f00);
+    transform: scale(1.1);
+}
+
+.botao-excluir,
+.botao-imprimir-individual,
+.botao-editar {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+}
+
+
+
+.botao-editar {
+    background: linear-gradient(to bottom, #FFA500, #663300);
+    color: #fff;
+}
+
+.botao-editar:hover {
+    transform: scale(1.1);
+    background: linear-gradient(to bottom, #FFC107, #4d2600);
+}
+
+.fechar,
+.botao-voltar {
+    background: linear-gradient(to bottom, #29a317, #000000);
+    color: white;
+    border: none;
+    font-size: 20px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.fechar:hover,
+.botao-voltar:hover {
     transform: scale(1.1);
 }

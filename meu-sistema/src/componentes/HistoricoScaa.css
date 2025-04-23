@@ -1,4 +1,11 @@
-/* ===== Container principal ===== */
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+}
+
 .historico-scaa-container {
     max-width: 1000px;
     margin: 40px auto;
@@ -45,6 +52,7 @@
     border-collapse: collapse;
     font-size: 15px;
 }
+
 
 .avaliacoes-table th,
 .avaliacoes-table td {

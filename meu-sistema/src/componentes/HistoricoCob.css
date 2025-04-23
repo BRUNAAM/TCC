@@ -11,8 +11,8 @@ body {
     margin: 40px auto;
     padding: 20px;
     background-color: #032B43;
-    color: #ffffff;
     font-family: 'Times New Roman', Times, serif;
+    color: #ffffff;
 }
 
 /* ===== Cabeçalho ===== */
@@ -35,12 +35,13 @@ body {
 .botoes-topo button {
     padding: 10px 16px;
     margin-left: 10px;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: 0.3s;
+    font-family: 'Times New Roman', Times, serif;
 }
 
 
@@ -61,6 +62,20 @@ body {
     text-align: center;
     margin-top: 40px;
 }
+
+.avaliacoes-table th,
+.avaliacoes-table td {
+    border: 1px solid #ffffff;
+    padding: 10px;
+    text-align: center;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+th {
+    color: #FFBA08;
+}
+
 
 /* ===== Responsividade ===== */
 
@@ -108,7 +123,7 @@ body,
     transition: 0.3s ease;
 }
 
-/* ===== Adaptação para telas menores ===== */
+/* ===== Responsividade geral ===== */
 @media (max-width: 768px) {
     .historico-header {
         flex-direction: row;
@@ -120,10 +135,6 @@ body,
         font-size: 14px;
         padding: 8px 12px;
     }
-
-    .historico-header h2 {
-        font-size: 20px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -133,14 +144,14 @@ body,
     }
 
     .historico-header h2 {
-        font-size: 18px;
+        font-size: 20px;
     }
 }
 
-/* ===== Tabela adaptável com rolagem ===== */
+/* ===== Adaptação da tabela para telas pequenas ===== */
 .avaliacoes-table {
-    display: block;
     overflow-x: auto;
+    display: block;
     width: 100%;
 }
 
@@ -150,10 +161,3 @@ body,
     border-collapse: collapse;
 }
 
-.avaliacoes-table th,
-.avaliacoes-table td {
-    border: 1px solid #ffffff;
-    padding: 10px;
-    text-align: center;
-    font-size: 15px;
-}

@@ -3,7 +3,7 @@ import { db } from "../config/firebase";
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import "./Fornecedores.css";
 import { useNavigate } from "react-router-dom";
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Fornecedores = () => {
     const [fornecedores, setFornecedores] = useState([]);
@@ -14,6 +14,8 @@ const Fornecedores = () => {
     const [cep, setCep] = useState("");
     const [telefone, setTelefone] = useState("");
     const [idEdicao, setIdEdicao] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         carregarFornecedores();
@@ -73,12 +75,17 @@ const Fornecedores = () => {
         setCep("");
         setTelefone("");
     };
-    const navigate = useNavigate();
 
     return (
         <div className="fornecedores-container">
-            <button className="fechar" onClick={() => navigate(-1)}>✖</button>
-            <h2>Cadastro de Produtores / Fornecedores</h2>
+            <div className="historico-header">
+                <h2>Cadastro de Produtores / Fornecedores</h2>
+                <div className="botoes-topo">
+                    <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
+                        <i className="bi bi-arrow-return-left"></i>
+                    </button>
+                </div>
+            </div>
 
             <form onSubmit={handleCadastro} className="fornecedor-form">
                 <input type="text" placeholder="Nome Completo" value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -92,8 +99,8 @@ const Fornecedores = () => {
                     {idEdicao && <button type="button" className="cancelar" onClick={limparCampos}>CANCELAR</button>}
                 </div>
             </form>
-            <div className="tabela-responsiva">
 
+            <div className="tabela-responsiva">
                 <table className="fornecedores-table">
                     <thead>
                         <tr>
@@ -115,9 +122,15 @@ const Fornecedores = () => {
                                 <td>{fornecedor.cidade}</td>
                                 <td>{fornecedor.cep}</td>
                                 <td>{fornecedor.telefone}</td>
-                                <td>
-                                    <button className="editar" onClick={() => handleEditar(fornecedor)}>EDITAR</button>
-                                    <button className="excluir" onClick={() => handleExcluir(fornecedor.id)}>EXCLUIR</button>
+                                <td className="celula-acoes">
+                                    <div className="acoes-botoes">
+                                        <button className="botao-editar" onClick={() => handleEditar(fornecedor)} title="Editar fornecedor">
+                                            <i className="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button className="botao-excluir" onClick={() => handleExcluir(fornecedor.id)} title="Excluir fornecedor">
+                                            <i className="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

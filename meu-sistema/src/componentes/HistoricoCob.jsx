@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import "./HistoricoCob.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Printer } from "lucide-react";
 import logo from "../assets/logopdf.png"; // Importa o logo
 
 
@@ -171,8 +170,12 @@ const HistoricoCob = () => {
             <div className="historico-header">
                 <h2>Histórico de Avaliações COB</h2>
                 <div className="botoes-topo">
-                    <button className="botao-voltar" onClick={() => navigate(-1)}>VOLTAR</button>
-                    <button className="botao-imprimir" onClick={handlePrint}>IMPRIMIR</button>
+                    <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
+                        <i className="bi bi-arrow-return-left"></i>
+                    </button>
+                    <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
+                        <i className="bi bi-printer"></i>
+                    </button>
                 </div>
             </div>
 
@@ -197,14 +200,17 @@ const HistoricoCob = () => {
                                 <td>{numeroAmostra}</td>
                                 <td>{tipo}</td> {/* mostra o tipo do café */}
                                 <td>{grupoBebida ? `${grupoBebida} - ${subClassificacaoBebida}` : ""}</td> {/* tipo de bebida */}
-                                <div className="acoes-botoes">
-                                    <button className="botao-excluir" onClick={() => handleDelete(id)} title="Excluir avaliação">
-                                        <i className="bi bi-trash3"></i>
-                                    </button>
-                                    <button className="botao-imprimir-individual" onClick={() => handlePrintPDF(id)} title="Imprimir avaliação">
-                                        <i className="bi bi-printer"></i>
-                                    </button>
-                                </div>
+                                <td className="celula-acoes">
+                                    <div className="acoes-botoes">
+                                        <button className="botao-excluir" onClick={() => handleDelete(id)} title="Excluir avaliação">
+                                            <i className="bi bi-trash3"></i>
+                                        </button>
+                                        <button className="botao-imprimir-individual" onClick={() => handlePrintPDF(id)} title="Imprimir avaliação">
+                                            <i className="bi bi-printer"></i>
+                                        </button>
+                                    </div>
+                                </td>
+
                             </tr>
                         ))}
                     </tbody>

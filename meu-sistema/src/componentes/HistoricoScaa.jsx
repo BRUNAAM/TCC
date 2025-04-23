@@ -166,8 +166,12 @@ const HistoricoScaa = () => {
             <div className="historico-header">
                 <h2>Histórico de Avaliações SCAA</h2>
                 <div className="botoes-topo">
-                    <button className="botao-voltar" onClick={() => navigate(-1)}>VOLTAR</button>
-                    <button className="botao-imprimir" onClick={handlePrint}>IMPRIMIR</button>
+                    <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
+                        <i className="bi bi-arrow-return-left"></i>
+                    </button>
+                    <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
+                        <i className="bi bi-printer"></i>
+                    </button>
                 </div>
             </div>
 
