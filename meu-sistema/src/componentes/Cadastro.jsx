@@ -4,21 +4,28 @@ import { auth, db } from "../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext"; // topo do arquivo
+import { sendEmailVerification } from "firebase/auth";
+
+
 
 const Cadastro = () => {
+    const { setUsuario } = useUser(); // dentro do componente Cadastro
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
     const validarCampos = () => {
         if (!nome.trim()) return "O nome não pode estar vazio.";
-        if (!email.includes("@")) return "Digite um e-mail válido.";
-        if (senha.length < 6) return "A senha deve ter pelo menos 6 caracteres.";
-        return null;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Digite um e-mail válido.";
+        if (!/(?=.*\d)(?=.*[a-zA-Z]).{6,}/.test(senha)) {
+            return "A senha deve conter pelo menos 6 caracteres, incluindo letras e números.";
+        }
+        return null; // ← ESSENCIAL!
     };
+
 
     const handleCadastro = async (e) => {
         e.preventDefault();
@@ -36,25 +43,32 @@ const Cadastro = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
 
-            await updateProfile(user, { displayName: nome });
+            const nomeLimpo = nome.trim();
+            const emailLimpo = email.trim();
+
+            await updateProfile(user, { displayName: nomeLimpo });
+            await sendEmailVerification(user);
 
             await setDoc(doc(db, "usuarios", user.uid), {
-                nome,
-                email,
+                nome: nomeLimpo,
+                email: emailLimpo,
                 dataCadastro: new Date().toISOString(),
             });
 
-            localStorage.setItem("usuarioNome", nome);
+            setUsuario({ nome: nomeLimpo, email: emailLimpo, uid: user.uid });
 
-            alert("Cadastro realizado com sucesso!");
+            setTimeout(() => {
+                alert("Cadastro realizado com sucesso! Verifique seu e-mail para confirmar sua conta.");
+                navigate("/login");
+            }, 300);
 
             // Limpa os campos
             setNome("");
             setEmail("");
             setSenha("");
+        }
 
-            navigate("/login");
-        } catch (error) {
+        catch (error) {
             console.error("Erro no cadastro:", error);
             switch (error.code) {
                 case "auth/email-already-in-use":
@@ -75,7 +89,6 @@ const Cadastro = () => {
     };
 
     const handleClose = () => navigate(-1);
-
     return (
         <div className="cadastro-container">
             <div className="cadastro-box">
@@ -119,7 +132,7 @@ const Cadastro = () => {
                         {loading ? "Cadastrando..." : "SALVAR"}
                     </button>
 
-                    {erro && <p className="erro">{erro}</p>}
+                    {erro && <p className="erro" aria-live="assertive">{erro}</p>}
                 </form>
             </div>
         </div>

@@ -7,6 +7,9 @@ import "./Cob.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import logo from "../assets/logopdf.png";
+
+
 
 
 const classificationTable = [
@@ -259,121 +262,134 @@ const Cob = () => {
     };
 
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
-
-    //
     const handlePrintPDF = () => {
         const docPDF = new jsPDF();
 
+        const marginX = 14;
+        const boxX = marginX;
+        const boxY = 10;
+        const boxWidth = 210 - 2 * marginX;
+        const boxHeight = 30;
 
+        const img = new Image();
+        img.src = logo;
+        img.onload = () => {
+            docPDF.setFont("times", "normal");
+            docPDF.setTextColor(0, 0, 0);
 
-        const titulo = "Avaliação Física de Café - Método COB";
-        const pageWidth = docPDF.internal.pageSize.getWidth();
-        const textX = (pageWidth - docPDF.getTextWidth(titulo)) / 2;
-        docPDF.setFontSize(16);
-        docPDF.setFont("helvetica", "bold");
-        docPDF.text(titulo, textX, 20);
+            docPDF.rect(boxX, boxY, boxWidth, boxHeight); // caixa de cabeçalho
+            const logoWidth = 25;
+            const logoHeight = 25;
+            const titulo = "Avaliação Física de Café - Método COB";
 
-        const autoTableOptions = (config) => ({
-            ...config,
-            theme: "grid",
-            pageBreak: "avoid",
-            startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : 30,
-        });
+            // Centraliza logo + texto juntos
+            const tituloWidth = docPDF.getTextWidth(titulo);
+            const spacing = 5;
+            const contentWidth = logoWidth + spacing + tituloWidth;
+            const startX = (docPDF.internal.pageSize.getWidth() - contentWidth) / 2;
+            const centerY = boxY + boxHeight / 2;
 
-        // 1. Identificação
-        autoTable(docPDF, autoTableOptions({
-            head: [["Identificação", "Valor"]],
-            body: [
-                ["Avaliador", avaliador || "—"],
-                ["Data", new Date().toLocaleDateString("pt-BR")],
-                ["Fornecedor", fornecedorSelecionado || "—"],
-                ["Nº Amostra", numeroAmostra || "—"],
-                ["Umidade", umidade || "—"],
-                ["Aparelho", aparelho || "—"],
-                ["Subcategoria", subcategoria || "—"],
-                ["Tipo", tipo || "—"],
-                ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
-                ["Posto Serviço", postoServico || "—"],
-                ["Classificador MAPA", classificadorMapa || "—"],
-            ],
-        }));
+            docPDF.addImage(img, "PNG", startX, centerY - logoHeight / 2, logoWidth, logoHeight);
+            docPDF.setFont("times", "bold");
+            docPDF.setFontSize(14);
+            docPDF.text(titulo, startX + logoWidth + spacing, centerY + 5);
 
-        // 2. Defeitos
-        const defeitosBody = Object.entries(defeitos || {}).map(
-            ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
-        );
+            const autoTableOptions = (config) => ({
+                ...config,
+                theme: "grid",
+                margin: { left: marginX, right: marginX },
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+                headStyles: {
+                    fillColor: [3, 43, 67],
+                    textColor: 255,
+                    fontStyle: "bold",
+                    font: "times",
+                },
+                bodyStyles: {
+                    font: "times",
+                    textColor: 0,
+                },
+            });
 
-        autoTable(docPDF, autoTableOptions({
-            head: [["Defeito", "Quantidade", "Equivalência"]],
-            body: defeitosBody,
-        }));
+            // Tabelas seguem aqui
+            autoTable(docPDF, autoTableOptions({
+                head: [["Identificação", "Valor"]],
+                body: [
+                    ["Avaliador", avaliador || "—"],
+                    ["Data", new Date().toLocaleDateString("pt-BR")],
+                    ["Fornecedor", fornecedorSelecionado || "—"],
+                    ["Nº Amostra", numeroAmostra || "—"],
+                    ["Umidade", umidade || "—"],
+                    ["Aparelho", aparelho || "—"],
+                    ["Subcategoria", subcategoria || "—"],
+                    ["Tipo", tipo || "—"],
+                    ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
+                    ["Posto Serviço", postoServico || "—"],
+                    ["Classificador MAPA", classificadorMapa || "—"],
+                ],
+            }));
 
-        // 3. Totais
-        autoTable(docPDF, autoTableOptions({
-            body: [
-                ["Total de Defeitos", totalDefeitos],
-                ["Total Equivalência", equivalenciaTotal],
-                ["Tipo do Café", tipo || "—"],
-            ],
-            head: [],
-        }));
+            const defeitosBody = Object.entries(defeitos || {}).map(
+                ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
+            );
 
-        // 4. Categoria
-        autoTable(docPDF, autoTableOptions({
-            head: [["Categoria", "Valor"]],
-            body: [
-                ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
-                ["Grupo da Bebida", grupoBebida || "—"],
-                ["Subclassificação", subClassificacaoBebida || "—"],
-                ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
-            ],
-        }));
+            autoTable(docPDF, autoTableOptions({
+                head: [["Defeito", "Quantidade", "Equivalência"]],
+                body: defeitosBody,
+            }));
 
-        // 5. Laudo Técnico
-        autoTable(docPDF, autoTableOptions({
-            head: [["Laudo Técnico", "Valor"]],
-            body: [
-                ["Preparo", peloPreparo || "—"],
-                ["Seca", pelaSeca || "—"],
-                ["Aspecto", peloAspecto || "—"],
-                ["Torra Arábica", torraArabica || "—"],
-                ["Torra Canephora", torraCanephora || "—"],
-                ["Teor Cafeína", teorCafeina || "—"],
-            ],
-        }));
+            autoTable(docPDF, autoTableOptions({
+                body: [
+                    ["Total de Defeitos", totalDefeitos],
+                    ["Total Equivalência", equivalenciaTotal],
+                    ["Tipo do Café", tipo || "—"],
+                ],
+                head: [],
+            }));
 
-        // 6. Observações
-        autoTable(docPDF, autoTableOptions({
-            body: [["Observações", observacoes || "—"]],
-            head: [],
-        }));
+            autoTable(docPDF, autoTableOptions({
+                head: [["Categoria", "Valor"]],
+                body: [
+                    ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
+                    ["Grupo da Bebida", grupoBebida || "—"],
+                    ["Subclassificação", subClassificacaoBebida || "—"],
+                    ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
+                ],
+            }));
 
+            autoTable(docPDF, autoTableOptions({
+                head: [["Laudo Técnico", "Valor"]],
+                body: [
+                    ["Preparo", peloPreparo || "—"],
+                    ["Seca", pelaSeca || "—"],
+                    ["Aspecto", peloAspecto || "—"],
+                    ["Torra Arábica", torraArabica || "—"],
+                    ["Torra Canephora", torraCanephora || "—"],
+                    ["Teor Cafeína", teorCafeina || "—"],
+                ],
+            }));
 
+            autoTable(docPDF, autoTableOptions({
+                body: [["Observações", observacoes || "—"]],
+                head: [],
+            }));
 
+            // Assinatura
+            const assinaturaY = docPDF.lastAutoTable.finalY + 30;
+            const pageWidth = docPDF.internal.pageSize.getWidth();
+            const linhaLargura = 80;
+            const linhaInicioX = (pageWidth - linhaLargura) / 2;
 
-        // 7. Assinatura do Avaliador
-        docPDF.setFont("helvetica", "normal");
-        docPDF.setFontSize(12);
-
-        const assinaturaY = docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 30 : 270;
-
-        // Assinatura centralizada com linha menor
-        const linhaLargura = 80; // largura da linha da assinatura
-        const linhaInicioX = (pageWidth - linhaLargura) / 2;
-
-        docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
-
-        // Centralizar textos abaixo da linha
-        docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
-        docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 14, { align: "center" });
-
-        // Gerar e abrir PDF
-        const blob = docPDF.output("blob");
-        const url = URL.createObjectURL(blob);
-        window.open(url, "_blank");
+            docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
+            docPDF.setFont("times", "normal");
+            docPDF.setFontSize(12);
+            docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
+            docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, { align: "center" });
+            
+            docPDF.save(`avaliacao_scaa_${fornecedorSelecionado}_${numeroAmostra}.pdf`);
+        };
     };
 
-    //
 
     return (
         <div id="avaliacao-completa">
@@ -765,5 +781,4 @@ const Cob = () => {
         </div>
     );
 };
-
 export default Cob;

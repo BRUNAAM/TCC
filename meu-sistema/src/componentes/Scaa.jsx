@@ -6,8 +6,8 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import GraoCafe from "./GraoCafe";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import logo from "../assets/logopdf.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import logo from "../assets/logopdf.png"; // Adicione no topo do seu arquivo, igual no Scaa
 
 
 
@@ -157,13 +157,16 @@ const Scaa = () => {
         img.src = logo;
 
         img.onload = () => {
+            docPDF.setFont("times", "normal");
+            docPDF.setTextColor(0, 0, 0);
+
             docPDF.rect(boxX, boxY, boxWidth, boxHeight);
             const logoWidth = 25;
             const logoHeight = 25;
             docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
 
             const titulo = "Avaliação Sensorial de Café - Método SCAA";
-            docPDF.setFont("helvetica", "bold");
+            docPDF.setFont("times", "bold");
             docPDF.setFontSize(14);
             docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
 
@@ -172,9 +175,19 @@ const Scaa = () => {
                 theme: "grid",
                 margin: { left: marginX, right: marginX },
                 startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+                headStyles: {
+                    fillColor: [3, 43, 67], // #032B43
+                    textColor: 255,         // white
+                    fontStyle: "bold",
+                    font: "times"
+                },
+                bodyStyles: {
+                    font: "times",
+                    textColor: 0            // black
+                }
             });
 
-            // Seção: Identificação
+            // Identificação
             autoTable(docPDF, autoTableOptions({
                 head: [["Identificação", "Valor"]],
                 body: [
@@ -183,24 +196,20 @@ const Scaa = () => {
                     ["Fornecedor", fornecedorSelecionado || "—"],
                     ["Nº Amostra", numeroAmostra || "—"],
                     ["Torra", torraSelecionada || "—"],
-                    [{ content: "Pontuação Final", styles: { fontStyle: 'bold' } }, { content: calcularPontuacaoFinal(), styles: { fontStyle: 'bold' } }],
-                    [{ content: "Notas Sensoriais", styles: { fontStyle: 'bold' } }, { content: notasSensorias || "—", styles: { fontStyle: 'bold' } }],
-                ],
+                    [{ content: "Pontuação Final", styles: { fontStyle: "bold" } }, { content: calcularPontuacaoFinal(), styles: { fontStyle: "bold" } }],
+                    [{ content: "Notas Sensoriais", styles: { fontStyle: "bold" } }, { content: notasSensorias || "—", styles: { fontStyle: "bold" } }]
+                ]
             }));
 
-
-            // Seção: Notas Sensoriais
-            // Seção: Notas Sensoriais (com observação de acidez logo após acidez)
+            // Atributos sensoriais
             const corpoNotas = [
                 ["Aroma / Fragrância", notas.AromaFragrancia],
                 ["Sabor", notas.sabor],
                 ["Finalização", notas.finalizacao],
-                ["Acidez", notas.acidez],
+                ["Acidez", notas.acidez]
             ];
 
-            if (obsAcidez) {
-                corpoNotas.push(["Tipo de Acidez", obsAcidez]);
-            }
+            if (obsAcidez) corpoNotas.push(["Tipo de Acidez", obsAcidez]);
 
             corpoNotas.push(
                 ["Corpo", notas.corpo],
@@ -210,12 +219,11 @@ const Scaa = () => {
 
             autoTable(docPDF, autoTableOptions({
                 head: [["Atributo Sensorial", "Nota"]],
-                body: corpoNotas,
+                body: corpoNotas
             }));
 
-            // Seção: Critérios Técnicos
+            // Critérios Técnicos
             const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
-
             autoTable(docPDF, autoTableOptions({
                 head: [["Critério", "Valor"]],
                 body: [
@@ -226,45 +234,45 @@ const Scaa = () => {
                     ["Defeitos Leves", `-${qtdLeve * 2}`],
                     ["Defeitos Graves", `-${qtdGrave * 4}`],
                     ["Total de Pontos Descontados", `-${totalDescontos}`]
-                ],
+                ]
             }));
 
-
             // Observações em nova página
-            docPDF.addPage(); // quebra de página
-
+            docPDF.addPage();
             autoTable(docPDF, {
                 theme: "grid",
-                startY: 20,
                 margin: { left: marginX, right: marginX },
+                startY: 20,
+                headStyles: {
+                    fillColor: [3, 43, 67],
+                    textColor: 255,
+                    fontStyle: "bold",
+                    font: "times"
+                },
+                bodyStyles: {
+                    font: "times",
+                    textColor: 0
+                },
                 head: [["Observações", "Conteúdo"]],
                 body: [
                     ["Observações Gerais", observacoes || "—"]
-                ],
+                ]
             });
 
-
-            // Campo de Assinatura
+            // Assinatura
             const assinaturaY = docPDF.lastAutoTable.finalY + 30;
             const pageWidth = docPDF.internal.pageSize.getWidth();
             const linhaLargura = 80;
             const linhaInicioX = (pageWidth - linhaLargura) / 2;
 
-            // Linha de assinatura
             docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
-
-            // Nome do avaliador abaixo da linha
-            docPDF.setFont("helvetica", "normal");
+            docPDF.setFont("times", "normal");
             docPDF.setFontSize(12);
             docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
 
             docPDF.save(`avaliacao_scaa_${fornecedorSelecionado}_${numeroAmostra}.pdf`);
         };
-
-
     };
-
-
 
 
     const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];

@@ -5,17 +5,26 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "./Login.css";
 import logo from "../assets/logo.svg";
+import { useUser } from "../context/UserContext";
+
+
 
 
 const Login = () => {
+    const { setUsuario } = useUser();
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [erro, setErro] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // ← Coloque sempre primeiro
+        if (!email || !senha) {
+            setErro("Preencha todos os campos.");
+            return;
+        }
+        if (loading) return;
+
         setErro("");
         setLoading(true);
 
@@ -30,13 +39,15 @@ const Login = () => {
                 usuarioNome = userDoc.data().nome;
             }
 
-            localStorage.setItem("usuarioNome", usuarioNome);
-
+            setUsuario({ nome: usuarioNome, email: user.email });
             navigate("/logado");
         } catch (error) {
             const mensagensErro = {
                 "auth/user-not-found": "Usuário não encontrado. Verifique o e-mail.",
                 "auth/wrong-password": "Senha incorreta. Tente novamente.",
+                "auth/invalid-email": "Formato de e-mail inválido.",
+                "auth/too-many-requests": "Muitas tentativas. Tente novamente mais tarde.",
+                "auth/network-request-failed": "Erro de rede. Verifique sua conexão.",
             };
             setErro(mensagensErro[error.code] || "Erro ao fazer login. Tente novamente.");
         } finally {
@@ -44,18 +55,19 @@ const Login = () => {
         }
     };
 
+
     return (
         <div className="login-container">
             <div className="login-box">
                 <img src={logo} alt="Logotipo do sistema" className="login-logo" />
                 <h2 className="login-title">FAÇA SEU LOGIN</h2>
                 <form onSubmit={handleLogin} className="login-form">
-                    <input
+                    <input autoFocus
                         id="email"
                         type="email"
                         placeholder="Email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value.trim())}
                         className="login-input"
                         required
                         aria-label="Digite seu e-mail"
@@ -65,13 +77,13 @@ const Login = () => {
                         type="password"
                         placeholder="Senha"
                         value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
+                        onChange={(e) => setSenha(e.target.value.trim())}
                         className="login-input"
                         required
                         aria-label="Digite sua senha"
                     />
 
-                    {erro && <p className="login-erro">{erro}</p>}
+                    {erro && <p className="login-erro" aria-live="assertive">{erro}</p>}
 
                     <button className="login-button" type="submit" disabled={loading}>
                         {loading ? "ENTRANDO..." : "FAZER LOGIN"}

@@ -1,60 +1,36 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../config/firebase";
+import { useUser } from "../context/UserContext";
 import "./Logado.css";
 
 const Logado = () => {
-    const [usuarioNome, setUsuarioNome] = useState("");
-    const [loading, setLoading] = useState(true);
+    const { usuario, setUsuario } = useUser();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const carregarUsuario = async () => {
-            try {
-                let nome = localStorage.getItem("usuarioNome");
-
-                if (!nome) {
-                    const user = auth.currentUser;
-                    if (user) {
-                        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-                        if (userDoc.exists()) {
-                            nome = userDoc.data().nome;
-                            localStorage.setItem("usuarioNome", nome);
-                        }
-                    }
-                }
-
-                if (nome) {
-                    setUsuarioNome(nome);
-                }
-            } catch (error) {
-                console.error("Erro ao carregar usuário:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        carregarUsuario();
-    }, []);
-
     const handleLogout = async () => {
-        await signOut(auth);
-        localStorage.removeItem("usuarioNome");
-        navigate("/login");
+        try {
+            await signOut(auth);
+            setUsuario(null);
+            navigate("/login");
+        } catch (error) {
+            console.error("Erro ao sair:", error);
+        }
     };
 
-    if (loading) return <p>Carregando...</p>;
+    if (!usuario) return <p>Carregando...</p>; // Evita erro se contexto ainda não carregou
 
     return (
         <main className="logado-container">
-            <h2 className="logado-h2">Bem-vindo (a) <br />{usuarioNome}!</h2>
+            <h2 className="logado-h2">
+                Bem-vindo (a) <br />
+                {usuario.nome}!
+            </h2>
 
             <nav className="botoes-container" aria-label="Menu de navegação">
-                <button onClick={() => navigate("/cob")}> Iniciar Avaliação COB</button>
+                <button onClick={() => navigate("/cob")}>Iniciar Avaliação COB</button>
                 <button onClick={() => navigate("/scaa")}>Iniciar Avaliação SCAA</button>
-                <button onClick={() => navigate("/fornecedores")}> Cadastro de Produtores / Fornecedores</button>
+                <button onClick={() => navigate("/fornecedores")}>Cadastro de Produtores / Fornecedores</button>
                 <button onClick={() => navigate("/historico-scaa")}>Histórico de Avaliações SCAA</button>
                 <button onClick={() => navigate("/historico-cob")}>Histórico de Avaliações COB</button>
             </nav>
