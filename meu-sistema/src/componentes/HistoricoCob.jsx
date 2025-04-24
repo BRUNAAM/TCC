@@ -53,42 +53,49 @@ const HistoricoCob = () => {
             }
 
             const data = docSnap.data();
+            const docPDF = new jsPDF();
             const img = new Image();
             img.src = logo;
 
             img.onload = () => {
-                const docPDF = new jsPDF();
-
-                // Margens compatíveis com autoTable
                 const marginX = 14;
                 const boxX = marginX;
                 const boxY = 10;
                 const boxWidth = 210 - 2 * marginX;
                 const boxHeight = 30;
 
-                // Quadro com logo + título
-                docPDF.setDrawColor(0);
-                docPDF.rect(boxX, boxY, boxWidth, boxHeight);
-
+                const titulo = "Avaliação Física de Café - Método COB";
                 const logoWidth = 25;
                 const logoHeight = 25;
-                docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
+                const spacing = 5;
+                const tituloWidth = docPDF.getTextWidth(titulo);
+                const contentWidth = logoWidth + spacing + tituloWidth;
+                const startX = (docPDF.internal.pageSize.getWidth() - contentWidth) / 2;
+                const centerY = boxY + boxHeight / 2;
 
-                const titulo = "Avaliação Física de Café - Método COB";
+                docPDF.rect(boxX, boxY, boxWidth, boxHeight);
+                docPDF.addImage(img, "PNG", startX, centerY - logoHeight / 2, logoWidth, logoHeight);
+                docPDF.setFont("times", "bold");
                 docPDF.setFontSize(14);
-                docPDF.setFont("helvetica", "bold");
-                docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
+                docPDF.text(titulo, startX + logoWidth + spacing, centerY + 5);
 
-                // Posição inicial para as tabelas
                 const autoTableOptions = (config) => ({
                     ...config,
                     theme: "grid",
-                    pageBreak: "avoid",
                     margin: { left: marginX, right: marginX },
                     startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+                    headStyles: {
+                        fillColor: [3, 43, 67],
+                        textColor: 255,
+                        fontStyle: "bold",
+                        font: "times",
+                    },
+                    bodyStyles: {
+                        font: "times",
+                        textColor: 0,
+                    },
                 });
 
-                // Seção 1: Identificação
                 autoTable(docPDF, autoTableOptions({
                     head: [["Identificação", "Valor"]],
                     body: [
@@ -100,12 +107,12 @@ const HistoricoCob = () => {
                         ["Aparelho", data.aparelho || "—"],
                         ["Subcategoria", data.subcategoria || "—"],
                         ["Tipo", data.tipo || "—"],
+                        ["Tipo Café (Chato ou Moca)", data.tipoCafe || "—"],
                         ["Posto Serviço", data.postoServico || "—"],
                         ["Classificador MAPA", data.classificadorMapa || "—"],
                     ],
                 }));
 
-                // Seção 2: Defeitos
                 const defeitosBody = Object.entries(data.defeitos || {}).map(
                     ([nome, qtd]) => [nome, qtd, data.equivalencias?.[nome] || 0]
                 );
@@ -115,27 +122,25 @@ const HistoricoCob = () => {
                     body: defeitosBody,
                 }));
 
-                // Seção 3: Totais e tipo
                 autoTable(docPDF, autoTableOptions({
                     body: [
-                        ["Total de Equivalência", data.equivalenciaTotal || 0],
+                        ["Total de Defeitos", Object.values(data.defeitos || {}).reduce((acc, val) => acc + val, 0)],
+                        ["Total Equivalência", data.equivalenciaTotal],
                         ["Tipo do Café", data.tipo || "—"],
                     ],
                     head: [],
                 }));
 
-                // Seção 4: Categoria
                 autoTable(docPDF, autoTableOptions({
                     head: [["Categoria", "Valor"]],
                     body: [
-                        ["Peneira/Subcategoria", data.peneiraSubcategoria?.join(", ") || "—"],
+                        ["Peneira/Subcategoria", (data.peneiraSubcategoria || []).join(", ") || "—"],
                         ["Grupo da Bebida", data.grupoBebida || "—"],
                         ["Subclassificação", data.subClassificacaoBebida || "—"],
-                        ["Classe da Bebida", data.classeBebida?.join(", ") || "—"],
+                        ["Classe da Bebida", (data.classeBebida || []).join(", ") || "—"],
                     ],
                 }));
 
-                // Seção 5: Laudo Técnico
                 autoTable(docPDF, autoTableOptions({
                     head: [["Laudo Técnico", "Valor"]],
                     body: [
@@ -148,13 +153,24 @@ const HistoricoCob = () => {
                     ],
                 }));
 
-                // Seção 6: Observações
                 autoTable(docPDF, autoTableOptions({
                     body: [["Observações", data.observacoes || "—"]],
                     head: [],
                 }));
 
-                // Abrir PDF em nova aba
+                // Assinatura
+                const assinaturaY = docPDF.lastAutoTable.finalY + 30;
+                const pageWidth = docPDF.internal.pageSize.getWidth();
+                const linhaLargura = 80;
+                const linhaInicioX = (pageWidth - linhaLargura) / 2;
+
+                docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
+                docPDF.setFont("times", "normal");
+                docPDF.setFontSize(12);
+                docPDF.text(`Avaliador: ${data.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
+                docPDF.text(`Registro MAPA: ${data.classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, { align: "center" });
+
+                // Abrir em nova aba
                 const blob = docPDF.output("blob");
                 const url = URL.createObjectURL(blob);
                 window.open(url, "_blank");
@@ -164,6 +180,7 @@ const HistoricoCob = () => {
             alert("Erro ao gerar PDF.");
         }
     };
+
 
     return (
         <div className="historico-cob-container">

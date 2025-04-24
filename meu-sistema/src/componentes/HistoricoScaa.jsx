@@ -46,7 +46,7 @@ const HistoricoScaa = () => {
 
     const handlePrintPDF = async (id) => {
         try {
-            const docRef = doc(db, "avaliacoes_scaa", id); // ajuste o nome da coleção se necessário
+            const docRef = doc(db, "avaliacoes_scaa", id);
             const docSnap = await getDoc(docRef);
 
             if (!docSnap.exists()) {
@@ -55,45 +55,51 @@ const HistoricoScaa = () => {
             }
 
             const data = docSnap.data();
+            const docPDF = new jsPDF();
             const img = new Image();
             img.src = logo;
 
             img.onload = () => {
-                const docPDF = new jsPDF();
-
-                // Margens padrão do autoTable
                 const marginX = 14;
-
-                // Cabeçalho: quadro com logo + título
                 const boxX = marginX;
                 const boxY = 10;
-                const boxWidth = 210 - 2 * marginX; // largura total da página A4 com margens
+                const boxWidth = 210 - 2 * marginX;
                 const boxHeight = 30;
 
-                docPDF.setDrawColor(0); // cor da borda
-                docPDF.rect(boxX, boxY, boxWidth, boxHeight); // desenha o quadro
-
-                // Logo alinhado à esquerda dentro do quadro
+                const titulo = "Avaliação Sensorial de Café - Método SCAA";
                 const logoWidth = 25;
                 const logoHeight = 25;
-                docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
+                const spacing = 5;
+                const tituloWidth = docPDF.getTextWidth(titulo);
+                const contentWidth = logoWidth + spacing + tituloWidth;
+                const startX = (docPDF.internal.pageSize.getWidth() - contentWidth) / 2;
+                const centerY = boxY + boxHeight / 2;
 
-                // Título ao lado do logo
-                const titulo = "Avaliação Sensorial de Café - Método SCAA";
+                docPDF.rect(boxX, boxY, boxWidth, boxHeight);
+                docPDF.addImage(img, "PNG", startX, centerY - logoHeight / 2, logoWidth, logoHeight);
+                docPDF.setFont("times", "bold");
                 docPDF.setFontSize(14);
-                docPDF.setFont("helvetica", "bold");
-                docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
+                docPDF.text(titulo, startX + logoWidth + spacing, centerY + 5);
 
-                // Configuração padrão para todas as tabelas
                 const autoTableOptions = (config) => ({
                     ...config,
                     theme: "grid",
-                    pageBreak: "avoid",
+                    margin: { left: marginX, right: marginX },
                     startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
-                    margin: { left: marginX, right: marginX }, // garante alinhamento com o quadro
+                    headStyles: {
+                        fillColor: [3, 43, 67],
+                        textColor: 255,
+                        fontStyle: "bold",
+                        font: "times"
+                    },
+                    bodyStyles: {
+                        font: "times",
+                        textColor: 0
+                    }
                 });
 
-                // Seção: Identificação
+                const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
+
                 autoTable(docPDF, autoTableOptions({
                     head: [["Identificação", "Valor"]],
                     body: [
@@ -102,54 +108,74 @@ const HistoricoScaa = () => {
                         ["Fornecedor", data.fornecedor || "—"],
                         ["Nº Amostra", data.numeroAmostra || "—"],
                         ["Torra", data.torra || "—"],
-                        [
-                            { content: "Pontuação Final" },
-                            { content: data.pontuacaoFinal || "—", styles: { fontStyle: "bold" } }
-                        ],
-                    ],
+                        [{ content: "Pontuação Final", styles: { fontStyle: "bold" } }, { content: data.pontuacaoFinal || "—", styles: { fontStyle: "bold" } }],
+                        [{ content: "Notas Sensoriais", styles: { fontStyle: "bold" } }, { content: data.notasSensorias || "—", styles: { fontStyle: "bold" } }]
+                    ]
                 }));
 
-                // Seção: Notas Sensoriais principais
-                autoTable(docPDF, autoTableOptions({
-                    head: [["Atributo Sensorial", "Nota"]],
-                    body: [
-                        ["Acidez", data.notas?.acidez ?? "—"],
-                        ["Sabor", data.notas?.sabor ?? "—"],
-                        ["Equilíbrio", data.notas?.equilibrio ?? "—"],
-                        ["Finalização", data.notas?.finalizacao ?? "—"],
-                        ["Corpo", data.notas?.corpo ?? "—"],
-                        ["Aroma", data.notas?.aroma ?? "—"],
-                    ],
-                }));
+                const corpoNotas = [
+                    ["Aroma / Fragrância", data.notas?.AromaFragrancia ?? "—"],
+                    ["Sabor", data.notas?.sabor ?? "—"],
+                    ["Finalização", data.notas?.finalizacao ?? "—"],
+                    ["Acidez", data.notas?.acidez ?? "—"],
+                    ["Corpo", data.notas?.corpo ?? "—"],
+                    ["Equilíbrio", data.notas?.equilibrio ?? "—"],
+                    ["Avaliação Pessoal", data.notas?.avaliacaoPessoal ?? "—"]
+                ];
 
-                // Seção: Critérios Técnicos
-                autoTable(docPDF, autoTableOptions({
-                    head: [["Critério Técnico", "Valor"]],
-                    body: [
-                        ["Nível de Acidez", data.nivelAcidez ?? "—"],
-                        ["Nível de Corpo", data.nivelCorpo ?? "—"],
-                        ["Defeitos Leves", data.defeitosLeves ?? "—"],
-                        ["Defeitos Graves", data.defeitosGraves ?? "—"],
-                        ["Dry", data.dry ?? "—"],
-                        ["Break", data.breakValue ?? "—"],
-                    ],
-                }));
-
-                // Seção: Observações
-                autoTable(docPDF, autoTableOptions({
-                    body: [["Observações Gerais", data.observacoes || "—"]],
-                    head: [],
-                }));
-
-                // Seção extra: Observação de acidez (se houver)
                 if (data.obsAcidez) {
-                    autoTable(docPDF, autoTableOptions({
-                        body: [["Observação de Acidez", data.obsAcidez]],
-                        head: [],
-                    }));
+                    corpoNotas.push(["Tipo de Acidez", data.obsAcidez]);
                 }
 
-                // Finaliza e abre o PDF
+                autoTable(docPDF, autoTableOptions({
+                    head: [["Atributo Sensorial", "Nota"]],
+                    body: corpoNotas
+                }));
+
+                const descontos = (data.defeitosLeves || 0) * 2 + (data.defeitosGraves || 0) * 4;
+
+                autoTable(docPDF, autoTableOptions({
+                    head: [["Critério", "Valor"]],
+                    body: [
+                        ["Dry", intensidades[data.dry] || "—"],
+                        ["Break", intensidades[data.breakValue] || "—"],
+                        ["Nível de Acidez", intensidades[data.nivelAcidez] || "—"],
+                        ["Nível de Corpo", intensidades[data.nivelCorpo] || "—"],
+                        ["Defeitos Leves", `-${(data.defeitosLeves || 0) * 2}`],
+                        ["Defeitos Graves", `-${(data.defeitosGraves || 0) * 4}`],
+                        ["Total de Pontos Descontados", `-${descontos}`]
+                    ]
+                }));
+
+                docPDF.addPage();
+                autoTable(docPDF, {
+                    theme: "grid",
+                    margin: { left: marginX, right: marginX },
+                    startY: 20,
+                    headStyles: {
+                        fillColor: [3, 43, 67],
+                        textColor: 255,
+                        fontStyle: "bold",
+                        font: "times"
+                    },
+                    bodyStyles: {
+                        font: "times",
+                        textColor: 0
+                    },
+                    head: [["Observações", "Conteúdo"]],
+                    body: [["Observações Gerais", data.observacoes || "—"]]
+                });
+
+                const assinaturaY = docPDF.lastAutoTable.finalY + 30;
+                const pageWidth = docPDF.internal.pageSize.getWidth();
+                const linhaLargura = 80;
+                const linhaInicioX = (pageWidth - linhaLargura) / 2;
+
+                docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
+                docPDF.setFont("times", "normal");
+                docPDF.setFontSize(12);
+                docPDF.text(`Avaliador: ${data.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
+
                 const blob = docPDF.output("blob");
                 const url = URL.createObjectURL(blob);
                 window.open(url, "_blank");
@@ -159,6 +185,7 @@ const HistoricoScaa = () => {
             alert("Erro ao gerar PDF.");
         }
     };
+
 
 
     return (
