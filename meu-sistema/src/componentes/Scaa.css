@@ -1,15 +1,21 @@
 body {
     font-family: "Times New Roman", Times, serif;
+    /* ou var(--fonte-principal), se preferir usar variáveis */
+    background-color: #032B43;
     color: #ffffff;
     margin: 0;
     padding: 0;
 }
-body {
-    font-family: var(--fonte-principal);
-    background-color: var(--cor-primaria);
-    color: var(--cor-texto);
-  }
-  
+
+
+.break {
+    text-align: center;
+}
+
+.dry {
+    text-align: center;
+}
+
 
 .pontuacao-final h3 {
     color: #FFBA08;
@@ -25,14 +31,23 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 20px #000000;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
+
+input:focus,
+select:focus,
+textarea:focus {
+    scroll-margin-top: 100px;
+}
+
 
 /* Cabeçalho */
 .scaa-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid#FFBA08;
+    border-bottom: 2px solid #FFBA08;
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
@@ -191,8 +206,7 @@ h4 {
 /* Efeito de seleção */
 .torra-option.selecionado .grao-svg {
     transform: scale(1.2);
-    outline: 2px solid#FFBA08;
-    ;
+    outline: 2px solid #FFBA08;
     border-radius: 50%;
 }
 
@@ -366,16 +380,12 @@ h4 {
     border-radius: 8px;
     line-height: 1.5;
     box-shadow: 0 2px 6px #000000;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-
-
-.caixa-tipos-acidez {
     font-size: 18px;
     font-family: 'Times New Roman', Times, serif;
     color: #ffffff;
 }
+
+
 
 label {
     font-size: 18px;

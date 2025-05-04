@@ -4,20 +4,34 @@ body,
 #root {
     margin: 0;
     padding: 0;
-    height: 100%;
     width: 100%;
     font-family: 'Times New Roman', Times, serif;
     font-weight: bold;
     background-color: #032B43;
     color: #ffffff;
+    overflow-x: hidden;
+    /* importante para evitar "saltar" horizontal */
 }
+
+#avaliacao-completa {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    scroll-margin-top: 100px;
+    /* evita que o foco "pule" o campo para o topo em mobile */
+}
+
 
 body {
     font-family: var(--fonte-principal);
     background-color: var(--cor-primaria);
     color: var(--cor-texto);
-  }
-  
+}
+
 h5 {
     font-size: 15px;
 }

@@ -114,13 +114,18 @@ const Cob = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        window.history.pushState(null, null, window.location.href);
-        const bloquearVoltar = () => {
+        const bloquearVoltar = (e) => {
+            e.preventDefault();
             window.history.pushState(null, null, window.location.href);
         };
+        window.history.pushState(null, null, window.location.href);
         window.addEventListener("popstate", bloquearVoltar);
-        return () => window.removeEventListener("popstate", bloquearVoltar);
+
+        return () => {
+            window.removeEventListener("popstate", bloquearVoltar);
+        };
     }, []);
+
 
 
 

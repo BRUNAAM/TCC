@@ -1,16 +1,13 @@
 /* index.css ou App.css */
-html,
-body,
-#root {
-    margin: 0;
-    padding: 0;
+html, body, #root {
     height: 100%;
     width: 100%;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
-    background-color: #032B43;
-    /* ou outro fundo padrão do sistema */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
+
 
 
 .fechar {
@@ -225,4 +222,6 @@ input {
     --borda-radius: 10px;
     --sombra-padrao: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
+
+  
   

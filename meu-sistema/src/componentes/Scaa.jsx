@@ -401,7 +401,7 @@ const Scaa = () => {
                 {/* Sliders verticais (DRY, BREAK) */}
                 <div className="vertical-sliders-container">
                     <div className="vertical-slider-box">
-                        <h4>Dry</h4>
+                        <h4 className="dry">Dry <br /> "Aroma do pó seco"</h4>
                         <div className="slider-row-with-note">
                             <div className="slider-row">
                                 <input
@@ -432,7 +432,7 @@ const Scaa = () => {
                     </div>
 
                     <div className="vertical-slider-box">
-                        <h4>Break</h4>
+                        <h4 className="break">Break <br /> "Aroma de Quebra de xicara"</h4>
                         <div className="slider-row-with-note">
                             <div className="slider-row">
                                 <input
@@ -464,16 +464,6 @@ const Scaa = () => {
                 </div>
 
 
-                {/* Notas do Café */}
-                <div className="nota-cafe-container">
-                    <label>Notas:</label>
-                    <textarea
-                        value={notasSensorias}
-                        onChange={(e) => setnotasSensoriais(e.target.value)}
-                        placeholder="Preencha as notas encontradas no café"
-                    />
-                </div>
-
                 {/* Sliders horizontais (AromaFragrancia, Sabor, Finalização, etc.) */}
                 <div className="nota-container">
                     <label>Aroma / Fragrancia:</label>
@@ -486,13 +476,14 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("AromaFragrancia", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.AromaFragrancia ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
                     </div>
                 </div>
+
 
                 <div className="nota-container">
                     <label>Sabor:</label>
@@ -505,7 +496,7 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("sabor", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.sabor ? "selecionado" : ""}>
                                 {num}
                             </span>
@@ -524,7 +515,7 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("finalizacao", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.finalizacao ? "selecionado" : ""}>
                                 {num}
                             </span>
@@ -532,29 +523,22 @@ const Scaa = () => {
                     </div>
                 </div>
 
+                {/* Notas do Café */}
+                <div className="nota-cafe-container">
+                    <label>Notas Sensoriais:</label>
+                    <textarea
+                        value={notasSensorias}
+                        onChange={(e) => setnotasSensoriais(e.target.value)}
+                        placeholder="Preencha as notas encontradas no café"
+                    />
+                </div>
+
                 {/* Vertical slider único para Nível de Acidez */}
                 <div className="vertical-sliders-container vertical-slider-single">
                     <div className="titulo-acidez-com-botao">
                         <h4>Nível de Acidez</h4>
-                        <button
-                            className="botao-info-acidez"
-                            onClick={() => setMostrarTiposAcidez(!mostrarTiposAcidez)}
-                            title="Ver tipos de acidez"
-                        >
-                            <i className="bi bi-info-circle-fill"></i>
-                        </button>
                     </div>
 
-                    {mostrarTiposAcidez && (
-                        <div className="caixa-tipos-acidez">
-                            <p><strong>Acidez Cítrica:</strong> Limão, laranja, lima, abacaxi. Bastante desejável.</p>
-                            <p><strong>Acidez Fosfórica:</strong> Presente em refrigerantes tipo cola, lembra espumante.</p>
-                            <p><strong>Acidez Málica:</strong> Como a da maçã. Comum em cafés de altitude, especialmente na América Central.</p>
-                            <p><strong>Acidez Lática:</strong> Derivados do leite. Rara no café.</p>
-                            <p><strong>Acidez Tartárica:</strong> Comum nos vinhos, vinda da videira.</p>
-                            <p><strong>Acidez Acética:</strong> Acidez do vinagre. Considerado defeito no café.</p>
-                        </div>
-                    )}
                     <div className="slider-row-with-note">
                         <div className="slider-row">
                             <input
@@ -577,18 +561,30 @@ const Scaa = () => {
                                 ))}
                             </div>
                         </div>
-                        <textarea
-                            className="slider-lateral-note"
-                            placeholder="Observações Acidez"
-                            value={obsAcidez}
-                            onChange={(e) => setObsAcidez(e.target.value)}
-                        />
                     </div>
                 </div>
 
 
                 <div className="nota-container">
                     <label>Acidez:</label>
+                    <button
+                        className="botao-info-acidez"
+                        onClick={() => setMostrarTiposAcidez(!mostrarTiposAcidez)}
+                        title="Ver tipos de acidez"
+                    >
+                        <i className="bi bi-info-circle-fill"></i>
+                    </button>
+
+                    {mostrarTiposAcidez && (
+                        <div className="caixa-tipos-acidez">
+                            <p><strong>Acidez Cítrica:</strong> Limão, laranja, lima, abacaxi. Bastante desejável.</p>
+                            <p><strong>Acidez Fosfórica:</strong> Presente em refrigerantes tipo cola, lembra espumante.</p>
+                            <p><strong>Acidez Málica:</strong> Como a da maçã. Comum em cafés de altitude, especialmente na América Central.</p>
+                            <p><strong>Acidez Lática:</strong> Derivados do leite. Rara no café.</p>
+                            <p><strong>Acidez Tartárica:</strong> Comum nos vinhos, vinda da videira.</p>
+                            <p><strong>Acidez Acética:</strong> Acidez do vinagre. Considerado defeito no café.</p>
+                        </div>
+                    )}
                     <input
                         type="range"
                         min="6"
@@ -598,12 +594,18 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("acidez", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.acidez ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
                     </div>
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Acidez"
+                        value={obsAcidez}
+                        onChange={(e) => setObsAcidez(e.target.value)}
+                    />
                 </div>
 
                 {/* Vertical slider único para Nível de Corpo */}
@@ -643,7 +645,7 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("corpo", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.corpo ? "selecionado" : ""}>
                                 {num}
                             </span>
@@ -662,7 +664,7 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("equilibrio", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.equilibrio ? "selecionado" : ""}>
                                 {num}
                             </span>
@@ -682,7 +684,7 @@ const Scaa = () => {
                         onChange={(e) => handleNotaChange("avaliacaoPessoal", e.target.value)}
                     />
                     <div className="escala-notas">
-                        {[6, 6.25, 6.5, 7, 7.25, 7.5, 8, 8.25, 8.5, 9, 9.25, 9.5, 10].map((num) => (
+                        {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
                             <span key={num} className={num === notas.avaliacaoPessoal ? "selecionado" : ""}>
                                 {num}
                             </span>
