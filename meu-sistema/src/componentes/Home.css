@@ -12,6 +12,12 @@ body {
   background-color: #032B43;
   /* Fundo padrão escuro para a tela toda */
 }
+body {
+  font-family: var(--fonte-principal);
+  background-color: var(--cor-primaria);
+  color: var(--cor-texto);
+}
+
 
 .home-container {
   display: flex;

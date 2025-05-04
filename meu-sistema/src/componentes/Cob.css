@@ -12,6 +12,12 @@ body,
     color: #ffffff;
 }
 
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto);
+  }
+  
 h5 {
     font-size: 15px;
 }

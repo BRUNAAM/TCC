@@ -4,6 +4,12 @@ body {
     margin: 0;
     padding: 0;
 }
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto);
+  }
+  
 
 .pontuacao-final h3 {
     color: #FFBA08;

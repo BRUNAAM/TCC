@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../config/firebase";
-import { collection, query, where, getDocs, getDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import "./HistoricoScaa.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from "../assets/logopdf.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
-
-
 
 const HistoricoScaa = () => {
     const [avaliacoes, setAvaliacoes] = useState([]);
@@ -17,12 +15,9 @@ const HistoricoScaa = () => {
     const fetchAvaliacoes = async () => {
         const user = auth.currentUser;
         if (user) {
-            const q = query(collection(db, "avaliacoes_scaa"), where("userId", "==", user.uid));
+            const q = collection(db, "usuarios", user.uid, "avaliacoes_scaa");
             const snapshot = await getDocs(q);
-            const data = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
+            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setAvaliacoes(data);
         }
     };
@@ -34,7 +29,8 @@ const HistoricoScaa = () => {
     const handleDelete = async (id) => {
         const confirm = window.confirm("Deseja realmente excluir esta avaliação?");
         if (confirm) {
-            await deleteDoc(doc(db, "avaliacoes_scaa", id));
+            const user = auth.currentUser;
+            await deleteDoc(doc(db, "usuarios", user.uid, "avaliacoes_scaa", id));
             fetchAvaliacoes();
         }
     };
@@ -43,10 +39,15 @@ const HistoricoScaa = () => {
         window.print();
     };
 
-
     const handlePrintPDF = async (id) => {
         try {
-            const docRef = doc(db, "avaliacoes_scaa", id);
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Usuário não autenticado.");
+                return;
+            }
+
+            const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id);
             const docSnap = await getDoc(docRef);
 
             if (!docSnap.exists()) {
@@ -55,37 +56,32 @@ const HistoricoScaa = () => {
             }
 
             const data = docSnap.data();
-            const docPDF = new jsPDF();
+            const docPDF = new jsPDF({ unit: "mm", format: "a4" });
             const img = new Image();
             img.src = logo;
 
             img.onload = () => {
-                const marginX = 14;
-                const boxX = marginX;
+                const pageWidth = docPDF.internal.pageSize.getWidth();
+                const pageHeight = docPDF.internal.pageSize.getHeight();
+                const marginX = 20;
                 const boxY = 10;
-                const boxWidth = 210 - 2 * marginX;
-                const boxHeight = 30;
-
-                const titulo = "Avaliação Sensorial de Café - Método SCAA";
                 const logoWidth = 25;
                 const logoHeight = 25;
                 const spacing = 5;
+                const titulo = "Avaliação Sensorial de Café - Método SCAA";
                 const tituloWidth = docPDF.getTextWidth(titulo);
-                const contentWidth = logoWidth + spacing + tituloWidth;
-                const startX = (docPDF.internal.pageSize.getWidth() - contentWidth) / 2;
-                const centerY = boxY + boxHeight / 2;
+                const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2;
 
-                docPDF.rect(boxX, boxY, boxWidth, boxHeight);
-                docPDF.addImage(img, "PNG", startX, centerY - logoHeight / 2, logoWidth, logoHeight);
+                docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight);
                 docPDF.setFont("times", "bold");
                 docPDF.setFontSize(14);
-                docPDF.text(titulo, startX + logoWidth + spacing, centerY + 5);
+                docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16);
 
                 const autoTableOptions = (config) => ({
                     ...config,
                     theme: "grid",
                     margin: { left: marginX, right: marginX },
-                    startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+                    startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + logoHeight + 10,
                     headStyles: {
                         fillColor: [3, 43, 67],
                         textColor: 255,
@@ -95,6 +91,13 @@ const HistoricoScaa = () => {
                     bodyStyles: {
                         font: "times",
                         textColor: 0
+                    },
+                    didDrawPage: (data) => {
+                        const pageCount = docPDF.internal.getNumberOfPages();
+                        docPDF.setFontSize(10);
+                        docPDF.setTextColor(150);
+                        docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align: "right" });
+                        docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10);
                     }
                 });
 
@@ -123,9 +126,7 @@ const HistoricoScaa = () => {
                     ["Avaliação Pessoal", data.notas?.avaliacaoPessoal ?? "—"]
                 ];
 
-                if (data.obsAcidez) {
-                    corpoNotas.push(["Tipo de Acidez", data.obsAcidez]);
-                }
+                if (data.obsAcidez) corpoNotas.push(["Tipo de Acidez", data.obsAcidez]);
 
                 autoTable(docPDF, autoTableOptions({
                     head: [["Atributo Sensorial", "Nota"]],
@@ -147,30 +148,14 @@ const HistoricoScaa = () => {
                     ]
                 }));
 
-                docPDF.addPage();
-                autoTable(docPDF, {
-                    theme: "grid",
-                    margin: { left: marginX, right: marginX },
-                    startY: 20,
-                    headStyles: {
-                        fillColor: [3, 43, 67],
-                        textColor: 255,
-                        fontStyle: "bold",
-                        font: "times"
-                    },
-                    bodyStyles: {
-                        font: "times",
-                        textColor: 0
-                    },
+                autoTable(docPDF, autoTableOptions({
                     head: [["Observações", "Conteúdo"]],
                     body: [["Observações Gerais", data.observacoes || "—"]]
-                });
+                }));
 
                 const assinaturaY = docPDF.lastAutoTable.finalY + 30;
-                const pageWidth = docPDF.internal.pageSize.getWidth();
                 const linhaLargura = 80;
                 const linhaInicioX = (pageWidth - linhaLargura) / 2;
-
                 docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
                 docPDF.setFont("times", "normal");
                 docPDF.setFontSize(12);
@@ -186,8 +171,6 @@ const HistoricoScaa = () => {
         }
     };
 
-
-
     return (
         <div className="historico-scaa-container">
             <div className="historico-header">
@@ -201,7 +184,6 @@ const HistoricoScaa = () => {
                     </button>
                 </div>
             </div>
-
             {avaliacoes.length > 0 ? (
                 <table className="avaliacoes-table">
                     <thead>

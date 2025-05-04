@@ -9,9 +9,6 @@ import autoTable from "jspdf-autotable";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import logo from "../assets/logopdf.png";
 
-
-
-
 const classificationTable = [
     { defeitos: 4, label: "2-5" },
     { defeitos: 5, label: "2-10" },
@@ -114,8 +111,19 @@ const Cob = () => {
     const [torraArabica, setTorraArabica] = useState("");
     const [torraCanephora, setTorraCanephora] = useState("");
     const [teorCafeina, setTeorCafeina] = useState("");
-
     const navigate = useNavigate();
+
+    useEffect(() => {
+        window.history.pushState(null, null, window.location.href);
+        const bloquearVoltar = () => {
+            window.history.pushState(null, null, window.location.href);
+        };
+        window.addEventListener("popstate", bloquearVoltar);
+        return () => window.removeEventListener("popstate", bloquearVoltar);
+    }, []);
+
+
+
 
     const tabelaDefeitos = {
         "Grão Preto": { quantidade: 1, equivalencia: 1 },
@@ -150,19 +158,36 @@ const Cob = () => {
 
     const carregarAvaliador = () => {
         const usuarioNome = localStorage.getItem("usuarioNome");
-        if (usuarioNome) {
-            setAvaliador(usuarioNome);
+        if (usuarioNome) setAvaliador(usuarioNome);
+    };
+
+
+    const carregarFornecedores = async () => {
+        try {
+            const authInstance = getAuth();
+            const user = authInstance.currentUser;
+
+            if (!user) {
+                alert("Usuário não autenticado.");
+                return;
+            }
+
+            const querySnapshot = await getDocs(
+                collection(db, "usuarios", user.uid, "fornecedores")
+            );
+
+            const listaFornecedores = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            setFornecedores(listaFornecedores);
+        } catch (error) {
+            console.error("Erro ao carregar fornecedores:", error);
+            alert("Erro ao carregar fornecedores. Tente novamente.");
         }
     };
 
-    const carregarFornecedores = async () => {
-        const querySnapshot = await getDocs(collection(db, "fornecedores"));
-        const listaFornecedores = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-        setFornecedores(listaFornecedores);
-    };
 
     const handleDefeitoChange = (defeito, quantidade) => {
         const updatedDefeitos = { ...defeitos, [defeito]: quantidade };
@@ -203,56 +228,46 @@ const Cob = () => {
 
 
     const handleSalvarAvaliacao = async () => {
-        const auth = getAuth();
-        const user = auth.currentUser;
-
-        if (!user) {
-            alert("Usuário não autenticado.");
-            return;
-        }
-
-        if (!fornecedorSelecionado || !numeroAmostra || !umidade || !classificadorMapa) {
-            alert("Preencha todos os campos obrigatórios: Fornecedor, Nº Amostra, Umidade e Classificador/Reg. MAPA.");
-            return;
-        }
-
-        if (!grupoBebida || !subClassificacaoBebida) {
-            alert("Selecione o Grupo e a Subclassificação da Bebida.");
-            return;
-        }
-
-        const avaliacao = {
-            userId: user.uid,
-            avaliador,
-            fornecedor: fornecedorSelecionado,
-            numeroAmostra,
-            observacoes,
-            defeitos,
-            equivalencias,
-            equivalenciaTotal,
-            umidade,
-            categoria,
-            peneiraSubcategoria,
-            grupoBebida,
-            subClassificacaoBebida,
-            classeBebida,
-            aparelho,
-            subcategoria,
-            tipo,
-            tipoCafe: tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "",
-            postoServico,
-            classificadorMapa,
-            peloPreparo,
-            pelaSeca,
-            peloAspecto,
-            torraArabica,
-            torraCanephora,
-            teorCafeina,
-            data: new Date().toISOString(),
-        };
-
         try {
-            await addDoc(collection(db, "avaliacoes_cob"), avaliacao);
+            const authInstance = getAuth();
+            const user = authInstance.currentUser;
+
+            if (!user) {
+                alert("Usuário não autenticado.");
+                return;
+            }
+
+            const avaliacao = {
+                userId: user.uid,
+                avaliador,
+                fornecedor: fornecedorSelecionado,
+                numeroAmostra,
+                observacoes,
+                defeitos,
+                equivalencias,
+                equivalenciaTotal,
+                umidade,
+                categoria,
+                peneiraSubcategoria,
+                grupoBebida,
+                subClassificacaoBebida,
+                classeBebida,
+                aparelho,
+                subcategoria,
+                tipo,
+                tipoCafe: tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "",
+                postoServico,
+                classificadorMapa,
+                peloPreparo,
+                pelaSeca,
+                peloAspecto,
+                torraArabica,
+                torraCanephora,
+                teorCafeina,
+                data: new Date().toISOString(),
+            };
+
+            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_cob"), avaliacao);
             alert("Avaliação salva com sucesso!");
             handlePrintPDF();
         } catch (error) {
@@ -263,55 +278,54 @@ const Cob = () => {
 
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
     const handlePrintPDF = () => {
-        const docPDF = new jsPDF();
-
-        const marginX = 14;
-        const boxX = marginX;
-        const boxY = 10;
-        const boxWidth = 210 - 2 * marginX;
-        const boxHeight = 30;
-
+        const docPDF = new jsPDF({ unit: "mm", format: "a4" });
         const img = new Image();
         img.src = logo;
-        img.onload = () => {
-            docPDF.setFont("times", "normal");
-            docPDF.setTextColor(0, 0, 0);
 
-            docPDF.rect(boxX, boxY, boxWidth, boxHeight); // caixa de cabeçalho
+        img.onload = () => {
+            const pageWidth = docPDF.internal.pageSize.getWidth();
+            const pageHeight = docPDF.internal.pageSize.getHeight();
+            const marginX = 20;
+            const boxY = 10;
             const logoWidth = 25;
             const logoHeight = 25;
-            const titulo = "Avaliação Física de Café - Método COB";
-
-            // Centraliza logo + texto juntos
-            const tituloWidth = docPDF.getTextWidth(titulo);
             const spacing = 5;
-            const contentWidth = logoWidth + spacing + tituloWidth;
-            const startX = (docPDF.internal.pageSize.getWidth() - contentWidth) / 2;
-            const centerY = boxY + boxHeight / 2;
+            const titulo = "Avaliação Física de Café - Método COB";
+            const tituloWidth = docPDF.getTextWidth(titulo);
+            const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2;
 
-            docPDF.addImage(img, "PNG", startX, centerY - logoHeight / 2, logoWidth, logoHeight);
+            // Cabeçalho com logo e título
+            docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight);
             docPDF.setFont("times", "bold");
             docPDF.setFontSize(14);
-            docPDF.text(titulo, startX + logoWidth + spacing, centerY + 5);
+            docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16);
 
+            // Configuração padrão do autoTable
             const autoTableOptions = (config) => ({
                 ...config,
                 theme: "grid",
                 margin: { left: marginX, right: marginX },
-                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + logoHeight + 10,
                 headStyles: {
                     fillColor: [3, 43, 67],
                     textColor: 255,
                     fontStyle: "bold",
-                    font: "times",
+                    font: "times"
                 },
                 bodyStyles: {
                     font: "times",
-                    textColor: 0,
+                    textColor: 0
                 },
+                didDrawPage: (data) => {
+                    const pageCount = docPDF.internal.getNumberOfPages();
+                    docPDF.setFontSize(10);
+                    docPDF.setTextColor(150);
+                    docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align: "right" });
+                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10);
+                }
             });
 
-            // Tabelas seguem aqui
+            // Tabelas de dados
             autoTable(docPDF, autoTableOptions({
                 head: [["Identificação", "Valor"]],
                 body: [
@@ -325,26 +339,24 @@ const Cob = () => {
                     ["Tipo", tipo || "—"],
                     ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
                     ["Posto Serviço", postoServico || "—"],
-                    ["Classificador MAPA", classificadorMapa || "—"],
-                ],
+                    ["Classificador MAPA", classificadorMapa || "—"]
+                ]
             }));
-
-            const defeitosBody = Object.entries(defeitos || {}).map(
-                ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
-            );
 
             autoTable(docPDF, autoTableOptions({
                 head: [["Defeito", "Quantidade", "Equivalência"]],
-                body: defeitosBody,
+                body: Object.entries(defeitos || {}).map(
+                    ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
+                )
             }));
 
             autoTable(docPDF, autoTableOptions({
                 body: [
-                    ["Total de Defeitos", totalDefeitos],
+                    ["Total de Defeitos", Object.values(defeitos || {}).reduce((acc, val) => acc + val, 0)],
                     ["Total Equivalência", equivalenciaTotal],
-                    ["Tipo do Café", tipo || "—"],
+                    ["Tipo do Café", tipo || "—"]
                 ],
-                head: [],
+                head: []
             }));
 
             autoTable(docPDF, autoTableOptions({
@@ -353,8 +365,8 @@ const Cob = () => {
                     ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
                     ["Grupo da Bebida", grupoBebida || "—"],
                     ["Subclassificação", subClassificacaoBebida || "—"],
-                    ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
-                ],
+                    ["Classe da Bebida", (classeBebida || []).join(", ") || "—"]
+                ]
             }));
 
             autoTable(docPDF, autoTableOptions({
@@ -365,30 +377,30 @@ const Cob = () => {
                     ["Aspecto", peloAspecto || "—"],
                     ["Torra Arábica", torraArabica || "—"],
                     ["Torra Canephora", torraCanephora || "—"],
-                    ["Teor Cafeína", teorCafeina || "—"],
-                ],
+                    ["Teor Cafeína", teorCafeina || "—"]
+                ]
             }));
 
             autoTable(docPDF, autoTableOptions({
                 body: [["Observações", observacoes || "—"]],
-                head: [],
+                head: []
             }));
 
             // Assinatura
             const assinaturaY = docPDF.lastAutoTable.finalY + 30;
-            const pageWidth = docPDF.internal.pageSize.getWidth();
             const linhaLargura = 80;
             const linhaInicioX = (pageWidth - linhaLargura) / 2;
-
             docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
             docPDF.setFont("times", "normal");
             docPDF.setFontSize(12);
             docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
             docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, { align: "center" });
-            
-            docPDF.save(`avaliacao_scaa_${fornecedorSelecionado}_${numeroAmostra}.pdf`);
+
+            // Exporta o PDF com nome padronizado
+            docPDF.save(`laudo_cob_${new Date().toISOString().split("T")[0]}.pdf`);
         };
     };
+
 
 
     return (
@@ -397,9 +409,12 @@ const Cob = () => {
                 {/* Cabeçalho */}
                 <header className="cob-header">
                     <h2 className="titulo-cabecalho">AVALIAÇÃO DE CAFÉ - COB</h2>
-                    <button className="fechar" onClick={() => navigate(-1)}>
+                    <button className="fechar" onClick={() => navigate("/logado", { replace: true })}>
                         ✖
                     </button>
+
+
+
                 </header>
 
                 {/* Seção: Identificação */}

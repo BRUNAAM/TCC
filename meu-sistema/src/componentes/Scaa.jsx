@@ -1,7 +1,8 @@
 import "./Scaa.css";
+import { getAuth } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../config/firebase";
+import { db } from "../config/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import GraoCafe from "./GraoCafe";
 import jsPDF from "jspdf";
@@ -46,6 +47,17 @@ const Scaa = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        window.history.pushState(null, null, window.location.href);
+        const bloquearVoltar = () => {
+            window.history.pushState(null, null, window.location.href);
+        };
+        window.addEventListener("popstate", bloquearVoltar);
+
+        return () => window.removeEventListener("popstate", bloquearVoltar);
+    }, []);
+
+
+    useEffect(() => {
         setData(new Date().toISOString().split("T")[0]);
         carregarAvaliador();
         carregarFornecedores();
@@ -59,13 +71,31 @@ const Scaa = () => {
     };
 
     const carregarFornecedores = async () => {
-        const querySnapshot = await getDocs(collection(db, "fornecedores"));
-        const listaFornecedores = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        setFornecedores(listaFornecedores);
+        try {
+            const authInstance = getAuth(); // cria instância do auth
+            const user = authInstance.currentUser; // pega o usuário logado
+
+            if (!user) {
+                alert("Usuário não autenticado.");
+                return;
+            }
+
+            const querySnapshot = await getDocs(
+                collection(db, "usuarios", user.uid, "fornecedores")
+            );
+
+            const listaFornecedores = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            setFornecedores(listaFornecedores);
+        } catch (error) {
+            console.error("Erro ao carregar fornecedores:", error);
+            alert("Erro ao carregar fornecedores. Tente novamente.");
+        }
     };
+
 
     const handleNotaChange = (categoria, valor) => {
         setNotas((prev) => ({ ...prev, [categoria]: parseFloat(valor) }));
@@ -112,6 +142,14 @@ const Scaa = () => {
             return;
         }
 
+        const authInstance = getAuth(); // 👈 aqui você cria uma instância
+        const user = authInstance.currentUser; // 👈 aqui obtém o usuário autenticado
+
+        if (!user) {
+            alert("Usuário não autenticado.");
+            return;
+        }
+
         const avaliacao = {
             avaliador,
             data,
@@ -129,12 +167,13 @@ const Scaa = () => {
             defeitosLeves: qtdLeve,
             defeitosGraves: qtdGrave,
             pontuacaoFinal: calcularPontuacaoFinal(),
-            userId: auth.currentUser.uid,
+            totalDescontos, // <- adicionado aqui
+            userId: user.uid,
             dataCriacao: new Date().toISOString()
         };
 
         try {
-            await addDoc(collection(db, "avaliacoes_scaa"), avaliacao);
+            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), avaliacao);
             alert("Avaliação salva com sucesso!");
             handlePrintPDF();
         } catch (error) {
@@ -143,65 +182,53 @@ const Scaa = () => {
         }
     };
 
+
     const handlePrintPDF = () => {
-        const docPDF = new jsPDF();
-
-        // Cabeçalho com logo e título
-        const marginX = 14;
-        const boxX = marginX;
-        const boxY = 10;
-        const boxWidth = 210 - 2 * marginX;
-        const boxHeight = 30;
-
+        const docPDF = new jsPDF({ unit: "mm", format: "a4" });
         const img = new Image();
         img.src = logo;
 
         img.onload = () => {
-            docPDF.setFont("times", "normal");
-            docPDF.setTextColor(0, 0, 0);
-
-            docPDF.rect(boxX, boxY, boxWidth, boxHeight);
+            const pageWidth = docPDF.internal.pageSize.getWidth();
+            const pageHeight = docPDF.internal.pageSize.getHeight();
+            const marginX = 20;
+            const boxY = 10;
             const logoWidth = 25;
             const logoHeight = 25;
-            docPDF.addImage(img, "PNG", boxX + 2, boxY + 2.5, logoWidth, logoHeight);
-
+            const spacing = 5;
             const titulo = "Avaliação Sensorial de Café - Método SCAA";
+            const tituloWidth = docPDF.getTextWidth(titulo);
+            const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2;
+
+            docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight);
             docPDF.setFont("times", "bold");
             docPDF.setFontSize(14);
-            docPDF.text(titulo, boxX + logoWidth + 10, boxY + 18);
+            docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16);
 
             const autoTableOptions = (config) => ({
                 ...config,
                 theme: "grid",
                 margin: { left: marginX, right: marginX },
-                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + boxHeight + 10,
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + logoHeight + 10,
                 headStyles: {
-                    fillColor: [3, 43, 67], // #032B43
-                    textColor: 255,         // white
+                    fillColor: [3, 43, 67],
+                    textColor: 255,
                     fontStyle: "bold",
                     font: "times"
                 },
                 bodyStyles: {
                     font: "times",
-                    textColor: 0            // black
+                    textColor: 0
+                },
+                didDrawPage: (data) => {
+                    const pageCount = docPDF.internal.getNumberOfPages();
+                    docPDF.setFontSize(10);
+                    docPDF.setTextColor(150);
+                    docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align: "right" });
+                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10);
                 }
             });
 
-            // Identificação
-            autoTable(docPDF, autoTableOptions({
-                head: [["Identificação", "Valor"]],
-                body: [
-                    ["Avaliador", avaliador || "—"],
-                    ["Data", new Date(data).toLocaleDateString("pt-BR")],
-                    ["Fornecedor", fornecedorSelecionado || "—"],
-                    ["Nº Amostra", numeroAmostra || "—"],
-                    ["Torra", torraSelecionada || "—"],
-                    [{ content: "Pontuação Final", styles: { fontStyle: "bold" } }, { content: calcularPontuacaoFinal(), styles: { fontStyle: "bold" } }],
-                    [{ content: "Notas Sensoriais", styles: { fontStyle: "bold" } }, { content: notasSensorias || "—", styles: { fontStyle: "bold" } }]
-                ]
-            }));
-
-            // Atributos sensoriais
             const corpoNotas = [
                 ["Aroma / Fragrância", notas.AromaFragrancia],
                 ["Sabor", notas.sabor],
@@ -217,13 +244,27 @@ const Scaa = () => {
                 ["Avaliação Pessoal", notas.avaliacaoPessoal]
             );
 
+            const descontos = qtdLeve * 2 + qtdGrave * 4;
+            const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
+
+            autoTable(docPDF, autoTableOptions({
+                head: [["Identificação", "Valor"]],
+                body: [
+                    ["Avaliador", avaliador || "—"],
+                    ["Data", new Date(data).toLocaleDateString("pt-BR")],
+                    ["Fornecedor", fornecedorSelecionado || "—"],
+                    ["Nº Amostra", numeroAmostra || "—"],
+                    ["Torra", torraSelecionada || "—"],
+                    [{ content: "Pontuação Final", styles: { fontStyle: "bold" } }, { content: calcularPontuacaoFinal(), styles: { fontStyle: "bold" } }],
+                    [{ content: "Notas Sensoriais", styles: { fontStyle: "bold" } }, { content: notasSensorias || "—", styles: { fontStyle: "bold" } }]
+                ]
+            }));
+
             autoTable(docPDF, autoTableOptions({
                 head: [["Atributo Sensorial", "Nota"]],
                 body: corpoNotas
             }));
 
-            // Critérios Técnicos
-            const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
             autoTable(docPDF, autoTableOptions({
                 head: [["Critério", "Valor"]],
                 body: [
@@ -233,35 +274,16 @@ const Scaa = () => {
                     ["Nível de Corpo", intensidades[nivelCorpo] || "—"],
                     ["Defeitos Leves", `-${qtdLeve * 2}`],
                     ["Defeitos Graves", `-${qtdGrave * 4}`],
-                    ["Total de Pontos Descontados", `-${totalDescontos}`]
+                    ["Total de Pontos Descontados", `-${descontos}`]
                 ]
             }));
 
-            // Observações em nova página
-            docPDF.addPage();
-            autoTable(docPDF, {
-                theme: "grid",
-                margin: { left: marginX, right: marginX },
-                startY: 20,
-                headStyles: {
-                    fillColor: [3, 43, 67],
-                    textColor: 255,
-                    fontStyle: "bold",
-                    font: "times"
-                },
-                bodyStyles: {
-                    font: "times",
-                    textColor: 0
-                },
+            autoTable(docPDF, autoTableOptions({
                 head: [["Observações", "Conteúdo"]],
-                body: [
-                    ["Observações Gerais", observacoes || "—"]
-                ]
-            });
+                body: [["Observações Gerais", observacoes || "—"]]
+            }));
 
-            // Assinatura
             const assinaturaY = docPDF.lastAutoTable.finalY + 30;
-            const pageWidth = docPDF.internal.pageSize.getWidth();
             const linhaLargura = 80;
             const linhaInicioX = (pageWidth - linhaLargura) / 2;
 
@@ -269,10 +291,11 @@ const Scaa = () => {
             docPDF.setFont("times", "normal");
             docPDF.setFontSize(12);
             docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
+            docPDF.save(`laudo_scaa_${new Date().toISOString().split("T")[0]}.pdf`);
 
-            docPDF.save(`avaliacao_scaa_${fornecedorSelecionado}_${numeroAmostra}.pdf`);
         };
     };
+
 
 
     const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
@@ -281,7 +304,9 @@ const Scaa = () => {
         <div className="scaa-container">
             <div className="scaa-header">
                 <h2>Avaliação Sensorial de Café - SCAA</h2>
-                <button className="fechar" onClick={() => navigate(-1)}>✖</button>
+                <button className="fechar" onClick={() => navigate("/logado")}>
+                    ✖
+                </button>
             </div>
 
             <div className="pdf-float-container">
@@ -750,7 +775,9 @@ const Scaa = () => {
                 {/* Pontuação Final */}
                 <div className="pontuacao-final">
                     <h3>Pontuação Final: {calcularPontuacaoFinal()}</h3>
+                    <p>Descontos Totais: {totalDescontos}</p>
                 </div>
+
 
                 <button
                     className="salvar"

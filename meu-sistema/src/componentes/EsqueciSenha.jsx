@@ -1,15 +1,24 @@
 import "./EsqueciSenha.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { auth } from "../config/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext"; // ✅ Importa o contexto
 
 const EsqueciSenha = () => {
+    const { usuario } = useUser(); // ✅ Usa o contexto
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [erro, setErro] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    // ✅ Impede usuários logados de acessar
+    useEffect(() => {
+        if (usuario) {
+            navigate("/logado", { replace: true });
+        }
+    }, [usuario, navigate]);
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
@@ -26,7 +35,7 @@ const EsqueciSenha = () => {
         try {
             await sendPasswordResetEmail(auth, email);
             setMensagem("Um link para redefinir sua senha foi enviado para o seu e-mail.");
-            setTimeout(() => navigate("/login"), 3000); // Redireciona após 3 segundos
+            setTimeout(() => navigate("/login"), 3000);
         } catch (error) {
             if (error.code === "auth/user-not-found") {
                 setErro("Este e-mail não está cadastrado.");
@@ -45,9 +54,7 @@ const EsqueciSenha = () => {
             <div className="esqueci-header">
                 <form onSubmit={handleResetPassword} className="esqueci-form">
                     <h2>RECUPERAR SENHA</h2>
-                    <button className="fechar" onClick={() => navigate("/login")}>
-                        X
-                    </button>
+                    <button className="fechar" onClick={() => navigate("/login")}>X</button>
                     <input
                         type="email"
                         placeholder="Digite seu e-mail"
@@ -56,7 +63,6 @@ const EsqueciSenha = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-
                     <button className="esqueci-botao" type="submit" disabled={loading}>
                         {loading ? "ENVIANDO..." : "ENVIAR LINK DE RECUPERAÇÃO "}
                     </button>
@@ -64,7 +70,6 @@ const EsqueciSenha = () => {
             </div>
             {mensagem && <p className="mensagem-sucesso">{mensagem}</p>}
             {erro && <p className="mensagem-erro">{erro}</p>}
-
         </div>
     );
 };

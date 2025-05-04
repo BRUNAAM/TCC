@@ -1,4 +1,5 @@
 import "./Cadastro.css";
+import { useEffect } from "react"; // já deve estar no topo
 import { useState } from "react";
 import { auth, db } from "../config/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -9,8 +10,9 @@ import { sendEmailVerification } from "firebase/auth";
 
 
 
+
 const Cadastro = () => {
-    const { setUsuario } = useUser(); // dentro do componente Cadastro
+    const { setUsuario, usuario } = useUser(); // dentro do componente Cadastro
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
@@ -25,6 +27,12 @@ const Cadastro = () => {
         }
         return null; // ← ESSENCIAL!
     };
+
+    useEffect(() => {
+        if (usuario) {
+            navigate("/logado", { replace: true }); // impede voltar
+        }
+    }, [usuario, navigate]);
 
 
     const handleCadastro = async (e) => {

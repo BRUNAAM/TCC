@@ -10,7 +10,13 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUsuario(user);
+      if (user) {
+        // Recupera o nome salvo localmente, ou usa o displayName do Firebase
+        const nomeSalvo = localStorage.getItem("usuarioNome") || user.displayName || "Usuário";
+        setUsuario({ nome: nomeSalvo, email: user.email });
+      } else {
+        setUsuario(null);
+      }
       setLoading(false);
     });
 

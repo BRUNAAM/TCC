@@ -15,6 +15,13 @@ body,
     font-size: 1rem;
 }
 
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto);
+  }
+  
+
 /* Container principal */
 .cadastro-container {
     display: flex;

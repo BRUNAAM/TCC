@@ -1,9 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import logo from "../assets/logo.svg";
+import { useUser } from "../context/UserContext";
+import { useEffect } from "react";
 
 const Home = () => {
+    const { usuario } = useUser();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (usuario) {
+            navigate("/logado", { replace: true }); // impede voltar
+        }
+    }, [usuario, navigate]);
 
     return (
         <main className="home-container">

@@ -1,3 +1,4 @@
+import { useEffect, } from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
@@ -8,17 +9,32 @@ const Logado = () => {
     const { usuario, setUsuario } = useUser();
     const navigate = useNavigate();
 
+    // ✅ Proteção extra: redireciona se não estiver logado
+    useEffect(() => {
+        if (!usuario) {
+            const nomeSalvo = localStorage.getItem("usuarioNome");
+            if (nomeSalvo) {
+                setUsuario({ nome: nomeSalvo }); // repõe o contexto
+            } else {
+                navigate("/login", { replace: true });
+            }
+        }
+    }, [usuario, navigate, setUsuario]);
+
     const handleLogout = async () => {
         try {
             await signOut(auth);
             setUsuario(null);
-            navigate("/login");
+            localStorage.removeItem("usuarioNome"); // ← remove nome salvo
+            navigate("/login", { replace: true });
         } catch (error) {
             console.error("Erro ao sair:", error);
         }
     };
 
-    if (!usuario) return <p>Carregando...</p>; // Evita erro se contexto ainda não carregou
+
+    // Ainda carregando contexto
+    if (!usuario) return <p>Carregando...</p>;
 
     return (
         <main className="logado-container">
@@ -31,8 +47,8 @@ const Logado = () => {
                 <button onClick={() => navigate("/cob")}>Iniciar Avaliação COB</button>
                 <button onClick={() => navigate("/scaa")}>Iniciar Avaliação SCAA</button>
                 <button onClick={() => navigate("/fornecedores")}>Cadastro de Produtores / Fornecedores</button>
-                <button onClick={() => navigate("/historico-scaa")}>Histórico de Avaliações SCAA</button>
                 <button onClick={() => navigate("/historico-cob")}>Histórico de Avaliações COB</button>
+                <button onClick={() => navigate("/historico-scaa")}>Histórico de Avaliações SCAA</button>
             </nav>
 
             <button className="logout-button" onClick={handleLogout}>SAIR</button>

@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
 import { db } from "../config/firebase";
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import "./Fornecedores.css";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "./Fornecedores.css";
 
 const Fornecedores = () => {
     const [fornecedores, setFornecedores] = useState([]);
@@ -22,18 +30,37 @@ const Fornecedores = () => {
     }, []);
 
     const carregarFornecedores = async () => {
-        const querySnapshot = await getDocs(collection(db, "fornecedores"));
+        const authInstance = getAuth();
+        const user = authInstance.currentUser;
+
+        if (!user) {
+            alert("Usuário não autenticado.");
+            return;
+        }
+
+        const querySnapshot = await getDocs(
+            collection(db, "usuarios", user.uid, "fornecedores")
+        );
         setFornecedores(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
 
     const handleCadastro = async (e) => {
         e.preventDefault();
+        const authInstance = getAuth();
+        const user = authInstance.currentUser;
+
+        if (!user) {
+            alert("Usuário não autenticado.");
+            return;
+        }
+
+        const fornecedorRef = collection(db, "usuarios", user.uid, "fornecedores");
 
         if (idEdicao) {
-            const fornecedorRef = doc(db, "fornecedores", idEdicao);
-            await updateDoc(fornecedorRef, { nome, rua, bairro, cidade, cep, telefone });
+            const docRef = doc(fornecedorRef, idEdicao);
+            await updateDoc(docRef, { nome, rua, bairro, cidade, cep, telefone });
         } else {
-            await addDoc(collection(db, "fornecedores"), {
+            await addDoc(fornecedorRef, {
                 nome,
                 rua,
                 bairro,
@@ -41,8 +68,6 @@ const Fornecedores = () => {
                 cep,
                 telefone
             });
-
-            navigate("/cob", { state: { fornecedorRecemCadastrado: nome } });
         }
 
         limparCampos();
@@ -61,7 +86,16 @@ const Fornecedores = () => {
 
     const handleExcluir = async (id) => {
         if (window.confirm("Deseja realmente excluir este fornecedor?")) {
-            await deleteDoc(doc(db, "fornecedores", id));
+            const authInstance = getAuth();
+            const user = authInstance.currentUser;
+
+            if (!user) {
+                alert("Usuário não autenticado.");
+                return;
+            }
+
+            const docRef = doc(db, "usuarios", user.uid, "fornecedores", id);
+            await deleteDoc(docRef);
             carregarFornecedores();
         }
     };

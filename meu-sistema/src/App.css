@@ -216,3 +216,13 @@ input {
 .botao-voltar:hover {
     transform: scale(1.1);
 }
+:root {
+    --cor-primaria: #032B43;
+    --cor-secundaria: #FFBA08;
+    --cor-fundo: #ffffff;
+    --cor-texto: #ffffff;
+    --fonte-principal: 'Times New Roman', Times, serif;
+    --borda-radius: 10px;
+    --sombra-padrao: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
