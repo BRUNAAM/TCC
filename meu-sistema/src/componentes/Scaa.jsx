@@ -14,6 +14,8 @@ import logo from "../assets/logopdf.png"; // Adicione no topo do seu arquivo, ig
 
 
 const Scaa = () => {
+    const [avaliacoes, setAvaliacoes] = useState([]);
+    const [abaAtiva, setAbaAtiva] = useState(null);
     const [mostrarPdf, setMostrarPdf] = useState(false);
     const [avaliador, setAvaliador] = useState("");
     const [data, setData] = useState("");
@@ -95,6 +97,7 @@ const Scaa = () => {
             alert("Erro ao carregar fornecedores. Tente novamente.");
         }
     };
+
 
 
     const handleNotaChange = (categoria, valor) => {
@@ -181,6 +184,51 @@ const Scaa = () => {
             alert("Erro ao salvar avaliação. Tente novamente mais tarde.");
         }
     };
+
+    const criarNovaAvaliacao = () => {
+        const nova = {
+            id: Date.now(),
+            fornecedorSelecionado: "",
+            numeroAmostra: "",
+            notas: { /* default notes */ },
+            // ... demais campos com valores padrões
+        };
+        setAvaliacoes([...avaliacoes, nova]);
+        setAbaAtiva(avaliacoes.length);
+    };
+
+    const salvarAvaliacaoFirebase = async (avaliacao) => {
+        try {
+            const authInstance = getAuth();
+            const user = authInstance.currentUser;
+
+            if (!user) {
+                console.warn("Usuário não autenticado.");
+                return;
+            }
+
+            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), {
+                ...avaliacao,
+                userId: user.uid,
+                dataCriacao: new Date().toISOString()
+            });
+
+            console.log("Avaliação salva automaticamente.");
+        } catch (error) {
+            console.error("Erro ao salvar automaticamente:", error);
+        }
+    };
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (avaliacoes[abaAtiva]) {
+                salvarAvaliacaoFirebase(avaliacoes[abaAtiva]);
+            }
+        }, 1000); // salva 1s após digitação
+
+        return () => clearTimeout(timeout);
+    }, [avaliacoes, abaAtiva]);
+
 
 
     const handlePrintPDF = () => {
@@ -309,28 +357,43 @@ const Scaa = () => {
                 </button>
             </div>
 
-            <div className="pdf-float-container">
-                <button
-                    className="botao-flutuante-pdf"
-                    onClick={() => setMostrarPdf(!mostrarPdf)}
-                    title={mostrarPdf ? "Fechar PDF" : "Abrir PF"}
-                >
-                    📄
-                </button>
+            {/* 
+<div className="pdf-float-container">
+    <button
+        className="botao-flutuante-pdf"
+        onClick={() => setMostrarPdf(!mostrarPdf)}
+        title={mostrarPdf ? "Fechar PDF" : "Abrir PF"}
+    >
+        📄
+    </button>
 
-                {mostrarPdf && (
-                    <div className="pdf-janela">
-                        <iframe
-                            src="/documentos/roda de sabores.pdf"
-                            title="Manual SCAA"
-                            width="400"
-                            height="600"
-                        ></iframe>
-                    </div>
-                )}
-            </div>
+    {mostrarPdf && (
+        <div className="pdf-janela">
+            <iframe
+                src="/documentos/roda de sabores.pdf"
+                title="Manual SCAA"
+                width="400"
+                height="600"
+            ></iframe>
+        </div>
+    )}
+</div>
+*/}
+
 
             <div className="scaa-form">
+            <div className="abas">
+                    {avaliacoes.map((av, index) => (
+                        <button
+                            key={index}
+                            className={abaAtiva === index ? "aba ativa" : "aba"}
+                            onClick={() => setAbaAtiva(index)}
+                        >
+                            Amostra {av.numeroAmostra || index + 1}
+                        </button>
+                    ))}
+                    <button onClick={criarNovaAvaliacao}>+ Nova Avaliação</button>
+                </div>
                 <label>Nome do Avaliador:</label>
                 <input type="text" value={avaliador} disabled />
 
@@ -359,7 +422,6 @@ const Scaa = () => {
                         Novo
                     </button>
                 </div>
-
 
                 <label>N° da Amostra:</label>
                 <input

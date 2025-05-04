@@ -16,6 +16,25 @@ body {
     text-align: center;
 }
 
+.abas {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.aba {
+    background: #444;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.aba.ativa {
+    background: #FFBA08;
+    color: #032B43;
+}
+
 
 .pontuacao-final h3 {
     color: #FFBA08;
@@ -392,6 +411,7 @@ label {
     font-family: 'Times New Roman', Times, serif;
     color: #FFBA08;
 }
+
 
 
 
