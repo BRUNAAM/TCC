@@ -518,3 +518,42 @@ body,
         align-items: center;
     }
 }
+
+.secao-xicaras-defeitos {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.titulo-secao {
+    color: #FFBA08;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.nota-xicaras-valor {
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.defeitos-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 25px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.defeito-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.resultado-defeito {
+    font-weight: bold;
+    color: #FFBA08;
+    font-size: 18px;
+}

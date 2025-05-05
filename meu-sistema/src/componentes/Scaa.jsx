@@ -1,256 +1,320 @@
-import "./Scaa.css";
-import { getAuth } from "firebase/auth";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { db } from "../config/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import GraoCafe from "./GraoCafe";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import logo from "../assets/logopdf.png"; // Adicione no topo do seu arquivo, igual no Scaa
+"use client"
 
+// Instead of using TypeScript interface, we'll use JSDoc for type documentation
+// and create a factory function for new evaluations
 
+import "./Scaa.css"
+import { getAuth } from "firebase/auth"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { db } from "../config/firebase"
+import { collection, getDocs, addDoc } from "firebase/firestore"
+import GraoCafe from "./GraoCafe"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
+import "bootstrap-icons/font/bootstrap-icons.css"
+import logo from "../assets/logopdf.png"
 
+/**
+ * Creates a new evaluation object with default values
+ * @param {Object} overrides - Optional values to override defaults
+ * @returns {Object} A new evaluation object
+ */
+const novaEstruturaAvaliacao = (overrides = {}) => {
+    return {
+        id: Date.now(),
+        avaliador: "",
+        data: new Date().toISOString().split("T")[0],
+        fornecedorSelecionado: "",
+        numeroAmostra: "",
+        torraSelecionada: "",
+        observacoes: "",
+        notasSensorias: "",
+        obsAcidez: "",
+        obsDry: "",
+        obsBreak: "",
+        dry: 2,
+        breakValue: 2,
+        nivelAcidez: 2,
+        nivelCorpo: 2,
+        notas: {
+            AromaFragrancia: 6,
+            sabor: 6,
+            finalizacao: 6,
+            acidez: 6,
+            corpo: 6,
+            equilibrio: 6,
+            avaliacaoPessoal: 6,
+            doçura: [false, false, false, false, false],
+            uniformidade: [false, false, false, false, false],
+            xicaraLimpa: [false, false, false, false, false],
+        },
+        defeitosLeves: 0,
+        defeitosGraves: 0,
+        ...overrides,
+    }
+}
 
 const Scaa = () => {
-    const [avaliacoes, setAvaliacoes] = useState([]);
-    const [abaAtiva, setAbaAtiva] = useState(null);
-    const [avaliador, setAvaliador] = useState("");
-    const [data, setData] = useState("");
-    const [fornecedores, setFornecedores] = useState([]);
-    const [fornecedorSelecionado, setFornecedorSelecionado] = useState("");
-    const [numeroAmostra, setNumeroAmostra] = useState("");
-    const [observacoes, setObservacoes] = useState("");
-    const [torraSelecionada, setTorraSelecionada] = useState("");
-    const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false);
-    const [obsAcidez, setObsAcidez] = useState("");
-    const [notasSensorias, setnotasSensoriais] = useState("");
-    const [dry, setDry] = useState(2);
-    const [breakValue, setBreakValue] = useState(2);
-    const [nivelAcidez, setNivelAcidez] = useState(2);
-    const [nivelCorpo, setNivelCorpo] = useState(2);
-    const [notas, setNotas] = useState({
-        AromaFragrancia: 6,
-        sabor: 6,
-        finalizacao: 6,
-        acidez: 6,
-        corpo: 6,
-        equilibrio: 6,
-        avaliacaoPessoal: 6,
-        doçura: [false, false, false, false, false],
-        uniformidade: [false, false, false, false, false],
-        xicaraLimpa: [false, false, false, false, false]
-    });
-    const [qtdLeve, setQtdLeve] = useState(0);
-    const [qtdGrave, setQtdGrave] = useState(0);
-    const totalDescontos = qtdLeve * 2 + qtdGrave * 4;
-    const navigate = useNavigate();
+    const [avaliacoes, setAvaliacoes] = useState([])
+    const [abaAtiva, setAbaAtiva] = useState(null)
+    const [fornecedores, setFornecedores] = useState([])
+    const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false)
+    const navigate = useNavigate()
+
+    // Get the current active evaluation
+    const avaliacaoAtual = abaAtiva !== null && avaliacoes[abaAtiva] ? avaliacoes[abaAtiva] : null
 
     useEffect(() => {
-        window.history.pushState(null, null, window.location.href);
+        // Prevent browser back button
+        window.history.pushState(null, null, window.location.href)
         const bloquearVoltar = () => {
-            window.history.pushState(null, null, window.location.href);
-        };
-        window.addEventListener("popstate", bloquearVoltar);
+            window.history.pushState(null, null, window.location.href)
+        }
+        window.addEventListener("popstate", bloquearVoltar)
+        return () => window.removeEventListener("popstate", bloquearVoltar)
+    }, [])
 
-        return () => window.removeEventListener("popstate", bloquearVoltar);
-    }, []);
-
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        setData(new Date().toISOString().split("T")[0]);
-        carregarAvaliador();
-        carregarFornecedores();
-    }, []);
+        const inicializarAvaliacao = () => {
+            if (avaliacoes.length === 0) {
+                const novaAvaliacao = novaEstruturaAvaliacao({
+                    avaliador: localStorage.getItem("usuarioNome") || "",
+                })
+                setAvaliacoes([novaAvaliacao])
+                setAbaAtiva(0)
+            }
+        }
+
+        inicializarAvaliacao()
+        carregarAvaliador()
+        carregarFornecedores()
+    }, [avaliacoes.length])
 
     const carregarAvaliador = () => {
-        const usuarioNome = localStorage.getItem("usuarioNome");
+        const usuarioNome = localStorage.getItem("usuarioNome")
         if (usuarioNome) {
-            setAvaliador(usuarioNome);
+            setAvaliacoes((prev) => {
+                return prev.map((av) => ({
+                    ...av,
+                    avaliador: usuarioNome,
+                }))
+            })
         }
-    };
+    }
 
     const carregarFornecedores = async () => {
         try {
-            const authInstance = getAuth(); // cria instância do auth
-            const user = authInstance.currentUser; // pega o usuário logado
+            const authInstance = getAuth()
+            const user = authInstance.currentUser
 
             if (!user) {
-                alert("Usuário não autenticado.");
-                return;
+                alert("Usuário não autenticado.")
+                return
             }
 
-            const querySnapshot = await getDocs(
-                collection(db, "usuarios", user.uid, "fornecedores")
-            );
+            const querySnapshot = await getDocs(collection(db, "usuarios", user.uid, "fornecedores"))
 
             const listaFornecedores = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
-                ...doc.data()
-            }));
+                ...doc.data(),
+            }))
 
-            setFornecedores(listaFornecedores);
+            setFornecedores(listaFornecedores)
         } catch (error) {
-            console.error("Erro ao carregar fornecedores:", error);
-            alert("Erro ao carregar fornecedores. Tente novamente.");
+            console.error("Erro ao carregar fornecedores:", error)
+            alert("Erro ao carregar fornecedores. Tente novamente.")
         }
-    };
-
-
+    }
 
     const handleNotaChange = (categoria, valor) => {
-        setNotas((prev) => ({ ...prev, [categoria]: parseFloat(valor) }));
-    };
+        if (!avaliacaoAtual) return
+
+        setAvaliacoes((prev) => {
+            const newAvaliacoes = [...prev]
+            newAvaliacoes[abaAtiva] = {
+                ...newAvaliacoes[abaAtiva],
+                notas: {
+                    ...newAvaliacoes[abaAtiva].notas,
+                    [categoria]: Number.parseFloat(valor),
+                },
+            }
+            return newAvaliacoes
+        })
+    }
 
     const toggleCheckbox = (atributo, index) => {
-        setNotas((prev) => {
-            const newArray = [...prev[atributo]];
-            newArray[index] = !newArray[index];
-            return { ...prev, [atributo]: newArray };
-        });
-    };
+        if (!avaliacaoAtual) return
+
+        setAvaliacoes((prev) => {
+            const newAvaliacoes = [...prev]
+            const newArray = [...newAvaliacoes[abaAtiva].notas[atributo]]
+            newArray[index] = !newArray[index]
+
+            newAvaliacoes[abaAtiva] = {
+                ...newAvaliacoes[abaAtiva],
+                notas: {
+                    ...newAvaliacoes[abaAtiva].notas,
+                    [atributo]: newArray,
+                },
+            }
+            return newAvaliacoes
+        })
+    }
 
     const calcularPontuacaoXicara = (atributo) => {
-        const marcados = notas[atributo].filter((v) => v).length;
-        const score = 10 - marcados * 2;
-        return score < 0 ? 0 : score;
-    };
+        if (!avaliacaoAtual) return 0
+
+        // Cada xícara marcada desconta 2 pontos do total de 10
+        const marcados = avaliacaoAtual.notas[atributo].filter((v) => v).length
+        return 10 - marcados * 2
+    }
 
     const calcularPontuacaoXicaras = () => {
         return (
             calcularPontuacaoXicara("doçura") +
             calcularPontuacaoXicara("uniformidade") +
             calcularPontuacaoXicara("xicaraLimpa")
-        );
-    };
+        )
+    }
 
     const calcularPontuacaoFinal = () => {
-        let total = 0;
-        Object.keys(notas).forEach((key) => {
+        if (!avaliacaoAtual) return "0.00"
+
+        let total = 0
+
+        // Soma os atributos principais (escala de 6-10)
+        Object.keys(avaliacaoAtual.notas).forEach((key) => {
             if (!["doçura", "uniformidade", "xicaraLimpa"].includes(key)) {
-                total += notas[key];
+                total += avaliacaoAtual.notas[key]
             }
-        });
-        total += calcularPontuacaoXicaras();
-        total -= qtdLeve * 2;
-        total -= qtdGrave * 4;
-        return total.toFixed(2);
-    };
+        })
+
+        // Adiciona pontuação de xícaras limpas (0-10)
+        total += calcularPontuacaoXicara("xicaraLimpa")
+
+        // Adiciona pontuação de uniformidade (0-10)
+        total += calcularPontuacaoXicara("uniformidade")
+
+        // Adiciona pontuação de doçura (0-10)
+        total += calcularPontuacaoXicara("doçura")
+
+        // Subtrai defeitos
+        total -= avaliacaoAtual.defeitosLeves * 2
+        total -= avaliacaoAtual.defeitosGraves * 4
+
+        return total.toFixed(2)
+    }
+
+    const calcularTotalDescontos = () => {
+        if (!avaliacaoAtual) return 0
+
+        return avaliacaoAtual.defeitosLeves * 2 + avaliacaoAtual.defeitosGraves * 4
+    }
 
     const handleSalvarAvaliacao = async () => {
-        if (!fornecedorSelecionado || !numeroAmostra || !torraSelecionada) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
-            return;
+        if (!avaliacaoAtual) return
+
+        if (!avaliacaoAtual.fornecedorSelecionado || !avaliacaoAtual.numeroAmostra || !avaliacaoAtual.torraSelecionada) {
+            alert("Por favor, preencha todos os campos obrigatórios.")
+            return
         }
 
-        const authInstance = getAuth(); // 👈 aqui você cria uma instância
-        const user = authInstance.currentUser; // 👈 aqui obtém o usuário autenticado
+        const authInstance = getAuth()
+        const user = authInstance.currentUser
 
         if (!user) {
-            alert("Usuário não autenticado.");
-            return;
+            alert("Usuário não autenticado.")
+            return
         }
+
+        const totalDescontos = calcularTotalDescontos()
 
         const avaliacao = {
-            avaliador,
-            data,
-            fornecedor: fornecedorSelecionado,
-            numeroAmostra,
-            torra: torraSelecionada,
-            observacoes,
-            notasSensorias,
-            obsAcidez,
-            dry,
-            breakValue,
-            nivelAcidez,
-            nivelCorpo,
-            notas,
-            defeitosLeves: qtdLeve,
-            defeitosGraves: qtdGrave,
+            ...avaliacaoAtual,
             pontuacaoFinal: calcularPontuacaoFinal(),
-            totalDescontos, // <- adicionado aqui
+            totalDescontos,
             userId: user.uid,
-            dataCriacao: new Date().toISOString()
-        };
+            dataCriacao: new Date().toISOString(),
+        }
 
         try {
-            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), avaliacao);
-            alert("Avaliação salva com sucesso!");
-            handlePrintPDF();
+            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), avaliacao)
+            alert("Avaliação salva com sucesso!")
+            handlePrintPDF()
         } catch (error) {
-            console.error("Erro ao salvar avaliação:", error);
-            alert("Erro ao salvar avaliação. Tente novamente mais tarde.");
+            console.error("Erro ao salvar avaliação:", error)
+            alert("Erro ao salvar avaliação. Tente novamente mais tarde.")
         }
-    };
+    }
 
     const criarNovaAvaliacao = () => {
-        const nova = {
-            id: Date.now(),
-            fornecedorSelecionado: "",
-            numeroAmostra: "",
-            notas: { /* default notes */ },
-            // ... demais campos com valores padrões
-        };
-        setAvaliacoes([...avaliacoes, nova]);
-        setAbaAtiva(avaliacoes.length);
-    };
+        const novaAvaliacao = novaEstruturaAvaliacao({
+            avaliador: avaliacoes.length > 0 && avaliacoes[0].avaliador ? avaliacoes[0].avaliador : "",
+        })
+
+        setAvaliacoes((prev) => [...prev, novaAvaliacao])
+        setAbaAtiva((prev) => (prev === null ? 0 : prev + 1))
+    }
+
 
     const salvarAvaliacaoFirebase = async (avaliacao) => {
         try {
-            const authInstance = getAuth();
-            const user = authInstance.currentUser;
+            const authInstance = getAuth()
+            const user = authInstance.currentUser
 
             if (!user) {
-                console.warn("Usuário não autenticado.");
-                return;
+                console.warn("Usuário não autenticado.")
+                return
             }
 
             await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), {
                 ...avaliacao,
                 userId: user.uid,
-                dataCriacao: new Date().toISOString()
-            });
+                dataCriacao: new Date().toISOString(),
+            })
 
-            console.log("Avaliação salva automaticamente.");
+            console.log("Avaliação salva automaticamente.")
         } catch (error) {
-            console.error("Erro ao salvar automaticamente:", error);
+            console.error("Erro ao salvar automaticamente:", error)
         }
-    };
+    }
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (avaliacoes[abaAtiva]) {
-                salvarAvaliacaoFirebase(avaliacoes[abaAtiva]);
-            }
-        }, 1000); // salva 1s após digitação
+        if (abaAtiva !== null && avaliacoes[abaAtiva]) {
+            const timeout = setTimeout(() => {
+                salvarAvaliacaoFirebase(avaliacoes[abaAtiva])
+            }, 5000) // salva 5s após última alteração
 
-        return () => clearTimeout(timeout);
-    }, [avaliacoes, abaAtiva]);
-
-
+            return () => clearTimeout(timeout)
+        }
+    }, [avaliacoes, abaAtiva])
 
     const handlePrintPDF = () => {
-        const docPDF = new jsPDF({ unit: "mm", format: "a4" });
-        const img = new Image();
-        img.src = logo;
+        if (!avaliacaoAtual) return
+
+        const docPDF = new jsPDF({ unit: "mm", format: "a4" })
+        const img = new Image()
+        img.src = logo
+        img.crossOrigin = "anonymous" // Add this to avoid CORS issues
 
         img.onload = () => {
-            const pageWidth = docPDF.internal.pageSize.getWidth();
-            const pageHeight = docPDF.internal.pageSize.getHeight();
-            const marginX = 20;
-            const boxY = 10;
-            const logoWidth = 25;
-            const logoHeight = 25;
-            const spacing = 5;
-            const titulo = "Avaliação Sensorial de Café - Método SCAA";
-            const tituloWidth = docPDF.getTextWidth(titulo);
-            const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2;
+            const pageWidth = docPDF.internal.pageSize.getWidth()
+            const pageHeight = docPDF.internal.pageSize.getHeight()
+            const marginX = 20
+            const boxY = 10
+            const logoWidth = 25
+            const logoHeight = 25
+            const spacing = 5
+            const titulo = "Avaliação Sensorial de Café - Método SCAA"
+            const tituloWidth = docPDF.getTextWidth(titulo)
+            const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2
 
-            docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight);
-            docPDF.setFont("times", "bold");
-            docPDF.setFontSize(14);
-            docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16);
+            docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight)
+            docPDF.setFont("times", "bold")
+            docPDF.setFontSize(14)
+            docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16)
 
             const autoTableOptions = (config) => ({
                 ...config,
@@ -261,91 +325,140 @@ const Scaa = () => {
                     fillColor: [3, 43, 67],
                     textColor: 255,
                     fontStyle: "bold",
-                    font: "times"
+                    font: "times",
                 },
                 bodyStyles: {
                     font: "times",
-                    textColor: 0
+                    textColor: 0,
                 },
                 didDrawPage: (data) => {
-                    const pageCount = docPDF.internal.getNumberOfPages();
-                    docPDF.setFontSize(10);
-                    docPDF.setTextColor(150);
-                    docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align: "right" });
-                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10);
-                }
-            });
+                    const pageCount = docPDF.internal.getNumberOfPages()
+                    docPDF.setFontSize(10)
+                    docPDF.setTextColor(150)
+                    docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, {
+                        align: "right",
+                    })
+                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10)
+                },
+            })
 
             const corpoNotas = [
-                ["Aroma / Fragrância", notas.AromaFragrancia],
-                ["Sabor", notas.sabor],
-                ["Finalização", notas.finalizacao],
-                ["Acidez", notas.acidez]
-            ];
+                ["Aroma / Fragrância", avaliacaoAtual.notas.AromaFragrancia],
+                ["Sabor", avaliacaoAtual.notas.sabor],
+                ["Finalização", avaliacaoAtual.notas.finalizacao],
+                ["Acidez", avaliacaoAtual.notas.acidez],
+            ]
 
-            if (obsAcidez) corpoNotas.push(["Tipo de Acidez", obsAcidez]);
+            if (avaliacaoAtual.obsAcidez) corpoNotas.push(["Tipo de Acidez", avaliacaoAtual.obsAcidez])
 
             corpoNotas.push(
-                ["Corpo", notas.corpo],
-                ["Equilíbrio", notas.equilibrio],
-                ["Avaliação Pessoal", notas.avaliacaoPessoal]
-            );
+                ["Corpo", avaliacaoAtual.notas.corpo],
+                ["Equilíbrio", avaliacaoAtual.notas.equilibrio],
+                ["Avaliação Pessoal", avaliacaoAtual.notas.avaliacaoPessoal],
+            )
 
-            const descontos = qtdLeve * 2 + qtdGrave * 4;
-            const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
+            const descontos = calcularTotalDescontos()
+            const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
 
-            autoTable(docPDF, autoTableOptions({
-                head: [["Identificação", "Valor"]],
-                body: [
-                    ["Avaliador", avaliador || "—"],
-                    ["Data", new Date(data).toLocaleDateString("pt-BR")],
-                    ["Fornecedor", fornecedorSelecionado || "—"],
-                    ["Nº Amostra", numeroAmostra || "—"],
-                    ["Torra", torraSelecionada || "—"],
-                    [{ content: "Pontuação Final", styles: { fontStyle: "bold" } }, { content: calcularPontuacaoFinal(), styles: { fontStyle: "bold" } }],
-                    [{ content: "Notas Sensoriais", styles: { fontStyle: "bold" } }, { content: notasSensorias || "—", styles: { fontStyle: "bold" } }]
-                ]
-            }));
+            autoTable(
+                docPDF,
+                autoTableOptions({
+                    head: [["Identificação", "Valor"]],
+                    body: [
+                        ["Avaliador", avaliacaoAtual.avaliador || "—"],
+                        ["Data", new Date(avaliacaoAtual.data).toLocaleDateString("pt-BR")],
+                        ["Fornecedor", avaliacaoAtual.fornecedorSelecionado || "—"],
+                        ["Nº Amostra", avaliacaoAtual.numeroAmostra || "—"],
+                        ["Torra", avaliacaoAtual.torraSelecionada || "—"],
+                        [
+                            { content: "Pontuação Final", styles: { fontStyle: "bold" } },
+                            { content: calcularPontuacaoFinal(), styles: { fontStyle: "bold" } },
+                        ],
+                        [
+                            { content: "Notas Sensoriais", styles: { fontStyle: "bold" } },
+                            { content: avaliacaoAtual.notasSensorias || "—", styles: { fontStyle: "bold" } },
+                        ],
+                    ],
+                }),
+            )
 
-            autoTable(docPDF, autoTableOptions({
-                head: [["Atributo Sensorial", "Nota"]],
-                body: corpoNotas
-            }));
+            autoTable(
+                docPDF,
+                autoTableOptions({
+                    head: [["Atributo Sensorial", "Nota"]],
+                    body: corpoNotas,
+                }),
+            )
 
-            autoTable(docPDF, autoTableOptions({
-                head: [["Critério", "Valor"]],
-                body: [
-                    ["Dry", intensidades[dry] || "—"],
-                    ["Break", intensidades[breakValue] || "—"],
-                    ["Nível de Acidez", intensidades[nivelAcidez] || "—"],
-                    ["Nível de Corpo", intensidades[nivelCorpo] || "—"],
-                    ["Defeitos Leves", `-${qtdLeve * 2}`],
-                    ["Defeitos Graves", `-${qtdGrave * 4}`],
-                    ["Total de Pontos Descontados", `-${descontos}`]
-                ]
-            }));
+            autoTable(
+                docPDF,
+                autoTableOptions({
+                    head: [["Critério", "Valor"]],
+                    body: [
+                        ["Dry", intensidades[avaliacaoAtual.dry] || "—"],
+                        ["Break", intensidades[avaliacaoAtual.breakValue] || "—"],
+                        ["Nível de Acidez", intensidades[avaliacaoAtual.nivelAcidez] || "—"],
+                        ["Nível de Corpo", intensidades[avaliacaoAtual.nivelCorpo] || "—"],
+                        ["Defeitos Leves", `-${avaliacaoAtual.defeitosLeves * 2}`],
+                        ["Defeitos Graves", `-${avaliacaoAtual.defeitosGraves * 4}`],
+                        ["Total de Pontos Descontados", `-${descontos}`],
+                    ],
+                }),
+            )
 
-            autoTable(docPDF, autoTableOptions({
-                head: [["Observações", "Conteúdo"]],
-                body: [["Observações Gerais", observacoes || "—"]]
-            }));
+            autoTable(
+                docPDF,
+                autoTableOptions({
+                    head: [["Observações", "Conteúdo"]],
+                    body: [["Observações Gerais", avaliacaoAtual.observacoes || "—"]],
+                }),
+            )
 
-            const assinaturaY = docPDF.lastAutoTable.finalY + 30;
-            const linhaLargura = 80;
-            const linhaInicioX = (pageWidth - linhaLargura) / 2;
+            const assinaturaY = docPDF.lastAutoTable.finalY + 30
+            const linhaLargura = 80
+            const linhaInicioX = (pageWidth - linhaLargura) / 2
 
-            docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
-            docPDF.setFont("times", "normal");
-            docPDF.setFontSize(12);
-            docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
-            docPDF.save(`laudo_scaa_${new Date().toISOString().split("T")[0]}.pdf`);
+            docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
+            docPDF.setFont("times", "normal")
+            docPDF.setFontSize(12)
+            docPDF.text(`Avaliador: ${avaliacaoAtual.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
+            docPDF.save(`laudo_scaa_${avaliacaoAtual.numeroAmostra}_${new Date().toISOString().split("T")[0]}.pdf`)
+        }
+    }
 
-        };
-    };
+    // Helper function to update a field in the current evaluation
+    const updateField = (field, value) => {
+        if (abaAtiva === null) return
 
+        setAvaliacoes((prev) => {
+            const newAvaliacoes = [...prev]
+            newAvaliacoes[abaAtiva] = {
+                ...newAvaliacoes[abaAtiva],
+                [field]: value,
+            }
+            return newAvaliacoes
+        })
+    }
 
+    const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
 
-    const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"];
+    // If no evaluation is active, show a loading message or create a new one
+    if (!avaliacaoAtual) {
+        return (
+            <div className="scaa-container">
+                <div className="scaa-header">
+                    <h2>Avaliação Sensorial de Café - SCAA</h2>
+                    <button className="fechar" onClick={() => navigate("/logado")}>
+                        ✖
+                    </button>
+                </div>
+                <div className="scaa-form">
+                    <p>Carregando avaliação...</p>
+                    <button onClick={criarNovaAvaliacao}>Criar Nova Avaliação</button>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="scaa-container">
@@ -356,31 +469,49 @@ const Scaa = () => {
                 </button>
             </div>
 
-
             <div className="scaa-form">
                 <div className="abas">
-                    {avaliacoes.map((av, index) => (
-                        <button
-                            key={index}
-                            className={abaAtiva === index ? "aba ativa" : "aba"}
-                            onClick={() => setAbaAtiva(index)}
-                        >
-                            Amostra {av.numeroAmostra || index + 1}
-                        </button>
-                    ))}
+                    {avaliacoes.map((av, index) => {
+                        // Create a descriptive tab name that includes supplier and sample number
+                        const tabName =
+                            av.fornecedorSelecionado && av.numeroAmostra
+                                ? `${av.fornecedorSelecionado} / ${av.numeroAmostra}`
+                                : av.fornecedorSelecionado
+                                    ? `${av.fornecedorSelecionado} / -`
+                                    : av.numeroAmostra
+                                        ? `- / ${av.numeroAmostra}`
+                                        : `Amostra ${index + 1}`
+
+                        return (
+                            <button
+                                key={av.id}
+                                className={abaAtiva === index ? "aba ativa" : "aba"}
+                                onClick={() => setAbaAtiva(index)}
+                                title={`Fornecedor: ${av.fornecedorSelecionado || "Não selecionado"}, Amostra: ${av.numeroAmostra || "Não definida"}`}
+                            >
+                                {tabName}
+                            </button>
+                        )
+                    })}
                     <button onClick={criarNovaAvaliacao}>+ Nova Avaliação</button>
                 </div>
+
                 <label>Nome do Avaliador:</label>
-                <input type="text" value={avaliador} disabled />
+                <input
+                    type="text"
+                    value={avaliacaoAtual.avaliador}
+                    onChange={(e) => updateField("avaliador", e.target.value)}
+                    disabled
+                />
 
                 <label>Data:</label>
-                <input type="date" value={data} disabled />
+                <input type="date" value={avaliacaoAtual.data} onChange={(e) => updateField("data", e.target.value)} disabled />
 
                 <label>Fornecedor:</label>
                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                     <select
-                        value={fornecedorSelecionado}
-                        onChange={(e) => setFornecedorSelecionado(e.target.value)}
+                        value={avaliacaoAtual.fornecedorSelecionado}
+                        onChange={(e) => updateField("fornecedorSelecionado", e.target.value)}
                     >
                         <option value="">Selecione um fornecedor</option>
                         {fornecedores.map((f) => (
@@ -389,11 +520,7 @@ const Scaa = () => {
                             </option>
                         ))}
                     </select>
-                    <button
-                        type="button"
-                        onClick={() => navigate("/fornecedores")}
-                        className="botao-icone"
-                    >
+                    <button type="button" onClick={() => navigate("/fornecedores")} className="botao-icone">
                         <i className="bi bi-folder-plus"></i>
                         Novo
                     </button>
@@ -402,15 +529,15 @@ const Scaa = () => {
                 <label>N° da Amostra:</label>
                 <input
                     type="text"
-                    value={numeroAmostra}
-                    onChange={(e) => setNumeroAmostra(e.target.value)}
+                    value={avaliacaoAtual.numeroAmostra}
+                    onChange={(e) => updateField("numeroAmostra", e.target.value)}
                     placeholder="Digite o número da amostra"
                 />
 
                 <label>Observações:</label>
                 <textarea
-                    value={observacoes}
-                    onChange={(e) => setObservacoes(e.target.value)}
+                    value={avaliacaoAtual.observacoes}
+                    onChange={(e) => updateField("observacoes", e.target.value)}
                     placeholder="Adicione observações..."
                 />
 
@@ -422,12 +549,12 @@ const Scaa = () => {
                             { nome: "Torra Clara", cor: "#a57b70" },
                             { nome: "Torra Média Clara", cor: "#704e44" },
                             { nome: "Torra Média", cor: "#553026" },
-                            { nome: "Torra Escura", cor: "#3b1e17" }
+                            { nome: "Torra Escura", cor: "#3b1e17" },
                         ].map((torra) => (
                             <div
                                 key={torra.nome}
-                                className={`torra-option ${torraSelecionada === torra.nome ? "selecionado" : ""}`}
-                                onClick={() => setTorraSelecionada(torra.nome)}
+                                className={`torra-option ${avaliacaoAtual.torraSelecionada === torra.nome ? "selecionado" : ""}`}
+                                onClick={() => updateField("torraSelecionada", torra.nome)}
                             >
                                 <GraoCafe cor={torra.cor} />
                                 <span>{torra.nome}</span>
@@ -439,7 +566,9 @@ const Scaa = () => {
                 {/* Sliders verticais (DRY, BREAK) */}
                 <div className="vertical-sliders-container">
                     <div className="vertical-slider-box">
-                        <h4 className="dry">Dry <br /> "Aroma do pó seco"</h4>
+                        <h4 className="dry">
+                            Dry <br /> "Aroma do pó seco"
+                        </h4>
                         <div className="slider-row-with-note">
                             <div className="slider-row">
                                 <input
@@ -448,29 +577,36 @@ const Scaa = () => {
                                     min="0"
                                     max="4"
                                     step="1"
-                                    value={dry}
-                                    onChange={(e) => setDry(parseInt(e.target.value))}
+                                    value={avaliacaoAtual.dry}
+                                    onChange={(e) => updateField("dry", Number.parseInt(e.target.value))}
                                 />
                                 <div className="slider-labels">
-                                    {intensidades.slice().reverse().map((label, index) => (
-                                        <span
-                                            key={index}
-                                            className={dry === intensidades.length - 1 - index ? "selected" : ""}
-                                        >
-                                            {label}
-                                        </span>
-                                    ))}
+                                    {intensidades
+                                        .slice()
+                                        .reverse()
+                                        .map((label, index) => (
+                                            <span
+                                                key={index}
+                                                className={avaliacaoAtual.dry === intensidades.length - 1 - index ? "selected" : ""}
+                                            >
+                                                {label}
+                                            </span>
+                                        ))}
                                 </div>
                             </div>
                             <textarea
                                 className="slider-lateral-note"
                                 placeholder="Observações Dry"
+                                value={avaliacaoAtual.obsDry}
+                                onChange={(e) => updateField("obsDry", e.target.value)}
                             />
                         </div>
                     </div>
 
                     <div className="vertical-slider-box">
-                        <h4 className="break">Break <br /> "Aroma de Quebra de xicara"</h4>
+                        <h4 className="break">
+                            Break <br /> "Aroma de Quebra de xicara"
+                        </h4>
                         <div className="slider-row-with-note">
                             <div className="slider-row">
                                 <input
@@ -479,28 +615,32 @@ const Scaa = () => {
                                     min="0"
                                     max="4"
                                     step="1"
-                                    value={breakValue}
-                                    onChange={(e) => setBreakValue(parseInt(e.target.value))}
+                                    value={avaliacaoAtual.breakValue}
+                                    onChange={(e) => updateField("breakValue", Number.parseInt(e.target.value))}
                                 />
                                 <div className="slider-labels">
-                                    {intensidades.slice().reverse().map((label, index) => (
-                                        <span
-                                            key={index}
-                                            className={breakValue === intensidades.length - 1 - index ? "selected" : ""}
-                                        >
-                                            {label}
-                                        </span>
-                                    ))}
+                                    {intensidades
+                                        .slice()
+                                        .reverse()
+                                        .map((label, index) => (
+                                            <span
+                                                key={index}
+                                                className={avaliacaoAtual.breakValue === intensidades.length - 1 - index ? "selected" : ""}
+                                            >
+                                                {label}
+                                            </span>
+                                        ))}
                                 </div>
                             </div>
                             <textarea
                                 className="slider-lateral-note"
                                 placeholder="Observações Break"
+                                value={avaliacaoAtual.obsBreak}
+                                onChange={(e) => updateField("obsBreak", e.target.value)}
                             />
                         </div>
                     </div>
                 </div>
-
 
                 {/* Sliders horizontais (AromaFragrancia, Sabor, Finalização, etc.) */}
                 <div className="nota-container">
@@ -510,18 +650,17 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.AromaFragrancia}
+                        value={avaliacaoAtual.notas.AromaFragrancia}
                         onChange={(e) => handleNotaChange("AromaFragrancia", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.AromaFragrancia ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.AromaFragrancia ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
                     </div>
                 </div>
-
 
                 <div className="nota-container">
                     <label>Sabor:</label>
@@ -530,12 +669,12 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.sabor}
+                        value={avaliacaoAtual.notas.sabor}
                         onChange={(e) => handleNotaChange("sabor", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.sabor ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.sabor ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -549,12 +688,12 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.finalizacao}
+                        value={avaliacaoAtual.notas.finalizacao}
                         onChange={(e) => handleNotaChange("finalizacao", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.finalizacao ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.finalizacao ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -565,8 +704,8 @@ const Scaa = () => {
                 <div className="nota-cafe-container">
                     <label>Notas Sensoriais:</label>
                     <textarea
-                        value={notasSensorias}
-                        onChange={(e) => setnotasSensoriais(e.target.value)}
+                        value={avaliacaoAtual.notasSensorias}
+                        onChange={(e) => updateField("notasSensorias", e.target.value)}
                         placeholder="Preencha as notas encontradas no café"
                     />
                 </div>
@@ -585,23 +724,25 @@ const Scaa = () => {
                                 min="0"
                                 max="4"
                                 step="1"
-                                value={nivelAcidez}
-                                onChange={(e) => setNivelAcidez(parseInt(e.target.value))}
+                                value={avaliacaoAtual.nivelAcidez}
+                                onChange={(e) => updateField("nivelAcidez", Number.parseInt(e.target.value))}
                             />
                             <div className="slider-labels">
-                                {intensidades.slice().reverse().map((label, index) => (
-                                    <span
-                                        key={index}
-                                        className={nivelAcidez === intensidades.length - 1 - index ? "selected" : ""}
-                                    >
-                                        {label}
-                                    </span>
-                                ))}
+                                {intensidades
+                                    .slice()
+                                    .reverse()
+                                    .map((label, index) => (
+                                        <span
+                                            key={index}
+                                            className={avaliacaoAtual.nivelAcidez === intensidades.length - 1 - index ? "selected" : ""}
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
                             </div>
                         </div>
                     </div>
                 </div>
-
 
                 <div className="nota-container">
                     <label>Acidez:</label>
@@ -615,12 +756,25 @@ const Scaa = () => {
 
                     {mostrarTiposAcidez && (
                         <div className="caixa-tipos-acidez">
-                            <p><strong>Acidez Cítrica:</strong> Limão, laranja, lima, abacaxi. Bastante desejável.</p>
-                            <p><strong>Acidez Fosfórica:</strong> Presente em refrigerantes tipo cola, lembra espumante.</p>
-                            <p><strong>Acidez Málica:</strong> Como a da maçã. Comum em cafés de altitude, especialmente na América Central.</p>
-                            <p><strong>Acidez Lática:</strong> Derivados do leite. Rara no café.</p>
-                            <p><strong>Acidez Tartárica:</strong> Comum nos vinhos, vinda da videira.</p>
-                            <p><strong>Acidez Acética:</strong> Acidez do vinagre. Considerado defeito no café.</p>
+                            <p>
+                                <strong>Acidez Cítrica:</strong> Limão, laranja, lima, abacaxi. Bastante desejável.
+                            </p>
+                            <p>
+                                <strong>Acidez Fosfórica:</strong> Presente em refrigerantes tipo cola, lembra espumante.
+                            </p>
+                            <p>
+                                <strong>Acidez Málica:</strong> Como a da maçã. Comum em cafés de altitude, especialmente na América
+                                Central.
+                            </p>
+                            <p>
+                                <strong>Acidez Lática:</strong> Derivados do leite. Rara no café.
+                            </p>
+                            <p>
+                                <strong>Acidez Tartárica:</strong> Comum nos vinhos, vinda da videira.
+                            </p>
+                            <p>
+                                <strong>Acidez Acética:</strong> Acidez do vinagre. Considerado defeito no café.
+                            </p>
                         </div>
                     )}
                     <input
@@ -628,12 +782,12 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.acidez}
+                        value={avaliacaoAtual.notas.acidez}
                         onChange={(e) => handleNotaChange("acidez", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.acidez ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.acidez ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -641,8 +795,8 @@ const Scaa = () => {
                     <textarea
                         className="slider-lateral-note"
                         placeholder="Observações Acidez"
-                        value={obsAcidez}
-                        onChange={(e) => setObsAcidez(e.target.value)}
+                        value={avaliacaoAtual.obsAcidez}
+                        onChange={(e) => updateField("obsAcidez", e.target.value)}
                     />
                 </div>
 
@@ -656,18 +810,21 @@ const Scaa = () => {
                             min="0"
                             max="4"
                             step="1"
-                            value={nivelCorpo}
-                            onChange={(e) => setNivelCorpo(parseInt(e.target.value))}
+                            value={avaliacaoAtual.nivelCorpo}
+                            onChange={(e) => updateField("nivelCorpo", Number.parseInt(e.target.value))}
                         />
                         <div className="slider-labels">
-                            {intensidades.slice().reverse().map((label, index) => (
-                                <span
-                                    key={index}
-                                    className={nivelCorpo === intensidades.length - 1 - index ? "selected" : ""}
-                                >
-                                    {label}
-                                </span>
-                            ))}
+                            {intensidades
+                                .slice()
+                                .reverse()
+                                .map((label, index) => (
+                                    <span
+                                        key={index}
+                                        className={avaliacaoAtual.nivelCorpo === intensidades.length - 1 - index ? "selected" : ""}
+                                    >
+                                        {label}
+                                    </span>
+                                ))}
                         </div>
                     </div>
                 </div>
@@ -679,12 +836,12 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.corpo}
+                        value={avaliacaoAtual.notas.corpo}
                         onChange={(e) => handleNotaChange("corpo", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.corpo ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.corpo ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
@@ -698,19 +855,18 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.equilibrio}
+                        value={avaliacaoAtual.notas.equilibrio}
                         onChange={(e) => handleNotaChange("equilibrio", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.equilibrio ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.equilibrio ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
                     </div>
                 </div>
 
-                {/* Avaliação Pessoal (6..10) */}
                 <div className="nota-container">
                     <label>Avaliação Pessoal:</label>
                     <input
@@ -718,120 +874,104 @@ const Scaa = () => {
                         min="6"
                         max="10"
                         step="0.25"
-                        value={notas.avaliacaoPessoal}
+                        value={avaliacaoAtual.notas.avaliacaoPessoal}
                         onChange={(e) => handleNotaChange("avaliacaoPessoal", e.target.value)}
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === notas.avaliacaoPessoal ? "selecionado" : ""}>
+                            <span key={num} className={num === avaliacaoAtual.notas.avaliacaoPessoal ? "selecionado" : ""}>
                                 {num}
                             </span>
                         ))}
                     </div>
                 </div>
 
-                {/* Pontuação das xícaras */}
-                <div className="nota-container">
-                    <label>Pontuação dos atributos de xícaras:</label>
-                    <div className="nota-valor">
-                        {(() => {
-                            const docura = calcularPontuacaoXicara("doçura");
-                            const uniformidade = calcularPontuacaoXicara("uniformidade");
-                            const limpeza = calcularPontuacaoXicara("xicaraLimpa");
-                            return (docura + uniformidade + limpeza).toFixed(2);
-                        })()}
-                    </div>
-                </div>
-                {/* Checkboxes: Doçura, Uniformidade, Limpeza */}
-                <div className="xicaras-container">
-                    <div className="xicaras-group">
-                        <label>Doçura</label>
-                        <div className="checkbox-group">
-                            {notas.doçura.map((valor, index) => (
-                                <input
-                                    key={index}
-                                    type="checkbox"
-                                    checked={valor}
-                                    onChange={() => toggleCheckbox("doçura", index)}
-                                />
-                            ))}
+                {/* Seção de Xícaras e Defeitos no estilo da imagem */}
+                <div className="secao-xicaras-defeitos">
+                    <h4 className="titulo-secao">Pontuação dos atributos de xícaras:</h4>
+                    <div className="nota-xicaras-valor">{calcularPontuacaoXicaras().toFixed(2)}</div>
+
+                    <div className="xicaras-container">
+                        <div className="xicaras-group">
+                            <label>Doçura</label>
+                            <div className="checkboxes-coluna">
+                                {[0, 1, 2, 3, 4].map((index) => (
+                                    <input
+                                        key={index}
+                                        type="checkbox"
+                                        checked={avaliacaoAtual.notas.doçura[index]}
+                                        onChange={() => toggleCheckbox("doçura", index)}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <div className="xicaras-group">
-                        <label>Uniformidade</label>
-                        <div className="checkbox-group">
-                            {notas.uniformidade.map((valor, index) => (
-                                <input
-                                    key={index}
-                                    type="checkbox"
-                                    checked={valor}
-                                    onChange={() => toggleCheckbox("uniformidade", index)}
-                                />
-                            ))}
+
+                        <div className="xicaras-group">
+                            <label>Uniformidade</label>
+                            <div className="checkboxes-coluna">
+                                {[0, 1, 2, 3, 4].map((index) => (
+                                    <input
+                                        key={index}
+                                        type="checkbox"
+                                        checked={avaliacaoAtual.notas.uniformidade[index]}
+                                        onChange={() => toggleCheckbox("uniformidade", index)}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <div className="xicaras-group">
-                        <label>Limpeza da Xícara</label>
-                        <div className="checkbox-group">
-                            {notas.xicaraLimpa.map((valor, index) => (
-                                <input
-                                    key={index}
-                                    type="checkbox"
-                                    checked={valor}
-                                    onChange={() => toggleCheckbox("xicaraLimpa", index)}
-                                />
-                            ))}
+
+                        <div className="xicaras-group">
+                            <label>Limpeza de xícara</label>
+                            <div className="checkboxes-coluna">
+                                {[0, 1, 2, 3, 4].map((index) => (
+                                    <input
+                                        key={index}
+                                        type="checkbox"
+                                        checked={avaliacaoAtual.notas.xicaraLimpa[index]}
+                                        onChange={() => toggleCheckbox("xicaraLimpa", index)}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Defeitos - sem checkbox, só input */}
+                {/* Defeitos */}
                 <div className="defeitos-container">
-                    <div>
+                    <div className="defeito-box">
                         <label>Defeito Leve (-2):</label>
                         <input
                             type="number"
-                            min="0"
-                            value={qtdLeve}
-                            onChange={(e) => setQtdLeve(parseInt(e.target.value) || 0)}
-                            placeholder="# cups"
+                            value={avaliacaoAtual.defeitosLeves}
+                            onChange={(e) => updateField("defeitosLeves", Number(e.target.value) || 0)}
                         />
-                        <span> = {qtdLeve * 2}</span>
+                        <span className="resultado-defeito">= {avaliacaoAtual.defeitosLeves * 2}</span>
                     </div>
-                    <br />
-                    <div>
+                    <div className="defeito-box">
                         <label>Defeito Grave (-4):</label>
                         <input
                             type="number"
-                            min="0"
-                            value={qtdGrave}
-                            onChange={(e) => setQtdGrave(parseInt(e.target.value) || 0)}
-                            placeholder="# cups"
+                            value={avaliacaoAtual.defeitosGraves}
+                            onChange={(e) => updateField("defeitosGraves", Number(e.target.value) || 0)}
                         />
-                        <span> = {qtdGrave * 4}</span>
+                        <span className="resultado-defeito">= {avaliacaoAtual.defeitosGraves * 4}</span>
                     </div>
                 </div>
 
                 {/* Pontuação Final */}
                 <div className="pontuacao-final">
-                    <h3>Pontuação Final: {calcularPontuacaoFinal()}</h3>
-                    <p>Descontos Totais: {totalDescontos}</p>
+                    <h2>PONTUAÇÃO FINAL: {calcularPontuacaoFinal()}</h2>
+                    <p>Descontos Totais: {calcularTotalDescontos()}</p>
                 </div>
 
 
-                <button
-                    className="salvar"
-                    onClick={() => {
-                        handleSalvarAvaliacao();
-                    }}
-                >
+                {/* Botão de Salvar */}
+                <button className="salvar" onClick={handleSalvarAvaliacao}>
                     SALVAR
                 </button>
-
             </div>
         </div>
-    );
+    )
+}
 
-};
-
-export default Scaa;
+export default Scaa
