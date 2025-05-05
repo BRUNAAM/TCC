@@ -382,7 +382,7 @@ const Scaa = () => {
 
 
             <div className="scaa-form">
-            <div className="abas">
+                <div className="abas">
                     {avaliacoes.map((av, index) => (
                         <button
                             key={index}
