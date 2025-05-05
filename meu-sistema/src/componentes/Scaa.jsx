@@ -16,7 +16,6 @@ import logo from "../assets/logopdf.png"; // Adicione no topo do seu arquivo, ig
 const Scaa = () => {
     const [avaliacoes, setAvaliacoes] = useState([]);
     const [abaAtiva, setAbaAtiva] = useState(null);
-    const [mostrarPdf, setMostrarPdf] = useState(false);
     const [avaliador, setAvaliador] = useState("");
     const [data, setData] = useState("");
     const [fornecedores, setFornecedores] = useState([]);

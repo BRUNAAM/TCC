@@ -1,11 +1,11 @@
 body {
     font-family: "Times New Roman", Times, serif;
-    /* ou var(--fonte-principal), se preferir usar variáveis */
     background-color: #032B43;
     color: #ffffff;
     margin: 0;
     padding: 0;
 }
+
 
 
 .break {
