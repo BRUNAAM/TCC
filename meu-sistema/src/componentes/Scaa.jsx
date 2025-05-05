@@ -1,7 +1,3 @@
-"use client"
-
-// Instead of using TypeScript interface, we'll use JSDoc for type documentation
-// and create a factory function for new evaluations
 
 import "./Scaa.css"
 import { getAuth } from "firebase/auth"
@@ -77,10 +73,12 @@ const Scaa = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
+        const usuarioNome = localStorage.getItem("usuarioNome") || ""
+
         const inicializarAvaliacao = () => {
             if (avaliacoes.length === 0) {
                 const novaAvaliacao = novaEstruturaAvaliacao({
-                    avaliador: localStorage.getItem("usuarioNome") || "",
+                    avaliador: usuarioNome,
                 })
                 setAvaliacoes([novaAvaliacao])
                 setAbaAtiva(0)
@@ -88,21 +86,9 @@ const Scaa = () => {
         }
 
         inicializarAvaliacao()
-        carregarAvaliador()
         carregarFornecedores()
     }, [avaliacoes.length])
 
-    const carregarAvaliador = () => {
-        const usuarioNome = localStorage.getItem("usuarioNome")
-        if (usuarioNome) {
-            setAvaliacoes((prev) => {
-                return prev.map((av) => ({
-                    ...av,
-                    avaliador: usuarioNome,
-                }))
-            })
-        }
-    }
 
     const carregarFornecedores = async () => {
         try {

@@ -152,19 +152,19 @@ const Cob = () => {
     };
 
     useEffect(() => {
-        carregarAvaliador();
-        carregarFornecedores();
-    }, []);
+        const usuarioNome = localStorage.getItem("usuarioNome") || ""
+        setAvaliador(usuarioNome)
+
+        carregarFornecedores()
+    }, [])
+
 
     useEffect(() => {
         const classification = getClassification(equivalenciaTotal);
         setTipo(classification.label);
     }, [equivalenciaTotal]);
 
-    const carregarAvaliador = () => {
-        const usuarioNome = localStorage.getItem("usuarioNome");
-        if (usuarioNome) setAvaliador(usuarioNome);
-    };
+
 
 
     const carregarFornecedores = async () => {
