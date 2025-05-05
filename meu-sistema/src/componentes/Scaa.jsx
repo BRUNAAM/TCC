@@ -356,29 +356,6 @@ const Scaa = () => {
                 </button>
             </div>
 
-            {/* 
-<div className="pdf-float-container">
-    <button
-        className="botao-flutuante-pdf"
-        onClick={() => setMostrarPdf(!mostrarPdf)}
-        title={mostrarPdf ? "Fechar PDF" : "Abrir PF"}
-    >
-        📄
-    </button>
-
-    {mostrarPdf && (
-        <div className="pdf-janela">
-            <iframe
-                src="/documentos/roda de sabores.pdf"
-                title="Manual SCAA"
-                width="400"
-                height="600"
-            ></iframe>
-        </div>
-    )}
-</div>
-*/}
-
 
             <div className="scaa-form">
                 <div className="abas">
