@@ -8,17 +8,17 @@ body,
     padding: 0;
     height: 100%;
     width: 100%;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: "Times New Roman", Times, serif;
     font-weight: bold;
-    background-color: #032B43;
+    background-color: #032b43;
     /* Fundo padrão */
 }
+
 body {
     font-family: var(--fonte-principal);
     background-color: var(--cor-primaria);
     color: var(--cor-texto);
-  }
-  
+}
 
 .logado-container {
     display: flex;
@@ -28,74 +28,169 @@ body {
     min-height: 100dvh;
     /* Preenche toda a altura do dispositivo */
     width: 100%;
-    padding: 40px;
+    padding: 20px;
     box-sizing: border-box;
-    
+    background-color: #032b43;
 }
 
 .logado-box {
-    background-color: #032B43;
-    max-width: 400px;
+    background-color: #032b43;
+    max-width: 500px;
     width: 100%;
     border-radius: 15px;
-    padding: 40px;
-    box-shadow: 0 4px 20px #000000;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     text-align: center;
-    
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.logado-logo {
+    width: 120px;
+    height: auto;
+    margin: 0 auto 15px;
+}
+
+.welcome-section {
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #032b43, #054569, #032b43);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .logado-h2 {
-    font-size: 23px;
-    margin-bottom: 30px;
+    font-size: 22px;
+    margin: 0 0 5px 0;
+    color: #ffba08;
+    text-transform: uppercase;
+}
+
+.user-name {
+    font-size: 24px;
+    margin: 0;
     color: #ffffff;
+    font-weight: bold;
 }
 
 .botoes-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
-.botoes-container button {
-    background: linear-gradient(to bottom, #FFBA08, #303103);
+.nav-button {
+    background: linear-gradient(to bottom, #ffba08, #303103);
     color: #ffffff;
     border: none;
     border-radius: 10px;
-    padding: 12px;
-    font-size: 18px;
+    padding: 14px;
+    font-size: 16px;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
     font-weight: bold;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: "Times New Roman", Times, serif;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.botoes-container button:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 12px #000000;
+.nav-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(to bottom, #ffd058, #504d03);
+}
+
+.nav-button:active {
+    transform: translateY(1px);
+}
+
+.button-icon {
+    font-size: 20px;
+    margin-right: 12px;
+    min-width: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.button-text {
+    flex: 1;
 }
 
 .logout-button {
-    background: linear-gradient(to bottom, red, #310603);
+    background: linear-gradient(to bottom, #e74c3c, #7b241c);
     color: #ffffff;
     border: none;
     border-radius: 10px;
     padding: 12px 24px;
-    font-size: 15px;
+    font-size: 16px;
     cursor: pointer;
     font-weight: bold;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+    width: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .logout-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(179, 0, 0, 0.8);
+    box-shadow: 0 0 15px rgba(179, 0, 0, 0.5);
+    background: linear-gradient(to bottom, #f85c4c, #8b342c);
+}
+
+.logout-icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.app-version {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #7cd8e4;
+    opacity: 0.7;
+}
+
+/* Loading spinner */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffba08;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 186, 8, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #ffba08;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Responsivo para tablets */
 @media (max-width: 768px) {
     .logado-container {
-        padding: 20px;
+        padding: 15px;
     }
 
     .logado-box {
@@ -105,37 +200,62 @@ body {
 
     .logado-h2 {
         font-size: 20px;
-        margin-bottom: 25px;
     }
 
-    .botoes-container button {
-        font-size: 16px;
-        padding: 10px;
+    .user-name {
+        font-size: 22px;
+    }
+
+    .nav-button {
+        font-size: 15px;
+        padding: 12px;
+    }
+
+    .button-icon {
+        font-size: 18px;
     }
 
     .logout-button {
-        padding: 10px 20px;
-        font-size: 14px;
+        width: 60%;
+        font-size: 15px;
     }
 }
 
 /* Ajuste para telas bem pequenas */
 @media (max-width: 480px) {
     .logado-box {
-        padding: 20px;
+        padding: 20px 15px;
+    }
+
+    .logado-logo {
+        width: 100px;
+    }
+
+    .welcome-section {
+        padding: 10px;
     }
 
     .logado-h2 {
         font-size: 18px;
     }
 
-    .botoes-container button {
+    .user-name {
+        font-size: 20px;
+    }
+
+    .nav-button {
         font-size: 14px;
-        padding: 8px;
+        padding: 10px;
+    }
+
+    .button-icon {
+        font-size: 16px;
+        margin-right: 8px;
     }
 
     .logout-button {
-        font-size: 13px;
-        padding: 8px 16px;
+        width: 80%;
+        font-size: 14px;
+        padding: 10px;
     }
 }
