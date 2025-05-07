@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../config/firebase";
-import {
-    collection,
-    addDoc,
-    getDocs,
-    updateDoc,
-    deleteDoc,
-    doc
-} from "firebase/firestore";
+import {collection,addDoc,getDocs,updateDoc, deleteDoc, doc} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -22,7 +15,6 @@ const Fornecedores = () => {
     const [cep, setCep] = useState("");
     const [telefone, setTelefone] = useState("");
     const [idEdicao, setIdEdicao] = useState(null);
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,13 +29,11 @@ const Fornecedores = () => {
             alert("Usuário não autenticado.");
             return;
         }
-
         const querySnapshot = await getDocs(
             collection(db, "usuarios", user.uid, "fornecedores")
         );
         setFornecedores(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
-
     const handleCadastro = async (e) => {
         e.preventDefault();
         const authInstance = getAuth();
@@ -53,7 +43,6 @@ const Fornecedores = () => {
             alert("Usuário não autenticado.");
             return;
         }
-
         const fornecedorRef = collection(db, "usuarios", user.uid, "fornecedores");
 
         if (idEdicao) {

@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // topo do arquivo
 import { sendEmailVerification } from "firebase/auth";
 
-
 const Cadastro = () => {
     const { setUsuario, usuario } = useUser(); // dentro do componente Cadastro
     const [nome, setNome] = useState("");
