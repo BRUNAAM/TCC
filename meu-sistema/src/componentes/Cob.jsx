@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { db } from "../config/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import "./Cob.css";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import logo from "../assets/logopdf.png";
+"use client"
+
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { db } from "../config/firebase"
+import { collection, getDocs, addDoc } from "firebase/firestore"
+import { getAuth } from "firebase/auth"
+import "./Cob.css"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
+import "bootstrap-icons/font/bootstrap-icons.css"
+import logo from "../assets/logopdf.png"
 
 const classificationTable = [
     { defeitos: 4, label: "2-5" },
@@ -69,77 +71,76 @@ const classificationTable = [
     { defeitos: 320, label: "7-40" },
     { defeitos: 340, label: "7-45" },
     { defeitos: 360, label: "8" },
-    { defeitos: Infinity, label: "Fora de Tipo" },
-];
+    { defeitos: Number.POSITIVE_INFINITY, label: "Fora de Tipo" },
+]
 
 function getClassification(defeitosValue) {
-    let result = classificationTable[0];
+    // Fix the classification logic to handle edge cases
+    if (defeitosValue <= 0) return { label: "2-5" }
+
     for (let i = 0; i < classificationTable.length; i++) {
-        if (classificationTable[i].defeitos <= defeitosValue) {
-            result = classificationTable[i];
-        } else {
-            break;
+        if (defeitosValue <= classificationTable[i].defeitos) {
+            return classificationTable[i]
         }
     }
-    return result;
+    return classificationTable[classificationTable.length - 1]
 }
 
 const Cob = () => {
-    const [avaliador, setAvaliador] = useState("");
-    const [fornecedores, setFornecedores] = useState([]);
-    const [fornecedorSelecionado, setFornecedorSelecionado] = useState("");
-    const [numeroAmostra, setNumeroAmostra] = useState("");
-    const [observacoes, setObservacoes] = useState("");
-    const [defeitos, setDefeitos] = useState({});
-    const [umidade, setUmidade] = useState("");
-    const [equivalencias, setEquivalencias] = useState({});
-    const [equivalenciaTotal, setEquivalenciaTotal] = useState(0);
-    const [tipo, setTipo] = useState("");
-    const [categoria] = useState("");
-    const [peneiraSubcategoria, setPeneiraSubcategoria] = useState([]);
-    const [grupoBebida, setGrupoBebida] = useState("");
-    const [subClassificacaoBebida, setSubClassificacaoBebida] = useState("");
-    const [classeBebida, setClasseBebida] = useState([]);
-    const [aparelho, setAparelho] = useState("");
-    const [subcategoria, setSubcategoria] = useState("");
-    const [tipoCafe, setTipoCafe] = useState({ grupo: "", tamanho: "" });
-    const [postoServico, setPostoServico] = useState("");
-    const [classificadorMapa, setClassificadorMapa] = useState("");
-    const [peloPreparo, setPeloPreparo] = useState("");
-    const [pelaSeca, setPelaSeca] = useState("");
-    const [peloAspecto, setPeloAspecto] = useState("");
-    const [torraArabica, setTorraArabica] = useState("");
-    const [torraCanephora, setTorraCanephora] = useState("");
-    const [teorCafeina, setTeorCafeina] = useState("");
-    const navigate = useNavigate();
+    const [avaliador, setAvaliador] = useState("")
+    const [fornecedores, setFornecedores] = useState([])
+    const [fornecedorSelecionado, setFornecedorSelecionado] = useState("")
+    const [numeroAmostra, setNumeroAmostra] = useState("")
+    const [observacoes, setObservacoes] = useState("")
+    const [defeitos, setDefeitos] = useState({})
+    const [umidade, setUmidade] = useState("")
+    const [equivalencias, setEquivalencias] = useState({})
+    const [equivalenciaTotal, setEquivalenciaTotal] = useState(0)
+    const [tipo, setTipo] = useState("")
+    const [categoria] = useState("")
+    const [peneiraSubcategoria, setPeneiraSubcategoria] = useState([])
+    const [grupoBebida, setGrupoBebida] = useState("")
+    const [subClassificacaoBebida, setSubClassificacaoBebida] = useState("")
+    const [classeBebida, setClasseBebida] = useState([])
+    const [aparelho, setAparelho] = useState("")
+    const [subcategoria, setSubcategoria] = useState("")
+    const [tipoCafe, setTipoCafe] = useState({ grupo: "", tamanho: "" })
+    const [postoServico, setPostoServico] = useState("")
+    const [classificadorMapa, setClassificadorMapa] = useState("")
+    const [peloPreparo, setPeloPreparo] = useState("")
+    const [pelaSeca, setPelaSeca] = useState("")
+    const [peloAspecto, setPeloAspecto] = useState("")
+    const [torraArabica, setTorraArabica] = useState("")
+    const [torraCanephora, setTorraCanephora] = useState("")
+    const [teorCafeina, setTeorCafeina] = useState("")
+    const [salvando, setSalvando] = useState(false)
+    const navigate = useNavigate()
 
+    // Prevent back navigation
     useEffect(() => {
         const bloquearVoltar = (e) => {
-            e.preventDefault();
-            window.history.pushState(null, null, window.location.href);
-        };
-        window.history.pushState(null, null, window.location.href);
-        window.addEventListener("popstate", bloquearVoltar);
+            e.preventDefault()
+            window.history.pushState(null, null, window.location.href)
+        }
+
+        window.history.pushState(null, null, window.location.href)
+        window.addEventListener("popstate", bloquearVoltar)
 
         return () => {
-            window.removeEventListener("popstate", bloquearVoltar);
-        };
-    }, []);
-
-
-
-
+            window.removeEventListener("popstate", bloquearVoltar)
+        }
+    }, [])
 
     const tabelaDefeitos = {
         "Grão Preto": { quantidade: 1, equivalencia: 1 },
         "Grão Ardido": { quantidade: 2, equivalencia: 1 },
-        "Concha": { quantidade: 3, equivalencia: 1 },
+        Concha: { quantidade: 3, equivalencia: 1 },
         "Grãos Verdes": { quantidade: 5, equivalencia: 1 },
         "Grãos Quebrados": { quantidade: 5, equivalencia: 1 },
         "Grãos Brocados": { quantidade: 2, equivalencia: 1 },
         "Grãos Mal Granados ou Chocho": { quantidade: 5, equivalencia: 1 },
-        "Coco": { quantidade: 1, equivalencia: 1 },
-        "Marinheiro": { quantidade: 2, equivalencia: 1 },
+        Coco: { quantidade: 1, equivalencia: 1 },
+        Marinheiro: { quantidade: 2, equivalencia: 1 },
         "Pau, Pedra, Torrão Grande": { quantidade: 1, equivalencia: 5 },
         "Pau, Pedra, Torrão Regular": { quantidade: 1, equivalencia: 2 },
         "Pau, Pedra, Torrão Pequeno": { quantidade: 1, equivalencia: 1 },
@@ -149,97 +150,321 @@ const Cob = () => {
         "Brocado Rendado": { quantidade: 2, equivalencia: 1 },
         "Brocado Limpo": { quantidade: 5, equivalencia: 1 },
         "Grão Esmagado": { quantidade: 5, equivalencia: 1 },
-    };
+    }
 
+    // Load user name and suppliers on component mount
     useEffect(() => {
         const usuarioNome = localStorage.getItem("usuarioNome") || ""
         setAvaliador(usuarioNome)
-
         carregarFornecedores()
     }, [])
 
-
+    // Update tipo when equivalenciaTotal changes
     useEffect(() => {
-        const classification = getClassification(equivalenciaTotal);
-        setTipo(classification.label);
-    }, [equivalenciaTotal]);
-
-
-
+        const classification = getClassification(equivalenciaTotal)
+        setTipo(classification.label)
+    }, [equivalenciaTotal])
 
     const carregarFornecedores = async () => {
         try {
-            const authInstance = getAuth();
-            const user = authInstance.currentUser;
+            const authInstance = getAuth()
+            const user = authInstance.currentUser
 
             if (!user) {
-                alert("Usuário não autenticado.");
-                return;
+                alert("Usuário não autenticado.")
+                return
             }
 
-            const querySnapshot = await getDocs(
-                collection(db, "usuarios", user.uid, "fornecedores")
-            );
+            const querySnapshot = await getDocs(collection(db, "usuarios", user.uid, "fornecedores"))
 
             const listaFornecedores = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
-                ...doc.data()
-            }));
+                ...doc.data(),
+            }))
 
-            setFornecedores(listaFornecedores);
+            setFornecedores(listaFornecedores)
         } catch (error) {
-            console.error("Erro ao carregar fornecedores:", error);
-            alert("Erro ao carregar fornecedores. Tente novamente.");
+            console.error("Erro ao carregar fornecedores:", error)
+            alert("Erro ao carregar fornecedores. Tente novamente.")
         }
-    };
-
+    }
 
     const handleDefeitoChange = (defeito, quantidade) => {
-        const updatedDefeitos = { ...defeitos, [defeito]: quantidade };
-        setDefeitos(updatedDefeitos);
+        // Ensure quantity is a valid number
+        const validQuantity = isNaN(quantidade) ? 0 : quantidade
 
-        let totalEquivalencia = 0;
-        let updatedEquivalencias = {};
+        const updatedDefeitos = { ...defeitos, [defeito]: validQuantity }
+        setDefeitos(updatedDefeitos)
+
+        let totalEquivalencia = 0
+        const updatedEquivalencias = {}
 
         for (const [key, value] of Object.entries(updatedDefeitos)) {
             if (tabelaDefeitos[key]) {
-                const equivalencia =
-                    Math.floor(value / tabelaDefeitos[key].quantidade) * tabelaDefeitos[key].equivalencia;
-                updatedEquivalencias[key] = equivalencia;
-                totalEquivalencia += equivalencia;
+                const equivalencia = Math.floor(value / tabelaDefeitos[key].quantidade) * tabelaDefeitos[key].equivalencia
+                updatedEquivalencias[key] = equivalencia
+                totalEquivalencia += equivalencia
             }
         }
-        setEquivalencias(updatedEquivalencias);
-        setEquivalenciaTotal(totalEquivalencia);
-    };
+        setEquivalencias(updatedEquivalencias)
+        setEquivalenciaTotal(totalEquivalencia)
+    }
 
     const handleClasseChange = (e) => {
-        const { value, checked } = e.target;
+        const { value, checked } = e.target
         if (checked) {
-            setClasseBebida((prev) => [...prev, value]);
+            setClasseBebida((prev) => [...prev, value])
         } else {
-            setClasseBebida((prev) => prev.filter((item) => item !== value));
+            setClasseBebida((prev) => prev.filter((item) => item !== value))
         }
-    };
+    }
 
     const handlePeneiraChange = (e) => {
-        const { value, checked } = e.target;
+        const { value, checked } = e.target
         if (checked) {
-            setPeneiraSubcategoria((prev) => [...prev, value]);
+            setPeneiraSubcategoria((prev) => [...prev, value])
         } else {
-            setPeneiraSubcategoria((prev) => prev.filter((item) => item !== value));
+            setPeneiraSubcategoria((prev) => prev.filter((item) => item !== value))
         }
-    };
+    }
 
+    // Função para gerar PDF sem tentar abrir ou salvar automaticamente
+    const gerarPDFData = () => {
+        return new Promise((resolve, reject) => {
+            try {
+                const docPDF = new jsPDF({ unit: "mm", format: "a4" })
+                const img = new Image()
+                img.src = logo
+                img.crossOrigin = "anonymous"
+
+                const gerarPDF = () => {
+                    try {
+                        const pageWidth = docPDF.internal.pageSize.getWidth()
+                        const pageHeight = docPDF.internal.pageSize.getHeight()
+                        const marginX = 20
+                        const boxY = 10
+                        const logoWidth = 25
+                        const logoHeight = 25
+                        const spacing = 5
+                        const titulo = "Avaliação Física de Café - Método COB"
+                        const tituloWidth = docPDF.getTextWidth(titulo)
+                        const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2
+
+                        try {
+                            if (img.complete && img.naturalWidth > 0) {
+                                docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight)
+                            }
+                        } catch (err) {
+                            console.warn("Logo não carregado, gerando sem imagem.")
+                        }
+
+                        docPDF.setFont("times", "bold")
+                        docPDF.setFontSize(14)
+                        docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16)
+
+                        const autoTableOptions = (config) => ({
+                            ...config,
+                            theme: "grid",
+                            margin: { left: marginX, right: marginX },
+                            startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + logoHeight + 10,
+                            headStyles: {
+                                fillColor: [3, 43, 67],
+                                textColor: 255,
+                                fontStyle: "bold",
+                                font: "times",
+                            },
+                            bodyStyles: {
+                                font: "times",
+                                textColor: 0,
+                            },
+                            didDrawPage: (data) => {
+                                const pageCount = docPDF.internal.getNumberOfPages()
+                                docPDF.setFontSize(10)
+                                docPDF.setTextColor(150)
+                                docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, {
+                                    align: "right",
+                                })
+                                docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10)
+                            },
+                        })
+
+                        // Tabelas
+                        autoTable(
+                            docPDF,
+                            autoTableOptions({
+                                head: [["Identificação", "Valor"]],
+                                body: [
+                                    ["Avaliador", avaliador || "—"],
+                                    ["Data", new Date().toLocaleDateString("pt-BR")],
+                                    ["Fornecedor", fornecedorSelecionado || "—"],
+                                    ["Nº Amostra", numeroAmostra || "—"],
+                                    ["Umidade", umidade || "—"],
+                                    ["Aparelho", aparelho || "—"],
+                                    ["Subcategoria", subcategoria || "—"],
+                                    ["Tipo", tipo || "—"],
+                                    ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
+                                    ["Posto Serviço", postoServico || "—"],
+                                    ["Classificador MAPA", classificadorMapa || "—"],
+                                ],
+                            }),
+                        )
+
+                        autoTable(
+                            docPDF,
+                            autoTableOptions({
+                                head: [["Defeito", "Quantidade", "Equivalência"]],
+                                body: Object.entries(defeitos || {}).map(([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]),
+                            }),
+                        )
+
+                        autoTable(
+                            docPDF,
+                            autoTableOptions({
+                                body: [
+                                    [
+                                        "Total de Defeitos",
+                                        Object.values(defeitos || {}).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0),
+                                    ],
+                                    ["Total Equivalência", equivalenciaTotal],
+                                    ["Tipo do Café", tipo || "—"],
+                                ],
+                                head: [],
+                            }),
+                        )
+
+                        autoTable(
+                            docPDF,
+                            autoTableOptions({
+                                head: [["Categoria", "Valor"]],
+                                body: [
+                                    ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
+                                    ["Grupo da Bebida", grupoBebida || "—"],
+                                    ["Subclassificação", subClassificacaoBebida || "—"],
+                                    ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
+                                ],
+                            }),
+                        )
+
+                        autoTable(
+                            docPDF,
+                            autoTableOptions({
+                                head: [["Laudo Técnico", "Valor"]],
+                                body: [
+                                    ["Preparo", peloPreparo || "—"],
+                                    ["Seca", pelaSeca || "—"],
+                                    ["Aspecto", peloAspecto || "—"],
+                                    ["Torra Arábica", torraArabica || "—"],
+                                    ["Torra Canephora", torraCanephora || "—"],
+                                    ["Teor Cafeína", teorCafeina || "—"],
+                                ],
+                            }),
+                        )
+
+                        autoTable(
+                            docPDF,
+                            autoTableOptions({
+                                body: [["Observações", observacoes || "—"]],
+                                head: [],
+                            }),
+                        )
+
+                        const assinaturaY = docPDF.lastAutoTable.finalY + 30
+                        const linhaLargura = 80
+                        const linhaInicioX = (pageWidth - linhaLargura) / 2
+                        docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
+                        docPDF.setFont("times", "normal")
+                        docPDF.setFontSize(12)
+                        docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
+                        docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, {
+                            align: "center",
+                        })
+
+                        // Retorna o PDF como string base64
+                        const pdfBase64 = docPDF.output("datauristring")
+                        resolve(pdfBase64)
+                    } catch (error) {
+                        console.error("Erro ao gerar PDF:", error)
+                        reject(error)
+                    }
+                }
+
+                // Se a imagem já estiver carregada
+                if (img.complete) {
+                    gerarPDF()
+                } else {
+                    // Se a imagem ainda não estiver carregada
+                    img.onload = gerarPDF
+                    img.onerror = () => {
+                        console.warn("Erro ao carregar logo, gerando PDF sem imagem")
+                        gerarPDF()
+                    }
+
+                    // Timeout para caso a imagem demore muito para carregar
+                    setTimeout(() => {
+                        if (!img.complete) {
+                            console.warn("Timeout ao carregar logo, gerando PDF sem imagem")
+                            gerarPDF()
+                        }
+                    }, 3000)
+                }
+            } catch (error) {
+                console.error("Erro ao iniciar geração do PDF:", error)
+                reject(error)
+            }
+        })
+    }
+
+    // Função para mostrar o PDF em uma nova janela
+    const mostrarPDF = async () => {
+        try {
+            const pdfData = await gerarPDFData()
+
+            // Cria uma nova janela com o PDF incorporado
+            const newWindow = window.open("", "_blank")
+            if (newWindow) {
+                newWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Laudo COB</title>
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <style>
+                                body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
+                                .controls { padding: 10px; background: #f0f0f0; display: flex; justify-content: center; }
+                                .controls button { margin: 0 10px; padding: 8px 16px; cursor: pointer; }
+                                iframe { flex: 1; width: 100%; border: none; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="controls">
+                                <button onclick="window.print()">Imprimir</button>
+                                <button onclick="window.close()">Fechar</button>
+                            </div>
+                            <iframe src="${pdfData}" width="100%" height="100%"></iframe>
+                        </body>
+                    </html>
+                `)
+            } else {
+                alert("Não foi possível abrir uma nova janela. Verifique se o bloqueador de pop-ups está ativado.")
+            }
+        } catch (error) {
+            console.error("Erro ao mostrar PDF:", error)
+            alert("Erro ao gerar o PDF. Por favor, tente novamente mais tarde.")
+        }
+    }
 
     const handleSalvarAvaliacao = async () => {
+        if (salvando) return // Evita múltiplos cliques
+
+        setSalvando(true)
+
         try {
-            const authInstance = getAuth();
-            const user = authInstance.currentUser;
+            const authInstance = getAuth()
+            const user = authInstance.currentUser
 
             if (!user) {
-                alert("Usuário não autenticado.");
-                return;
+                alert("Usuário não autenticado.")
+                setSalvando(false)
+                return
             }
 
             const avaliacao = {
@@ -270,143 +495,26 @@ const Cob = () => {
                 torraCanephora,
                 teorCafeina,
                 data: new Date().toISOString(),
-            };
+            }
 
-            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_cob"), avaliacao);
-            alert("Avaliação salva com sucesso!");
-            handlePrintPDF();
+            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_cob"), avaliacao)
+
+            alert("Avaliação salva com sucesso!")
+
+            // Pergunta se o usuário deseja visualizar o PDF
+            const querVerPDF = window.confirm("Deseja visualizar o PDF da avaliação?")
+            if (querVerPDF) {
+                await mostrarPDF()
+            }
         } catch (error) {
-            console.error("Erro ao salvar avaliação:", error);
-            alert("Erro ao salvar avaliação. Tente novamente mais tarde.");
+            console.error("Erro ao salvar avaliação:", error)
+            alert("Erro ao salvar avaliação. Tente novamente mais tarde.")
+        } finally {
+            setSalvando(false)
         }
-    };
+    }
 
-    const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + val, 0);
-    const handlePrintPDF = () => {
-        const docPDF = new jsPDF({ unit: "mm", format: "a4" });
-        const img = new Image();
-        img.src = logo;
-
-        img.onload = () => {
-            const pageWidth = docPDF.internal.pageSize.getWidth();
-            const pageHeight = docPDF.internal.pageSize.getHeight();
-            const marginX = 20;
-            const boxY = 10;
-            const logoWidth = 25;
-            const logoHeight = 25;
-            const spacing = 5;
-            const titulo = "Avaliação Física de Café - Método COB";
-            const tituloWidth = docPDF.getTextWidth(titulo);
-            const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2;
-
-            // Cabeçalho com logo e título
-            docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight);
-            docPDF.setFont("times", "bold");
-            docPDF.setFontSize(14);
-            docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16);
-
-            // Configuração padrão do autoTable
-            const autoTableOptions = (config) => ({
-                ...config,
-                theme: "grid",
-                margin: { left: marginX, right: marginX },
-                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + logoHeight + 10,
-                headStyles: {
-                    fillColor: [3, 43, 67],
-                    textColor: 255,
-                    fontStyle: "bold",
-                    font: "times"
-                },
-                bodyStyles: {
-                    font: "times",
-                    textColor: 0
-                },
-                didDrawPage: (data) => {
-                    const pageCount = docPDF.internal.getNumberOfPages();
-                    docPDF.setFontSize(10);
-                    docPDF.setTextColor(150);
-                    docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align: "right" });
-                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10);
-                }
-            });
-
-            // Tabelas de dados
-            autoTable(docPDF, autoTableOptions({
-                head: [["Identificação", "Valor"]],
-                body: [
-                    ["Avaliador", avaliador || "—"],
-                    ["Data", new Date().toLocaleDateString("pt-BR")],
-                    ["Fornecedor", fornecedorSelecionado || "—"],
-                    ["Nº Amostra", numeroAmostra || "—"],
-                    ["Umidade", umidade || "—"],
-                    ["Aparelho", aparelho || "—"],
-                    ["Subcategoria", subcategoria || "—"],
-                    ["Tipo", tipo || "—"],
-                    ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
-                    ["Posto Serviço", postoServico || "—"],
-                    ["Classificador MAPA", classificadorMapa || "—"]
-                ]
-            }));
-
-            autoTable(docPDF, autoTableOptions({
-                head: [["Defeito", "Quantidade", "Equivalência"]],
-                body: Object.entries(defeitos || {}).map(
-                    ([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]
-                )
-            }));
-
-            autoTable(docPDF, autoTableOptions({
-                body: [
-                    ["Total de Defeitos", Object.values(defeitos || {}).reduce((acc, val) => acc + val, 0)],
-                    ["Total Equivalência", equivalenciaTotal],
-                    ["Tipo do Café", tipo || "—"]
-                ],
-                head: []
-            }));
-
-            autoTable(docPDF, autoTableOptions({
-                head: [["Categoria", "Valor"]],
-                body: [
-                    ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
-                    ["Grupo da Bebida", grupoBebida || "—"],
-                    ["Subclassificação", subClassificacaoBebida || "—"],
-                    ["Classe da Bebida", (classeBebida || []).join(", ") || "—"]
-                ]
-            }));
-
-            autoTable(docPDF, autoTableOptions({
-                head: [["Laudo Técnico", "Valor"]],
-                body: [
-                    ["Preparo", peloPreparo || "—"],
-                    ["Seca", pelaSeca || "—"],
-                    ["Aspecto", peloAspecto || "—"],
-                    ["Torra Arábica", torraArabica || "—"],
-                    ["Torra Canephora", torraCanephora || "—"],
-                    ["Teor Cafeína", teorCafeina || "—"]
-                ]
-            }));
-
-            autoTable(docPDF, autoTableOptions({
-                body: [["Observações", observacoes || "—"]],
-                head: []
-            }));
-
-            // Assinatura
-            const assinaturaY = docPDF.lastAutoTable.finalY + 30;
-            const linhaLargura = 80;
-            const linhaInicioX = (pageWidth - linhaLargura) / 2;
-            docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY);
-            docPDF.setFont("times", "normal");
-            docPDF.setFontSize(12);
-            docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" });
-            docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, { align: "center" });
-
-            // Exporta o PDF com nome padronizado
-            docPDF.save(`laudo_cob_${new Date().toISOString().split("T")[0]}.pdf`);
-        };
-    };
-
-
+    const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0)
 
     return (
         <div id="avaliacao-completa">
@@ -414,12 +522,9 @@ const Cob = () => {
                 {/* Cabeçalho */}
                 <header className="cob-header">
                     <h2 className="titulo-cabecalho">AVALIAÇÃO DE CAFÉ - COB</h2>
-                    <button className="fechar" onClick={() => navigate("/logado", { replace: true })}>
+                    <button className="fechar" onClick={() => navigate("/logado", { replace: true })} aria-label="Fechar">
                         ✖
                     </button>
-
-
-
                 </header>
 
                 {/* Seção: Identificação */}
@@ -428,19 +533,21 @@ const Cob = () => {
                         <h3>Identificação</h3>
                         <div className="grid-identificacao">
                             <div className="campo">
-                                <label>Nome do Avaliador:</label>
-                                <input type="text" value={avaliador} disabled />
+                                <label htmlFor="avaliador">Nome do Avaliador:</label>
+                                <input id="avaliador" type="text" value={avaliador} disabled />
                             </div>
                             <div className="campo">
-                                <label>Data da avaliação:</label>
-                                <input type="text" value={new Date().toLocaleDateString("pt-BR")} disabled />
+                                <label htmlFor="data">Data da avaliação:</label>
+                                <input id="data" type="text" value={new Date().toLocaleDateString("pt-BR")} disabled />
                             </div>
                             <div className="campo">
-                                <label>Fornecedor / Produtor:</label>
-                                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                <label htmlFor="fornecedor">Fornecedor / Produtor:</label>
+                                <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
                                     <select
+                                        id="fornecedor"
                                         value={fornecedorSelecionado}
                                         onChange={(e) => setFornecedorSelecionado(e.target.value)}
+                                        style={{ flex: "1", minWidth: "150px" }}
                                     >
                                         <option value="">Selecione um fornecedor</option>
                                         {fornecedores.map((fornecedor) => (
@@ -453,17 +560,18 @@ const Cob = () => {
                                         type="button"
                                         onClick={() => navigate("/fornecedores")}
                                         className="botao-icone"
+                                        style={{ whiteSpace: "nowrap" }}
                                     >
                                         <i className="bi bi-folder-plus"></i>
                                         Novo
                                     </button>
-
                                 </div>
                             </div>
 
                             <div className="campo">
-                                <label>Nº da Amostra:</label>
+                                <label htmlFor="amostra">Nº da Amostra:</label>
                                 <input
+                                    id="amostra"
                                     type="text"
                                     value={numeroAmostra}
                                     onChange={(e) => setNumeroAmostra(e.target.value)}
@@ -482,13 +590,14 @@ const Cob = () => {
                             <section className="defeitos-grid">
                                 {Object.keys(tabelaDefeitos).map((defeito) => (
                                     <div key={defeito} className="defeitos-checkbox">
-                                        <label>{defeito}:</label>
+                                        <label htmlFor={`defeito-${defeito}`}>{defeito}:</label>
                                         <input
+                                            id={`defeito-${defeito}`}
                                             className="defeitos-input"
-                                            type="text"
+                                            type="number"
                                             min="0"
                                             value={defeitos[defeito] || ""}
-                                            onChange={(e) => handleDefeitoChange(defeito, parseInt(e.target.value) || 0)}
+                                            onChange={(e) => handleDefeitoChange(defeito, Number.parseInt(e.target.value) || 0)}
                                         />
                                         <span>Equivalência: {equivalencias[defeito] || 0}</span>
                                     </div>
@@ -496,16 +605,16 @@ const Cob = () => {
                             </section>
                             <div className="total">
                                 <div>
-                                    <label>Total de Defeitos:</label>
-                                    <input type="number" readOnly value={totalDefeitos} />
+                                    <label htmlFor="total-defeitos">Total de Defeitos:</label>
+                                    <input id="total-defeitos" type="number" readOnly value={totalDefeitos} />
                                 </div>
                                 <div>
-                                    <label>Total da Equivalência:</label>
-                                    <input type="number" readOnly value={equivalenciaTotal} />
+                                    <label htmlFor="total-equivalencia">Total da Equivalência:</label>
+                                    <input id="total-equivalencia" type="number" readOnly value={equivalenciaTotal} />
                                 </div>
                                 <div>
-                                    <label>Tipo do Café: <br /></label>
-                                    <input type="text" readOnly value={tipo} />
+                                    <label htmlFor="tipo-cafe">Tipo do Café:</label>
+                                    <input id="tipo-cafe" type="text" readOnly value={tipo} />
                                 </div>
                             </div>
                         </div>
@@ -516,25 +625,26 @@ const Cob = () => {
                 <section className="section-categoria">
                     <div className="cob-block">
                         <h3>Categoria</h3>
-                        <div className="categoria-topo">
-                        </div>
+                        <div className="categoria-topo"></div>
                         <div className="tabela-2x3">
                             <div className="celula">
-                                <h5>SUBCATEGORIA % PENEIRA </h5>
+                                <h5>SUBCATEGORIA % PENEIRA</h5>
                                 {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
-                                    <label key={item}>
-                                        <input type="checkbox"
+                                    <label key={item} className="checkbox-label">
+                                        <input
+                                            type="checkbox"
                                             value={item}
                                             checked={peneiraSubcategoria.includes(item)}
-                                            onChange={handlePeneiraChange} />
-                                        {item}
+                                            onChange={handlePeneiraChange}
+                                        />
+                                        <span>{item}</span>
                                     </label>
                                 ))}
                             </div>
                             <div className="celula">
                                 <h5>CHATO</h5>
                                 {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                    <label key={`chato-${tamanho}`}>
+                                    <label key={`chato-${tamanho}`} className="radio-label">
                                         <input
                                             type="radio"
                                             name="tipoCafe"
@@ -542,15 +652,14 @@ const Cob = () => {
                                             checked={tipoCafe.grupo === "CHATO" && tipoCafe.tamanho === tamanho}
                                             onChange={() => setTipoCafe({ grupo: "CHATO", tamanho })}
                                         />
-                                        {tamanho}
+                                        <span>{tamanho}</span>
                                     </label>
                                 ))}
-
                             </div>
                             <div className="celula">
                                 <h5>MOCA</h5>
                                 {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                    <label key={`moca-${tamanho}`}>
+                                    <label key={`moca-${tamanho}`} className="radio-label">
                                         <input
                                             type="radio"
                                             name="tipoCafe"
@@ -558,45 +667,43 @@ const Cob = () => {
                                             checked={tipoCafe.grupo === "MOCA" && tipoCafe.tamanho === tamanho}
                                             onChange={() => setTipoCafe({ grupo: "MOCA", tamanho })}
                                         />
-                                        {tamanho}
+                                        <span>{tamanho}</span>
                                     </label>
                                 ))}
-
-
                             </div>
                             <div className="celula">
                                 <h5>GRUPO I: ARABICA</h5>
                                 {["Estritamente Mole", "Mole", "Apenas Mole", "Duro", "Riado", "Rio", "Rio Zona"].map((opcao) => (
-                                    <label key={opcao}>
+                                    <label key={opcao} className="radio-label">
                                         <input
                                             type="radio"
                                             name="subClassificacaoArabica"
                                             value={opcao}
                                             checked={grupoBebida === "ARABICA" && subClassificacaoBebida === opcao}
-                                            onChange={(e) => {
-                                                setGrupoBebida("ARABICA");
-                                                setSubClassificacaoBebida(e.target.value);
+                                            onChange={() => {
+                                                setGrupoBebida("ARABICA")
+                                                setSubClassificacaoBebida(opcao)
                                             }}
                                         />
-                                        {opcao}
+                                        <span>{opcao}</span>
                                     </label>
                                 ))}
                             </div>
                             <div className="celula">
                                 <h5>GRUPO II: ROBUSTA</h5>
                                 {["Excelente", "Regular", "Boa", "Anormal"].map((opcao) => (
-                                    <label key={opcao}>
+                                    <label key={opcao} className="radio-label">
                                         <input
                                             type="radio"
                                             name="subClassificacaoRobusta"
                                             value={opcao}
                                             checked={grupoBebida === "ROBUSTA" && subClassificacaoBebida === opcao}
-                                            onChange={(e) => {
-                                                setGrupoBebida("ROBUSTA");
-                                                setSubClassificacaoBebida(e.target.value);
+                                            onChange={() => {
+                                                setGrupoBebida("ROBUSTA")
+                                                setSubClassificacaoBebida(opcao)
                                             }}
                                         />
-                                        {opcao}
+                                        <span>{opcao}</span>
                                     </label>
                                 ))}
                             </div>
@@ -614,9 +721,14 @@ const Cob = () => {
                                     "Esbranquiçada",
                                     "Discrepante",
                                 ].map((item) => (
-                                    <label key={item}>
-                                        <input type="checkbox" value={item} checked={classeBebida.includes(item)} onChange={handleClasseChange} />
-                                        {item}
+                                    <label key={item} className="checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            value={item}
+                                            checked={classeBebida.includes(item)}
+                                            onChange={handleClasseChange}
+                                        />
+                                        <span>{item}</span>
                                     </label>
                                 ))}
                             </div>
@@ -630,8 +742,9 @@ const Cob = () => {
                         <h3>Conclusão</h3>
                         <div className="grid-conclusao">
                             <div className="campo">
-                                <label>Umidade:</label>
+                                <label htmlFor="umidade">Umidade:</label>
                                 <input
+                                    id="umidade"
                                     type="number"
                                     value={umidade}
                                     onChange={(e) => setUmidade(e.target.value)}
@@ -639,8 +752,9 @@ const Cob = () => {
                                 />
                             </div>
                             <div className="campo">
-                                <label>Aparelho:</label>
+                                <label htmlFor="aparelho">Aparelho:</label>
                                 <input
+                                    id="aparelho"
                                     type="text"
                                     value={aparelho}
                                     onChange={(e) => setAparelho(e.target.value)}
@@ -648,8 +762,9 @@ const Cob = () => {
                                 />
                             </div>
                             <div className="campo">
-                                <label>Subcategoria:</label>
+                                <label htmlFor="subcategoria">Subcategoria:</label>
                                 <input
+                                    id="subcategoria"
                                     type="text"
                                     value={subcategoria}
                                     onChange={(e) => setSubcategoria(e.target.value)}
@@ -657,8 +772,9 @@ const Cob = () => {
                                 />
                             </div>
                             <div className="campo">
-                                <label>Tipo:</label>
+                                <label htmlFor="tipo-input">Tipo:</label>
                                 <input
+                                    id="tipo-input"
                                     type="text"
                                     value={tipo}
                                     onChange={(e) => setTipo(e.target.value)}
@@ -666,8 +782,9 @@ const Cob = () => {
                                 />
                             </div>
                             <div className="campo">
-                                <label>Posto de Serviço:</label>
+                                <label htmlFor="posto-servico">Posto de Serviço:</label>
                                 <input
+                                    id="posto-servico"
                                     type="text"
                                     value={postoServico}
                                     onChange={(e) => setPostoServico(e.target.value)}
@@ -676,8 +793,9 @@ const Cob = () => {
                             </div>
 
                             <div className="campo">
-                                <label>Classificador/Reg. MAPA:</label>
+                                <label htmlFor="classificador-mapa">Classificador/Reg. MAPA:</label>
                                 <input
+                                    id="classificador-mapa"
                                     type="text"
                                     value={classificadorMapa}
                                     onChange={(e) => setClassificadorMapa(e.target.value)}
@@ -686,8 +804,9 @@ const Cob = () => {
                             </div>
                         </div>
                         <div className="campo campo-observacoes">
-                            <label>Observações:</label>
+                            <label htmlFor="observacoes">Observações:</label>
                             <textarea
+                                id="observacoes"
                                 value={observacoes}
                                 onChange={(e) => setObservacoes(e.target.value)}
                                 placeholder="Digite as observações..."
@@ -702,55 +821,63 @@ const Cob = () => {
                                     <div className="bloco-laudo">
                                         <h5>PREPARO</h5>
                                         {["Via Seca", "Via Úmida"].map((opcao) => (
-                                            <label key={opcao}>
+                                            <label key={opcao} className="radio-label">
                                                 <input
-                                                    type="checkbox"
+                                                    type="radio"
+                                                    name="preparo"
                                                     checked={peloPreparo === opcao}
                                                     onChange={() => setPeloPreparo(opcao)}
                                                 />
-                                                {opcao}
+                                                <span>{opcao}</span>
                                             </label>
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
-                                        <h5>SECA </h5>
+                                        <h5>SECA</h5>
                                         {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
-                                            <label key={opcao}>
+                                            <label key={opcao} className="radio-label">
                                                 <input
-                                                    type="checkbox"
+                                                    type="radio"
+                                                    name="seca"
                                                     checked={pelaSeca === opcao}
                                                     onChange={() => setPelaSeca(opcao)}
                                                 />
-                                                {opcao}
+                                                <span>{opcao}</span>
                                             </label>
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
                                         <h5>PELO ASPECTO</h5>
                                         {["Bom", "Regular", "Mau"].map((opcao) => (
-                                            <label key={opcao}>
+                                            <label key={opcao} className="radio-label">
                                                 <input
-                                                    type="checkbox"
+                                                    type="radio"
+                                                    name="aspecto"
                                                     checked={peloAspecto === opcao}
                                                     onChange={() => setPeloAspecto(opcao)}
                                                 />
-                                                {opcao}
+                                                <span>{opcao}</span>
                                             </label>
                                         ))}
                                     </div>
                                     <div className="bloco-laudo">
                                         <h5>TORRA (COFFEA ARÁBICA)</h5>
                                         {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
-                                            <label key={opcao}>
+                                            <label key={opcao} className="radio-label">
                                                 <input
-                                                    type="checkbox"
+                                                    type="radio"
+                                                    name="torra-arabica"
                                                     checked={torraArabica === opcao}
-                                                    onChange={() => setTorraArabica(opcao)}
+                                                    onChange={() => {
+                                                        setTorraArabica(opcao)
+                                                        setTorraCanephora("") // desmarca Canephora
+                                                    }}
                                                 />
-                                                {opcao}
+                                                <span>{opcao}</span>
                                             </label>
                                         ))}
                                     </div>
+
                                     <div className="bloco-laudo">
                                         <h5>TORRA (COFFEA CANEPHORA)</h5>
                                         {[
@@ -761,44 +888,52 @@ const Cob = () => {
                                             "Torração Regular",
                                             "Torração Má",
                                         ].map((opcao) => (
-                                            <label key={opcao}>
+                                            <label key={opcao} className="radio-label">
                                                 <input
-                                                    type="checkbox"
+                                                    type="radio"
+                                                    name="torra-canephora"
                                                     checked={torraCanephora === opcao}
-                                                    onChange={() => setTorraCanephora(opcao)}
+                                                    onChange={() => {
+                                                        setTorraCanephora(opcao)
+                                                        setTorraArabica("") // desmarca Arabica
+                                                    }}
                                                 />
-                                                {opcao}
+                                                <span>{opcao}</span>
                                             </label>
                                         ))}
                                     </div>
+
                                     <div className="bloco-laudo">
                                         <h5>TEOR DE CAFEINA</h5>
                                         {["Café", "Café descafeinado"].map((opcao) => (
-                                            <label key={opcao}>
+                                            <label key={opcao} className="radio-label">
                                                 <input
-                                                    type="checkbox"
+                                                    type="radio"
+                                                    name="teor-cafeina"
                                                     checked={teorCafeina === opcao}
                                                     onChange={() => setTeorCafeina(opcao)}
                                                 />
-                                                {opcao}
+                                                <span>{opcao}</span>
                                             </label>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button
-                            className="salvar"
-                            onClick={() => {
-                                handleSalvarAvaliacao();
-                            }}
-                        >
-                            SALVAR
+                        <button className="salvar" onClick={handleSalvarAvaliacao} disabled={salvando}>
+                            {salvando ? "SALVANDO..." : "SALVAR"}
                         </button>
+
+                        <div className="acoes-adicionais">
+                            <button className="botao-secundario" onClick={mostrarPDF} disabled={salvando}>
+                                <i className="bi bi-file-pdf"></i> Visualizar PDF
+                            </button>
+                        </div>
                     </div>
                 </section>
             </div>
         </div>
-    );
-};
-export default Cob;
+    )
+}
+
+export default Cob
