@@ -10,11 +10,6 @@ import autoTable from "jspdf-autotable"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import logo from "../assets/logopdf.png"
 
-/**
- * Creates a new evaluation object with default values
- * @param {Object} overrides - Optional values to override defaults
- * @returns {Object} A new evaluation object
- */
 const novaEstruturaAvaliacao = (overrides = {}) => {
     return {
         id: Date.now(),
@@ -57,11 +52,9 @@ const Scaa = () => {
     const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false)
     const navigate = useNavigate()
 
-    // Get the current active evaluation
     const avaliacaoAtual = abaAtiva !== null && avaliacoes[abaAtiva] ? avaliacoes[abaAtiva] : null
 
     useEffect(() => {
-        // Prevent browser back button
         window.history.pushState(null, null, window.location.href)
         const bloquearVoltar = () => {
             window.history.pushState(null, null, window.location.href)
@@ -279,7 +272,7 @@ const Scaa = () => {
         const docPDF = new jsPDF({ unit: "mm", format: "a4" })
         const img = new Image()
         img.src = logo
-        img.crossOrigin = "anonymous" // Add this to avoid CORS issues
+        img.crossOrigin = "anonymous"
 
         img.onload = () => {
             const pageWidth = docPDF.internal.pageSize.getWidth()

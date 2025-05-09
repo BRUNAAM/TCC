@@ -73,7 +73,6 @@ const classificationTable = [
 ]
 
 function getClassification(defeitosValue) {
-    // Fix the classification logic to handle edge cases
     if (defeitosValue <= 0) return { label: "2-5" }
 
     for (let i = 0; i < classificationTable.length; i++) {
@@ -114,7 +113,6 @@ const Cob = () => {
     const [salvando, setSalvando] = useState(false)
     const navigate = useNavigate()
 
-    // Prevent back navigation
     useEffect(() => {
         const bloquearVoltar = (e) => {
             e.preventDefault()
