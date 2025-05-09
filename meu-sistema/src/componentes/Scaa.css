@@ -12,6 +12,8 @@ body,
     font-weight: bold;
     background-color: #032b43;
     color: #ffffff;
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
 }
 
 body {
@@ -26,8 +28,12 @@ body {
     flex-direction: column;
     min-height: 100dvh;
     width: 100%;
+    max-width: 100vw;
+    /* Ensure container doesn't exceed viewport width */
     box-sizing: border-box;
     background-color: #032b43;
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
 }
 
 /* Cabeçalho */
@@ -41,6 +47,8 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .scaa-header h2 {
@@ -76,19 +84,42 @@ body {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
 }
 
 /* Abas */
 .abas {
     display: flex;
-    flex-wrap: wrap;
     gap: 5px;
     margin-bottom: 20px;
     border-bottom: 1px solid #ffba08;
     padding-bottom: 10px;
+    overflow-x: auto;
+    /* Allow horizontal scrolling for tabs */
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: #ffba08 #043b5c;
+    /* Firefox */
+}
+
+.abas::-webkit-scrollbar {
+    height: 6px;
+}
+
+.abas::-webkit-scrollbar-thumb {
+    background-color: #ffba08;
+    border-radius: 3px;
+}
+
+.abas::-webkit-scrollbar-track {
+    background-color: #043b5c;
 }
 
 .aba {
@@ -104,6 +135,8 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 200px;
+    flex-shrink: 0;
+    /* Prevent tabs from shrinking */
 }
 
 .aba.ativa {
@@ -130,6 +163,8 @@ body {
     transition: background-color 0.3s;
     font-size: 14px;
     margin-left: auto;
+    flex-shrink: 0;
+    /* Prevent button from shrinking */
 }
 
 .botao-nova-aba:hover {
@@ -149,11 +184,14 @@ body {
     flex-direction: column;
     gap: 5px;
     margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .input-com-botao {
     display: flex;
     gap: 10px;
+    width: 100%;
 }
 
 .input-com-botao select {
@@ -189,6 +227,8 @@ textarea {
     background-color: #043b5c;
     color: white;
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 input[type="text"]:focus,
@@ -224,6 +264,8 @@ textarea:focus {
     background-color: #043b5c;
     border-radius: 10px;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .torra-container h3 {
@@ -235,7 +277,7 @@ textarea:focus {
 
 .torra-options {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
 }
@@ -296,6 +338,8 @@ textarea:focus {
     flex-wrap: wrap;
     gap: 20px;
     margin: 30px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .vertical-slider-box {
@@ -307,6 +351,7 @@ textarea:focus {
     border-radius: 10px;
     min-width: 200px;
     width: 45%;
+    box-sizing: border-box;
 }
 
 .vertical-slider-box h4 {
@@ -397,6 +442,8 @@ textarea:focus {
 .nota-container {
     margin: 20px 0;
     position: relative;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nota-container label {
@@ -415,6 +462,7 @@ textarea:focus {
     outline: none;
     border-radius: 4px;
     margin-bottom: 10px;
+    box-sizing: border-box;
 }
 
 .nota-container input[type="range"]::-webkit-slider-thumb {
@@ -446,12 +494,16 @@ textarea:focus {
     color: #ccc;
     overflow-x: auto;
     padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
 }
 
 .escala-notas span {
     padding: 2px;
     border-radius: 3px;
     transition: all 0.3s;
+    min-width: 25px;
+    text-align: center;
 }
 
 .escala-notas span.selecionado {
@@ -463,6 +515,8 @@ textarea:focus {
 /* Notas do café */
 .nota-cafe-container {
     margin: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nota-cafe-container label {
@@ -509,6 +563,7 @@ textarea:focus {
     border-radius: 10px;
     margin: 20px 0;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .vertical-slider-single h4 {
@@ -530,6 +585,7 @@ textarea:focus {
     width: 100%;
     margin-top: 10px;
     height: 80px;
+    box-sizing: border-box;
 }
 
 /* Xícaras e defeitos */
@@ -538,6 +594,8 @@ textarea:focus {
     padding: 15px;
     border-radius: 10px;
     margin: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .titulo-secao {
@@ -590,6 +648,8 @@ textarea:focus {
     flex-wrap: wrap;
     gap: 20px;
     margin: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .defeito-box {
@@ -601,6 +661,7 @@ textarea:focus {
     background-color: #043b5c;
     padding: 15px;
     border-radius: 10px;
+    box-sizing: border-box;
 }
 
 .defeito-box label {
@@ -625,6 +686,8 @@ textarea:focus {
     border-radius: 10px;
     margin: 20px 0;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .pontuacao-final h2 {
@@ -670,7 +733,11 @@ textarea:focus {
     }
 
     .scaa-form {
-        padding: 15px;
+        padding: 15px 10px;
+    }
+
+    .campos-form {
+        grid-template-columns: 1fr;
     }
 
     .vertical-sliders-container {
@@ -680,6 +747,7 @@ textarea:focus {
 
     .vertical-slider-box {
         width: 100%;
+        min-width: unset;
     }
 
     .defeito-box {
@@ -700,20 +768,43 @@ textarea:focus {
         width: 50px;
         height: 75px;
     }
+
+    .xicaras-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .xicaras-group {
+        width: 100%;
+    }
+
+    .checkboxes-coluna {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 250px;
+    }
 }
 
 @media (max-width: 480px) {
     .scaa-header h2 {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .scaa-form {
-        padding: 10px;
+        padding: 10px 5px;
+        overflow-x: hidden;
     }
 
     .aba {
-        font-size: 12px;
-        padding: 6px 10px;
+        font-size: 11px;
+        padding: 6px 8px;
+        max-width: 120px;
+    }
+
+    .botao-nova-aba {
+        font-size: 11px;
+        padding: 6px 8px;
     }
 
     .slider-row-with-note {
@@ -727,26 +818,72 @@ textarea:focus {
     .caixa-tipos-acidez {
         width: 90vw;
         right: auto;
-        /* Remove o posicionamento à direita */
         left: 50%;
-        /* Centraliza horizontalmente */
         transform: translateX(-50%);
-        /* Completa a centralização */
     }
 
     .torra-option {
-        width: 90px;
-        height: 110px;
-        padding: 10px;
+        width: 70px;
+        height: 100px;
+        padding: 8px;
     }
 
     .torra-option span {
-        font-size: 12px;
-        margin-top: 8px;
+        font-size: 11px;
+        margin-top: 6px;
     }
 
     .grao-svg {
-        width: 40px;
-        height: 60px;
+        width: 35px;
+        height: 55px;
+    }
+
+    .escala-notas {
+        font-size: 8px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        justify-content: flex-start;
+    }
+
+    .escala-notas span {
+        margin-right: 5px;
+        min-width: 25px;
+        text-align: center;
+    }
+
+    .pontuacao-final h2 {
+        font-size: 18px;
+    }
+
+    .input-com-botao {
+        flex-direction: column;
+    }
+
+    .botao-icone {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .slider-labels {
+        font-size: 10px;
+    }
+
+    .torra-option {
+        width: 60px;
+        height: 90px;
+    }
+
+    .torra-option span {
+        font-size: 10px;
+    }
+
+    .grao-svg {
+        width: 30px;
+        height: 45px;
+    }
+
+    .defeito-box label {
+        font-size: 12px;
     }
 }
