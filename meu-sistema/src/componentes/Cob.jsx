@@ -922,11 +922,6 @@ const Cob = () => {
                             {salvando ? "SALVANDO..." : "SALVAR"}
                         </button>
 
-                        <div className="acoes-adicionais">
-                            <button className="botao-secundario" onClick={mostrarPDF} disabled={salvando}>
-                                <i className="bi bi-file-pdf"></i> Visualizar PDF
-                            </button>
-                        </div>
                     </div>
                 </section>
             </div>

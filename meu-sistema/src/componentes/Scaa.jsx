@@ -1,3 +1,4 @@
+"use client"
 
 import "./Scaa.css"
 import { getAuth } from "firebase/auth"
@@ -71,7 +72,6 @@ const Scaa = () => {
         return () => window.removeEventListener("popstate", bloquearVoltar)
     }, [])
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const usuarioNome = localStorage.getItem("usuarioNome") || ""
 
@@ -88,7 +88,6 @@ const Scaa = () => {
         inicializarAvaliacao()
         carregarFornecedores()
     }, [avaliacoes.length])
-
 
     const carregarFornecedores = async () => {
         try {
@@ -243,7 +242,6 @@ const Scaa = () => {
         setAvaliacoes((prev) => [...prev, novaAvaliacao])
         setAbaAtiva((prev) => (prev === null ? 0 : prev + 1))
     }
-
 
     const salvarAvaliacaoFirebase = async (avaliacao) => {
         try {
@@ -479,57 +477,77 @@ const Scaa = () => {
                             </button>
                         )
                     })}
-                    <button onClick={criarNovaAvaliacao}>+ Nova Avaliação</button>
-                </div>
-
-                <label>Nome do Avaliador:</label>
-                <input
-                    type="text"
-                    value={avaliacaoAtual.avaliador}
-                    onChange={(e) => updateField("avaliador", e.target.value)}
-                    disabled
-                />
-
-                <label>Data:</label>
-                <input type="date" value={avaliacaoAtual.data} onChange={(e) => updateField("data", e.target.value)} disabled />
-
-                <label>Fornecedor:</label>
-                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    <select
-                        value={avaliacaoAtual.fornecedorSelecionado}
-                        onChange={(e) => updateField("fornecedorSelecionado", e.target.value)}
-                    >
-                        <option value="">Selecione um fornecedor</option>
-                        {fornecedores.map((f) => (
-                            <option key={f.id} value={f.nome}>
-                                {f.nome}
-                            </option>
-                        ))}
-                    </select>
-                    <button type="button" onClick={() => navigate("/fornecedores")} className="botao-icone">
-                        <i className="bi bi-folder-plus"></i>
-                        Novo
+                    <button onClick={criarNovaAvaliacao} className="botao-nova-aba">
+                        + Nova Avaliação
                     </button>
                 </div>
 
-                <label>N° da Amostra:</label>
-                <input
-                    type="text"
-                    value={avaliacaoAtual.numeroAmostra}
-                    onChange={(e) => updateField("numeroAmostra", e.target.value)}
-                    placeholder="Digite o número da amostra"
-                />
+                <div className="campos-form">
+                    <div className="campo-form">
+                        <label>Nome do Avaliador:</label>
+                        <input
+                            type="text"
+                            value={avaliacaoAtual.avaliador}
+                            onChange={(e) => updateField("avaliador", e.target.value)}
+                            disabled
+                        />
+                    </div>
 
-                <label>Observações:</label>
-                <textarea
-                    value={avaliacaoAtual.observacoes}
-                    onChange={(e) => updateField("observacoes", e.target.value)}
-                    placeholder="Adicione observações..."
-                />
+                    <div className="campo-form">
+                        <label>Data:</label>
+                        <input
+                            type="date"
+                            value={avaliacaoAtual.data}
+                            onChange={(e) => updateField("data", e.target.value)}
+                            disabled
+                        />
+                    </div>
+
+                    <div className="campo-form">
+                        <label>Fornecedor:</label>
+                        <div className="input-com-botao">
+                            <select
+                                value={avaliacaoAtual.fornecedorSelecionado}
+                                onChange={(e) => updateField("fornecedorSelecionado", e.target.value)}
+                            >
+                                <option value="">Selecione um fornecedor</option>
+                                {fornecedores.map((f) => (
+                                    <option key={f.id} value={f.nome}>
+                                        {f.nome}
+                                    </option>
+                                ))}
+                            </select>
+                            <button type="button" onClick={() => navigate("/fornecedores")} className="botao-icone">
+                                <i className="bi bi-folder-plus"></i>
+                                Novo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="campo-form">
+                        <label>N° da Amostra:</label>
+                        <input
+                            type="text"
+                            value={avaliacaoAtual.numeroAmostra}
+                            onChange={(e) => updateField("numeroAmostra", e.target.value)}
+                            placeholder="Digite o número da amostra"
+                        />
+                    </div>
+                </div>
+
+                <div className="campo-form observacoes-campo">
+                    <label>Observações:</label>
+                    <textarea
+                        value={avaliacaoAtual.observacoes}
+                        onChange={(e) => updateField("observacoes", e.target.value)}
+                        placeholder="Adicione observações..."
+                        className="observacoes-textarea"
+                    />
+                </div>
 
                 {/* Selecao da Cor da Torra */}
                 <div className="torra-container">
-                    <h3>Selecione a Cor da Torra:</h3>
+                    <h3>SELECIONE A COR DA TORRA:</h3>
                     <div className="torra-options">
                         {[
                             { nome: "Torra Clara", cor: "#a57b70" },
@@ -557,27 +575,25 @@ const Scaa = () => {
                         </h4>
                         <div className="slider-row-with-note">
                             <div className="slider-row">
-                                <input
-                                    type="range"
-                                    className="vertical-slider"
-                                    min="0"
-                                    max="4"
-                                    step="1"
-                                    value={avaliacaoAtual.dry}
-                                    onChange={(e) => updateField("dry", Number.parseInt(e.target.value))}
-                                />
                                 <div className="slider-labels">
-                                    {intensidades
-                                        .slice()
-                                        .reverse()
-                                        .map((label, index) => (
-                                            <span
-                                                key={index}
-                                                className={avaliacaoAtual.dry === intensidades.length - 1 - index ? "selected" : ""}
-                                            >
-                                                {label}
-                                            </span>
-                                        ))}
+                                    {intensidades.map((label, index) => (
+                                        <span
+                                            key={index}
+                                            className={avaliacaoAtual.dry === index ? "selected" : ""}
+                                            onClick={() => updateField("dry", index)}
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="slider-indicator">
+                                    <div
+                                        className="slider-ball"
+                                        style={{
+                                            top: `${(avaliacaoAtual.dry / 4) * 100}%`,
+                                        }}
+                                    ></div>
+                                    <div className="slider-line"></div>
                                 </div>
                             </div>
                             <textarea
@@ -595,27 +611,25 @@ const Scaa = () => {
                         </h4>
                         <div className="slider-row-with-note">
                             <div className="slider-row">
-                                <input
-                                    type="range"
-                                    className="vertical-slider"
-                                    min="0"
-                                    max="4"
-                                    step="1"
-                                    value={avaliacaoAtual.breakValue}
-                                    onChange={(e) => updateField("breakValue", Number.parseInt(e.target.value))}
-                                />
                                 <div className="slider-labels">
-                                    {intensidades
-                                        .slice()
-                                        .reverse()
-                                        .map((label, index) => (
-                                            <span
-                                                key={index}
-                                                className={avaliacaoAtual.breakValue === intensidades.length - 1 - index ? "selected" : ""}
-                                            >
-                                                {label}
-                                            </span>
-                                        ))}
+                                    {intensidades.map((label, index) => (
+                                        <span
+                                            key={index}
+                                            className={avaliacaoAtual.breakValue === index ? "selected" : ""}
+                                            onClick={() => updateField("breakValue", index)}
+                                        >
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="slider-indicator">
+                                    <div
+                                        className="slider-ball"
+                                        style={{
+                                            top: `${(avaliacaoAtual.breakValue / 4) * 100}%`,
+                                        }}
+                                    ></div>
+                                    <div className="slider-line"></div>
                                 </div>
                             </div>
                             <textarea
@@ -693,6 +707,7 @@ const Scaa = () => {
                         value={avaliacaoAtual.notasSensorias}
                         onChange={(e) => updateField("notasSensorias", e.target.value)}
                         placeholder="Preencha as notas encontradas no café"
+                        className="notas-sensoriais-textarea"
                     />
                 </div>
 
@@ -702,30 +717,26 @@ const Scaa = () => {
                         <h4>Nível de Acidez</h4>
                     </div>
 
-                    <div className="slider-row-with-note">
-                        <div className="slider-row">
-                            <input
-                                type="range"
-                                className="vertical-slider"
-                                min="0"
-                                max="4"
-                                step="1"
-                                value={avaliacaoAtual.nivelAcidez}
-                                onChange={(e) => updateField("nivelAcidez", Number.parseInt(e.target.value))}
-                            />
-                            <div className="slider-labels">
-                                {intensidades
-                                    .slice()
-                                    .reverse()
-                                    .map((label, index) => (
-                                        <span
-                                            key={index}
-                                            className={avaliacaoAtual.nivelAcidez === intensidades.length - 1 - index ? "selected" : ""}
-                                        >
-                                            {label}
-                                        </span>
-                                    ))}
-                            </div>
+                    <div className="slider-row">
+                        <div className="slider-labels">
+                            {intensidades.map((label, index) => (
+                                <span
+                                    key={index}
+                                    className={avaliacaoAtual.nivelAcidez === index ? "selected" : ""}
+                                    onClick={() => updateField("nivelAcidez", index)}
+                                >
+                                    {label}
+                                </span>
+                            ))}
+                        </div>
+                        <div className="slider-indicator">
+                            <div
+                                className="slider-ball"
+                                style={{
+                                    top: `${(avaliacaoAtual.nivelAcidez / 4) * 100}%`,
+                                }}
+                            ></div>
+                            <div className="slider-line"></div>
                         </div>
                     </div>
                 </div>
@@ -736,6 +747,7 @@ const Scaa = () => {
                         className="botao-info-acidez"
                         onClick={() => setMostrarTiposAcidez(!mostrarTiposAcidez)}
                         title="Ver tipos de acidez"
+                        type="button"
                     >
                         <i className="bi bi-info-circle-fill"></i>
                     </button>
@@ -779,7 +791,7 @@ const Scaa = () => {
                         ))}
                     </div>
                     <textarea
-                        className="slider-lateral-note"
+                        className="observacoes-acidez"
                         placeholder="Observações Acidez"
                         value={avaliacaoAtual.obsAcidez}
                         onChange={(e) => updateField("obsAcidez", e.target.value)}
@@ -790,27 +802,25 @@ const Scaa = () => {
                 <div className="vertical-sliders-container vertical-slider-single">
                     <h4>Nível de Corpo</h4>
                     <div className="slider-row">
-                        <input
-                            type="range"
-                            className="vertical-slider"
-                            min="0"
-                            max="4"
-                            step="1"
-                            value={avaliacaoAtual.nivelCorpo}
-                            onChange={(e) => updateField("nivelCorpo", Number.parseInt(e.target.value))}
-                        />
                         <div className="slider-labels">
-                            {intensidades
-                                .slice()
-                                .reverse()
-                                .map((label, index) => (
-                                    <span
-                                        key={index}
-                                        className={avaliacaoAtual.nivelCorpo === intensidades.length - 1 - index ? "selected" : ""}
-                                    >
-                                        {label}
-                                    </span>
-                                ))}
+                            {intensidades.map((label, index) => (
+                                <span
+                                    key={index}
+                                    className={avaliacaoAtual.nivelCorpo === index ? "selected" : ""}
+                                    onClick={() => updateField("nivelCorpo", index)}
+                                >
+                                    {label}
+                                </span>
+                            ))}
+                        </div>
+                        <div className="slider-indicator">
+                            <div
+                                className="slider-ball"
+                                style={{
+                                    top: `${(avaliacaoAtual.nivelCorpo / 4) * 100}%`,
+                                }}
+                            ></div>
+                            <div className="slider-line"></div>
                         </div>
                     </div>
                 </div>
@@ -949,7 +959,6 @@ const Scaa = () => {
                     <h2>PONTUAÇÃO FINAL: {calcularPontuacaoFinal()}</h2>
                     <p>Descontos Totais: {calcularTotalDescontos()}</p>
                 </div>
-
 
                 {/* Botão de Salvar */}
                 <button className="salvar" onClick={handleSalvarAvaliacao}>
