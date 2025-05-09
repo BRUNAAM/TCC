@@ -1,5 +1,3 @@
-"use client"
-
 import "./Scaa.css"
 import { getAuth } from "firebase/auth"
 import { useState, useEffect } from "react"

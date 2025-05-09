@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import "./HistoricoScaa.css";
+import { useState, useEffect } from "react";
 import { auth, db } from "../config/firebase";
 import { collection, getDocs, getDoc, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import "./HistoricoScaa.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from "../assets/logopdf.png";

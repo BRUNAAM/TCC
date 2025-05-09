@@ -1,11 +1,9 @@
-"use client"
-
+import "./Logado.css"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { signOut } from "firebase/auth"
 import { auth } from "../config/firebase"
 import { useUser } from "../context/UserContext"
-import "./Logado.css"
 import logo from "../assets/logo.svg"
 
 const Logado = () => {

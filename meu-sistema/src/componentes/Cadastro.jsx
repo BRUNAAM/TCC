@@ -1,5 +1,3 @@
-"use client"
-
 import "./Cadastro.css"
 import { useEffect, useState } from "react"
 import { auth, db } from "../config/firebase"

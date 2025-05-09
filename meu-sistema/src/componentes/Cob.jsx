@@ -1,9 +1,9 @@
+import "./Cob.css"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { db } from "../config/firebase"
 import { collection, getDocs, addDoc } from "firebase/firestore"
 import { getAuth } from "firebase/auth"
-import "./Cob.css"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import "bootstrap-icons/font/bootstrap-icons.css"
@@ -150,14 +150,12 @@ const Cob = () => {
         "Grão Esmagado": { quantidade: 5, equivalencia: 1 },
     }
 
-    // Load user name and suppliers on component mount
     useEffect(() => {
         const usuarioNome = localStorage.getItem("usuarioNome") || ""
         setAvaliador(usuarioNome)
         carregarFornecedores()
     }, [])
 
-    // Update tipo when equivalenciaTotal changes
     useEffect(() => {
         const classification = getClassification(equivalenciaTotal)
         setTipo(classification.label)
@@ -188,7 +186,6 @@ const Cob = () => {
     }
 
     const handleDefeitoChange = (defeito, quantidade) => {
-        // Ensure quantity is a valid number
         const validQuantity = isNaN(quantidade) ? 0 : quantidade
 
         const updatedDefeitos = { ...defeitos, [defeito]: validQuantity }

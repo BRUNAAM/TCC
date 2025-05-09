@@ -1,11 +1,9 @@
-"use client"
-
+import "./Login.css"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth, db } from "../config/firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { doc, getDoc } from "firebase/firestore"
-import "./Login.css"
 import logo from "../assets/logo.svg"
 import { useUser } from "../context/UserContext"
 

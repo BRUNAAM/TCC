@@ -1,10 +1,10 @@
+import "./Fornecedores.css";
 import { useState, useEffect } from "react";
 import { db } from "../config/firebase";
-import {collection,addDoc,getDocs,updateDoc, deleteDoc, doc} from "firebase/firestore";
+import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./Fornecedores.css";
 
 const Fornecedores = () => {
     const [fornecedores, setFornecedores] = useState([]);

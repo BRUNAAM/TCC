@@ -1,7 +1,5 @@
-"use client"
-
-import { useNavigate } from "react-router-dom"
 import "./Home.css"
+import { useNavigate } from "react-router-dom"
 import logo from "../assets/logo.svg"
 import { useUser } from "../context/UserContext"
 import { useEffect } from "react"
