@@ -213,8 +213,9 @@ const HistoricoScaa = () => {
                 return
             }
             // Encontre a avaliação em nosso estado local primeiro para evitar uma leitura extra do Firestore
-            const avaliacao = avaliacoes.find((a) => a.id === id)
-            if (!avaliacao) {
+            let avaliacaoData
+            const avaliacaoEncontrada = avaliacoes.find((a) => a.id === id)
+            if (!avaliacaoEncontrada) {
                 console.error("Avaliação não encontrada no estado local")
                 // Retornar ao Firestore se não for encontrado no estado local
                 const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
@@ -225,10 +226,12 @@ const HistoricoScaa = () => {
                     return
                 }
 
-                const avaliacao = { id: docSnap.id, rawData: docSnap.data() }
+                avaliacaoData = { id: docSnap.id, rawData: docSnap.data() }
+            } else {
+                avaliacaoData = avaliacaoEncontrada
             }
             // Use os dados brutos para geração de PDF
-            const data = avaliacao.rawData || {}
+            const data = avaliacaoData.rawData || {}
 
             const docPDF = new jsPDF({ unit: "mm", format: "a4" })
             const img = new Image()
