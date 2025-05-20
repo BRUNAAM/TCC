@@ -1,5 +1,3 @@
-/* Scaa.css */
-
 /* Reset global */
 html,
 body,
@@ -34,6 +32,7 @@ body {
     background-color: #032b43;
     overflow-x: hidden;
     /* Prevent horizontal scrolling */
+    position: relative;
 }
 
 /* Cabeçalho */
@@ -90,14 +89,14 @@ body {
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
+    padding-top: 70px;
+    /* Espaço para as abas fixas */
 }
 
 /* Abas */
 .abas {
     display: flex;
     gap: 5px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ffba08;
     padding-bottom: 10px;
     overflow-x: auto;
     /* Allow horizontal scrolling for tabs */
@@ -107,6 +106,7 @@ body {
     /* Firefox */
     scrollbar-color: #ffba08 #043b5c;
     /* Firefox */
+    margin-bottom: 0;
 }
 
 .abas::-webkit-scrollbar {
@@ -129,7 +129,7 @@ body {
     border-radius: 5px 5px 0 0;
     color: white;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
     font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
@@ -137,6 +137,13 @@ body {
     max-width: 200px;
     flex-shrink: 0;
     /* Prevent tabs from shrinking */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    min-width: 100px;
+    max-width: 180px;
+    height: auto;
 }
 
 .aba.ativa {
@@ -153,6 +160,37 @@ body {
     background-color: #ffd058;
 }
 
+/* Estilo para o conteúdo das abas */
+.aba-conteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+}
+
+.aba-numero {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 2px;
+    color: #ffba08;
+}
+
+.aba-fornecedor {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.aba.ativa .aba-numero,
+.aba.ativa .aba-fornecedor {
+    color: #032b43;
+}
+
+/* Botão de nova aba */
 .botao-nova-aba {
     padding: 8px 15px;
     background-color: #28a745;
@@ -169,6 +207,46 @@ body {
 
 .botao-nova-aba:hover {
     background-color: #218838;
+}
+
+/* Contêiner fixo para as abas */
+.abas-sticky-container {
+    position: fixed;
+    top: 58px;
+    /* Altura do cabeçalho principal */
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background-color: #032b43;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ffba08;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* Modo compacto para as abas quando o usuário rola para baixo */
+.abas-sticky-container.compact-mode {
+    padding: 5px 20px;
+}
+
+.abas-sticky-container.compact-mode .aba {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.abas-sticky-container.compact-mode .botao-nova-aba {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.abas-sticky-container.compact-mode .aba-numero {
+    font-size: 14px;
+}
+
+.abas-sticky-container.compact-mode .aba-fornecedor {
+    font-size: 10px;
 }
 
 /* Campos do formulário */
@@ -226,7 +304,8 @@ textarea {
     border-radius: 5px;
     background-color: #043b5c;
     color: white;
-    font-size: 14px;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
     width: 100%;
     box-sizing: border-box;
 }
@@ -251,6 +330,8 @@ textarea:focus {
     resize: vertical;
     width: 100%;
     box-sizing: border-box;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .observacoes-campo {
@@ -278,8 +359,11 @@ textarea:focus {
 .torra-options {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 15px;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
 }
 
 .torra-option {
@@ -292,16 +376,50 @@ textarea:focus {
     border-radius: 12px;
     transition: all 0.3s ease;
     width: 120px;
+    min-width: 120px;
     height: 140px;
     background-color: rgba(4, 59, 92, 0.5);
+    flex: 1;
 }
 
-.torra-option:hover {
-    background-color: rgba(6, 86, 133, 0.7);
+/* Ajustes responsivos para a seleção de torra */
+@media (max-width: 768px) {
+    .torra-options {
+        justify-content: flex-start;
+        padding-bottom: 15px;
+    }
+
+    .torra-option {
+        width: 100px;
+        min-width: 100px;
+        height: 120px;
+    }
 }
 
-.torra-option.selecionado {
-    background-color: #ffba08;
+@media (max-width: 480px) {
+    .torra-options {
+        gap: 10px;
+    }
+
+    .torra-option {
+        width: 80px;
+        min-width: 80px;
+        height: 100px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 360px) {
+    .torra-options {
+        gap: 5px;
+    }
+
+    .torra-option {
+        width: 70px;
+        min-width: 70px;
+        height: 90px;
+        padding: 5px;
+    }
 }
 
 .torra-option span {
@@ -359,6 +477,8 @@ textarea:focus {
     text-align: center;
     color: #ffba08;
     margin-bottom: 15px;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .dry,
@@ -388,6 +508,8 @@ textarea:focus {
     width: 8px;
     background-color: #065685;
     border-radius: 4px;
+    cursor: pointer;
+    /* Adicionado para indicar que é clicável */
 }
 
 .slider-line {
@@ -410,6 +532,8 @@ textarea:focus {
     transform: translate(-50%, -50%);
     cursor: pointer;
     z-index: 2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    /* Adicionado sombra para destacar */
 }
 
 .slider-labels {
@@ -420,10 +544,18 @@ textarea:focus {
 }
 
 .slider-labels span {
-    padding: 2px 5px;
+    padding: 4px 8px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     border-radius: 3px;
     transition: all 0.3s;
     cursor: pointer;
+    font-size: 14px;
+    /* Aumentado para melhor legibilidade */
+}
+
+.slider-labels span:hover {
+    background-color: rgba(255, 186, 8, 0.3);
+    /* Efeito hover para indicar que é clicável */
 }
 
 .slider-labels span.selected {
@@ -435,7 +567,8 @@ textarea:focus {
 .slider-lateral-note {
     width: 150px;
     height: 80px;
-    font-size: 18px;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 /* Sliders horizontais */
@@ -450,6 +583,8 @@ textarea:focus {
     display: block;
     margin-bottom: 8px;
     color: #ffba08;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .nota-container input[type="range"] {
@@ -457,10 +592,11 @@ textarea:focus {
     -webkit-appearance: none;
     -moz-appearance: none;
     width: 100%;
-    height: 8px;
+    height: 12px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     background: #065685;
     outline: none;
-    border-radius: 4px;
+    border-radius: 6px;
     margin-bottom: 10px;
     box-sizing: border-box;
 }
@@ -469,47 +605,104 @@ textarea:focus {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    /* Aumentado para melhor toque em dispositivos móveis */
+    height: 24px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     background: #ffba08;
     cursor: pointer;
     border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    /* Adicionado sombra para destacar */
 }
 
 .nota-container input[type="range"]::-moz-range-thumb {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    /* Aumentado para melhor toque em dispositivos móveis */
+    height: 24px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     background: #ffba08;
     cursor: pointer;
     border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    /* Adicionado sombra para destacar */
 }
 
+/* Modificar a seção de escala-notas para corrigir o problema de corte */
 .escala-notas {
     display: flex;
-    justify-content: space-between;
-    font-size: 10px;
+    justify-content: flex-start;
+    /* Alterado de space-between para flex-start */
+    font-size: 12px;
     color: #ccc;
     overflow-x: auto;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
     -webkit-overflow-scrolling: touch;
-    /* Smooth scrolling on iOS */
+    gap: 5px;
+    /* Adicionado espaçamento uniforme entre os números */
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 .escala-notas span {
-    padding: 2px;
+    padding: 4px;
     border-radius: 3px;
     transition: all 0.3s;
-    min-width: 25px;
+    min-width: 35px;
+    /* Aumentado para garantir espaço suficiente */
     text-align: center;
+    flex-shrink: 0;
+    /* Impede que os números sejam comprimidos */
+    cursor: pointer;
+    /* Adicionado para indicar que é clicável */
+    color: #e0e0e0;
+    /* Cor mais clara para melhor contraste */
+    font-weight: 500;
+    /* Peso da fonte aumentado para melhor legibilidade */
+}
+
+.escala-notas span:hover {
+    background-color: rgba(255, 186, 8, 0.3);
+    /* Efeito hover para indicar que é clicável */
+    transform: scale(1.1);
+    /* Leve aumento no tamanho ao passar o mouse */
 }
 
 .escala-notas span.selecionado {
     background-color: #ffba08;
     color: #032b43;
     font-weight: bold;
+    transform: scale(1.15);
+    /* Destaque para o valor selecionado */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    /* Sombra para destacar o valor selecionado */
+}
+
+/* Ajustar o container do slider para garantir que ele ocupe toda a largura disponível */
+.nota-container {
+    margin: 20px 0;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+    /* Garante que o conteúdo não seja cortado */
+}
+
+.nota-container input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    height: 12px;
+    background: #065685;
+    outline: none;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    /* Aumentado para dar mais espaço para a escala */
+    box-sizing: border-box;
 }
 
 /* Notas do café */
@@ -523,6 +716,8 @@ textarea:focus {
     display: block;
     margin-bottom: 8px;
     color: #ffba08;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 /* Botão de informações de acidez */
@@ -531,29 +726,45 @@ textarea:focus {
     border: none;
     color: #ffba08;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     position: absolute;
     top: 0;
     right: 0;
 }
 
 .caixa-tipos-acidez {
-    position: absolute;
-    top: 30px;
-    right: 0;
+    position: fixed;
+    /* Alterado para fixed para melhor visualização em dispositivos móveis */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: #043b5c;
-    padding: 15px;
+    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    z-index: 10;
-    width: 300px;
-    font-size: 12px;
-    max-width: 90vw;
-    /* Limita a largura a 90% da viewport */
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+    font-size: 14px;
+    /* Aumentado para melhor legibilidade */
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .caixa-tipos-acidez p {
-    margin: 8px 0;
+    margin: 12px 0;
+}
+
+.fechar-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #ffba08;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 /* Slider vertical único */
@@ -571,6 +782,8 @@ textarea:focus {
     text-align: center;
     margin-top: 0;
     margin-bottom: 15px;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .titulo-acidez-com-botao {
@@ -602,10 +815,13 @@ textarea:focus {
     color: #ffba08;
     margin-top: 0;
     text-align: center;
+    font-size: 18px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .nota-xicaras-valor {
-    font-size: 24px;
+    font-size: 28px;
+    /* Aumentado para melhor legibilidade */
     font-weight: bold;
     text-align: center;
     margin: 10px 0;
@@ -628,6 +844,8 @@ textarea:focus {
 .xicaras-group label {
     margin-bottom: 10px;
     color: #ffba08;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .checkboxes-coluna {
@@ -637,8 +855,10 @@ textarea:focus {
 }
 
 .checkboxes-coluna input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    /* Aumentado para melhor toque em dispositivos móveis */
+    height: 24px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     cursor: pointer;
 }
 
@@ -667,16 +887,23 @@ textarea:focus {
 .defeito-box label {
     color: #ffba08;
     white-space: nowrap;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .defeito-box input {
-    width: 60px;
+    width: 70px;
+    /* Aumentado para melhor toque em dispositivos móveis */
     text-align: center;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .resultado-defeito {
     font-weight: bold;
     color: #ff6b6b;
+    font-size: 16px;
+    /* Aumentado para melhor legibilidade */
 }
 
 /* Pontuação final */
@@ -693,11 +920,15 @@ textarea:focus {
 .pontuacao-final h2 {
     color: #ffba08;
     margin-top: 0;
+    font-size: 24px;
+    /* Aumentado para melhor legibilidade */
 }
 
 .pontuacao-final p {
     color: #ff6b6b;
     font-weight: bold;
+    font-size: 18px;
+    /* Aumentado para melhor legibilidade */
 }
 
 /* Botão de salvar */
@@ -711,7 +942,8 @@ textarea:focus {
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 18px;
+    /* Aumentado para melhor legibilidade */
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
@@ -726,6 +958,32 @@ textarea:focus {
     transform: translateY(1px);
 }
 
+/* Botão de voltar ao topo */
+.voltar-ao-topo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ffba08;
+    color: #032b43;
+    border: none;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 90;
+    transition: all 0.3s ease;
+}
+
+.voltar-ao-topo:hover {
+    transform: scale(1.1);
+    background-color: #ffd058;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
     .scaa-header h2 {
@@ -734,6 +992,8 @@ textarea:focus {
 
     .scaa-form {
         padding: 15px 10px;
+        padding-top: 65px;
+        /* Ajustado para o cabeçalho fixo */
     }
 
     .campos-form {
@@ -784,26 +1044,54 @@ textarea:focus {
         width: 100%;
         max-width: 250px;
     }
+
+    /* Ajustes para melhor visualização em tablets */
+    .slider-labels span {
+        font-size: 16px;
+        padding: 6px 10px;
+    }
+
+    .escala-notas {
+        justify-content: flex-start;
+        gap: 5px;
+    }
+
+    .escala-notas span {
+        min-width: 35px;
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
     .scaa-header h2 {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .scaa-form {
         padding: 10px 5px;
+        padding-top: 55px;
+        /* Ajustado para o cabeçalho fixo */
         overflow-x: hidden;
     }
 
     .aba {
-        font-size: 11px;
+        font-size: 12px;
         padding: 6px 8px;
         max-width: 120px;
+        min-width: 80px;
+        padding: 6px 8px;
+    }
+
+    .aba-numero {
+        font-size: 14px;
+    }
+
+    .aba-fornecedor {
+        font-size: 10px;
     }
 
     .botao-nova-aba {
-        font-size: 11px;
+        font-size: 12px;
         padding: 6px 8px;
     }
 
@@ -816,20 +1104,19 @@ textarea:focus {
     }
 
     .caixa-tipos-acidez {
-        width: 90vw;
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
+        width: 95%;
+        max-width: none;
+        padding: 15px;
     }
 
     .torra-option {
-        width: 70px;
+        width: 80px;
         height: 100px;
         padding: 8px;
     }
 
     .torra-option span {
-        font-size: 11px;
+        font-size: 12px;
         margin-top: 6px;
     }
 
@@ -838,8 +1125,26 @@ textarea:focus {
         height: 55px;
     }
 
+    /* Ajustes específicos para dispositivos móveis */
     .escala-notas {
-        font-size: 8px;
+        padding-right: 10px;
+        /* Adiciona padding à direita para evitar corte */
+        margin-bottom: 15px;
+        /* Mais espaço abaixo da escala */
+    }
+
+    .escala-notas span {
+        min-width: 30px;
+        font-size: 11px;
+    }
+
+    .nota-container {
+        padding: 0 5px;
+        /* Pequeno padding para evitar que toque nas bordas */
+    }
+
+    .escala-notas {
+        font-size: 10px;
         overflow-x: auto;
         padding-bottom: 10px;
         justify-content: flex-start;
@@ -847,12 +1152,12 @@ textarea:focus {
 
     .escala-notas span {
         margin-right: 5px;
-        min-width: 25px;
+        min-width: 30px;
         text-align: center;
     }
 
     .pontuacao-final h2 {
-        font-size: 18px;
+        font-size: 20px;
     }
 
     .input-com-botao {
@@ -862,11 +1167,38 @@ textarea:focus {
     .botao-icone {
         width: 100%;
     }
+
+    /* Ajustes para melhor visualização em smartphones */
+    .slider-labels span {
+        font-size: 14px;
+        padding: 5px 8px;
+    }
+
+    .botao-texto {
+        display: none;
+        /* Oculta o texto do botão em telas muito pequenas */
+    }
+
+    .botao-icone i {
+        font-size: 18px;
+    }
+
+    .abas-sticky-container {
+        padding: 5px 10px;
+    }
+
+    .voltar-ao-topo {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        bottom: 15px;
+        right: 15px;
+    }
 }
 
 @media (max-width: 360px) {
     .slider-labels {
-        font-size: 10px;
+        font-size: 12px;
     }
 
     .torra-option {
@@ -884,6 +1216,43 @@ textarea:focus {
     }
 
     .defeito-box label {
+        font-size: 14px;
+    }
+
+    .nota-container label,
+    .vertical-slider-single h4,
+    .vertical-slider-box h4 {
+        font-size: 14px;
+    }
+
+    .escala-notas span {
+        min-width: 25px;
+        font-size: 9px;
+    }
+
+    .checkboxes-coluna input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+
+    .aba {
+        min-width: 70px;
+        padding: 4px 6px;
+    }
+
+    .aba-numero {
         font-size: 12px;
+    }
+
+    .aba-fornecedor {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 360px) {
+    .escala-notas span {
+        min-width: 28px;
+        font-size: 10px;
+        padding: 3px 2px;
     }
 }

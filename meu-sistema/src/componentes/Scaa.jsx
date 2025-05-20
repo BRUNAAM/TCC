@@ -1,3 +1,5 @@
+"use client"
+
 import "./Scaa.css"
 import { getAuth } from "firebase/auth"
 import { useState, useEffect } from "react"
@@ -50,6 +52,7 @@ const Scaa = () => {
     const [abaAtiva, setAbaAtiva] = useState(null)
     const [fornecedores, setFornecedores] = useState([])
     const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false)
+    const [scrollPosition, setScrollPosition] = useState(0)
     const navigate = useNavigate()
 
     const avaliacaoAtual = abaAtiva !== null && avaliacoes[abaAtiva] ? avaliacoes[abaAtiva] : null
@@ -60,7 +63,17 @@ const Scaa = () => {
             window.history.pushState(null, null, window.location.href)
         }
         window.addEventListener("popstate", bloquearVoltar)
-        return () => window.removeEventListener("popstate", bloquearVoltar)
+
+        // Adicionar listener para o scroll
+        const handleScroll = () => {
+            setScrollPosition(window.scrollY)
+        }
+        window.addEventListener("scroll", handleScroll)
+
+        return () => {
+            window.removeEventListener("popstate", bloquearVoltar)
+            window.removeEventListener("scroll", handleScroll)
+        }
     }, [])
 
     useEffect(() => {
@@ -415,6 +428,13 @@ const Scaa = () => {
         })
     }
 
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        })
+    }
+
     const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
 
     // If no evaluation is active, show a loading message or create a new one
@@ -444,19 +464,9 @@ const Scaa = () => {
                 </button>
             </div>
 
-            <div className="scaa-form">
+            <div className={`abas-sticky-container ${scrollPosition > 100 ? "compact-mode" : ""}`}>
                 <div className="abas">
                     {avaliacoes.map((av, index) => {
-                        // Create a descriptive tab name that includes supplier and sample number
-                        const tabName =
-                            av.fornecedorSelecionado && av.numeroAmostra
-                                ? `${av.fornecedorSelecionado} / ${av.numeroAmostra}`
-                                : av.fornecedorSelecionado
-                                    ? `${av.fornecedorSelecionado} / -`
-                                    : av.numeroAmostra
-                                        ? `- / ${av.numeroAmostra}`
-                                        : `Amostra ${index + 1}`
-
                         return (
                             <button
                                 key={av.id}
@@ -464,7 +474,10 @@ const Scaa = () => {
                                 onClick={() => setAbaAtiva(index)}
                                 title={`Fornecedor: ${av.fornecedorSelecionado || "Não selecionado"}, Amostra: ${av.numeroAmostra || "Não definida"}`}
                             >
-                                {tabName}
+                                <div className="aba-conteudo">
+                                    <div className="aba-numero">{av.numeroAmostra || `#${index + 1}`}</div>
+                                    <div className="aba-fornecedor">{av.fornecedorSelecionado || "Sem fornecedor"}</div>
+                                </div>
                             </button>
                         )
                     })}
@@ -472,7 +485,9 @@ const Scaa = () => {
                         + Nova Avaliação
                     </button>
                 </div>
+            </div>
 
+            <div className="scaa-form">
                 <div className="campos-form">
                     <div className="campo-form">
                         <label>Nome do Avaliador:</label>
@@ -510,7 +525,7 @@ const Scaa = () => {
                             </select>
                             <button type="button" onClick={() => navigate("/fornecedores")} className="botao-icone">
                                 <i className="bi bi-folder-plus"></i>
-                                Novo
+                                <span className="botao-texto">Novo</span>
                             </button>
                         </div>
                     </div>
@@ -577,7 +592,16 @@ const Scaa = () => {
                                         </span>
                                     ))}
                                 </div>
-                                <div className="slider-indicator">
+                                <div
+                                    className="slider-indicator"
+                                    onClick={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect()
+                                        const y = e.clientY - rect.top
+                                        const percentage = Math.min(Math.max(y / rect.height, 0), 1)
+                                        const newValue = Math.round(percentage * 4)
+                                        updateField("dry", newValue)
+                                    }}
+                                >
                                     <div
                                         className="slider-ball"
                                         style={{
@@ -613,7 +637,16 @@ const Scaa = () => {
                                         </span>
                                     ))}
                                 </div>
-                                <div className="slider-indicator">
+                                <div
+                                    className="slider-indicator"
+                                    onClick={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect()
+                                        const y = e.clientY - rect.top
+                                        const percentage = Math.min(Math.max(y / rect.height, 0), 1)
+                                        const newValue = Math.round(percentage * 4)
+                                        updateField("breakValue", newValue)
+                                    }}
+                                >
                                     <div
                                         className="slider-ball"
                                         style={{
@@ -646,7 +679,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.AromaFragrancia ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.AromaFragrancia) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("AromaFragrancia", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -665,7 +702,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.sabor ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.sabor) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("sabor", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -684,7 +725,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.finalizacao ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.finalizacao) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("finalizacao", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -720,7 +765,16 @@ const Scaa = () => {
                                 </span>
                             ))}
                         </div>
-                        <div className="slider-indicator">
+                        <div
+                            className="slider-indicator"
+                            onClick={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect()
+                                const y = e.clientY - rect.top
+                                const percentage = Math.min(Math.max(y / rect.height, 0), 1)
+                                const newValue = Math.round(percentage * 4)
+                                updateField("nivelAcidez", newValue)
+                            }}
+                        >
                             <div
                                 className="slider-ball"
                                 style={{
@@ -745,6 +799,9 @@ const Scaa = () => {
 
                     {mostrarTiposAcidez && (
                         <div className="caixa-tipos-acidez">
+                            <button className="fechar-info" onClick={() => setMostrarTiposAcidez(false)}>
+                                ×
+                            </button>
                             <p>
                                 <strong>Acidez Cítrica:</strong> Limão, laranja, lima, abacaxi. Bastante desejável.
                             </p>
@@ -776,7 +833,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.acidez ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.acidez) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("acidez", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -804,7 +865,16 @@ const Scaa = () => {
                                 </span>
                             ))}
                         </div>
-                        <div className="slider-indicator">
+                        <div
+                            className="slider-indicator"
+                            onClick={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect()
+                                const y = e.clientY - rect.top
+                                const percentage = Math.min(Math.max(y / rect.height, 0), 1)
+                                const newValue = Math.round(percentage * 4)
+                                updateField("nivelCorpo", newValue)
+                            }}
+                        >
                             <div
                                 className="slider-ball"
                                 style={{
@@ -828,7 +898,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.corpo ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.corpo) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("corpo", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -847,7 +921,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.equilibrio ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.equilibrio) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("equilibrio", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -866,7 +944,11 @@ const Scaa = () => {
                     />
                     <div className="escala-notas">
                         {[6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10].map((num) => (
-                            <span key={num} className={num === avaliacaoAtual.notas.avaliacaoPessoal ? "selecionado" : ""}>
+                            <span
+                                key={num}
+                                className={Number(avaliacaoAtual.notas.avaliacaoPessoal) === num ? "selecionado" : ""}
+                                onClick={() => handleNotaChange("avaliacaoPessoal", num)}
+                            >
                                 {num}
                             </span>
                         ))}
@@ -956,6 +1038,13 @@ const Scaa = () => {
                     SALVAR
                 </button>
             </div>
+
+            {/* Botão de voltar ao topo */}
+            {scrollPosition > 300 && (
+                <button className="voltar-ao-topo" onClick={scrollToTop} title="Voltar ao topo">
+                    <i className="bi bi-arrow-up-circle-fill"></i>
+                </button>
+            )}
         </div>
     )
 }
