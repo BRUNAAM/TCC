@@ -97,7 +97,6 @@ body {
 .abas {
     display: flex;
     gap: 5px;
-    padding-bottom: 10px;
     overflow-x: auto;
     /* Allow horizontal scrolling for tabs */
     -webkit-overflow-scrolling: touch;
@@ -212,7 +211,7 @@ body {
 /* Contêiner fixo para as abas */
 .abas-sticky-container {
     position: fixed;
-    top: 58px;
+    top: 50px;
     /* Altura do cabeçalho principal */
     left: 0;
     right: 0;
