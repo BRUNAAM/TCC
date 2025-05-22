@@ -590,7 +590,7 @@ textarea:focus {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 70%;
+    width: 100%;
     height: 12px;
     /* Aumentado para melhor toque em dispositivos móveis */
     background: #065685;
@@ -694,7 +694,7 @@ textarea:focus {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    width: 100%;
+    width: 70%;
     height: 12px;
     background: #065685;
     outline: none;
