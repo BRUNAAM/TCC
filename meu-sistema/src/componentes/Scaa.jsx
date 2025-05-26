@@ -2,7 +2,7 @@
 
 import "./Scaa.css"
 import { getAuth } from "firebase/auth"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { db } from "../config/firebase"
 import { collection, getDocs, addDoc } from "firebase/firestore"
@@ -43,6 +43,7 @@ const novaEstruturaAvaliacao = (overrides = {}) => {
         },
         defeitosLeves: 0,
         defeitosGraves: 0,
+        isSaved: false, // Flag para controlar se já foi salva
         ...overrides,
     }
 }
@@ -53,6 +54,8 @@ const Scaa = () => {
     const [fornecedores, setFornecedores] = useState([])
     const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false)
     const [scrollPosition, setScrollPosition] = useState(0)
+    const [isSaving, setIsSaving] = useState(false)
+    const autoSaveTimeoutRef = useRef(null)
     const navigate = useNavigate()
 
     const avaliacaoAtual = abaAtiva !== null && avaliacoes[abaAtiva] ? avaliacoes[abaAtiva] : null
@@ -64,7 +67,6 @@ const Scaa = () => {
         }
         window.addEventListener("popstate", bloquearVoltar)
 
-        // Adicionar listener para o scroll
         const handleScroll = () => {
             setScrollPosition(window.scrollY)
         }
@@ -73,6 +75,10 @@ const Scaa = () => {
         return () => {
             window.removeEventListener("popstate", bloquearVoltar)
             window.removeEventListener("scroll", handleScroll)
+            // Limpar timeout ao desmontar componente
+            if (autoSaveTimeoutRef.current) {
+                clearTimeout(autoSaveTimeoutRef.current)
+            }
         }
     }, [])
 
@@ -128,6 +134,7 @@ const Scaa = () => {
                     ...newAvaliacoes[abaAtiva].notas,
                     [categoria]: Number.parseFloat(valor),
                 },
+                isSaved: false, // Marcar como não salva quando houver mudanças
             }
             return newAvaliacoes
         })
@@ -147,6 +154,7 @@ const Scaa = () => {
                     ...newAvaliacoes[abaAtiva].notas,
                     [atributo]: newArray,
                 },
+                isSaved: false,
             }
             return newAvaliacoes
         })
@@ -154,8 +162,6 @@ const Scaa = () => {
 
     const calcularPontuacaoXicara = (atributo) => {
         if (!avaliacaoAtual) return 0
-
-        // Cada xícara marcada desconta 2 pontos do total de 10
         const marcados = avaliacaoAtual.notas[atributo].filter((v) => v).length
         return 10 - marcados * 2
     }
@@ -173,23 +179,15 @@ const Scaa = () => {
 
         let total = 0
 
-        // Soma os atributos principais (escala de 6-10)
         Object.keys(avaliacaoAtual.notas).forEach((key) => {
             if (!["doçura", "uniformidade", "xicaraLimpa"].includes(key)) {
                 total += avaliacaoAtual.notas[key]
             }
         })
 
-        // Adiciona pontuação de xícaras limpas (0-10)
         total += calcularPontuacaoXicara("xicaraLimpa")
-
-        // Adiciona pontuação de uniformidade (0-10)
         total += calcularPontuacaoXicara("uniformidade")
-
-        // Adiciona pontuação de doçura (0-10)
         total += calcularPontuacaoXicara("doçura")
-
-        // Subtrai defeitos
         total -= avaliacaoAtual.defeitosLeves * 2
         total -= avaliacaoAtual.defeitosGraves * 4
 
@@ -198,43 +196,115 @@ const Scaa = () => {
 
     const calcularTotalDescontos = () => {
         if (!avaliacaoAtual) return 0
-
         return avaliacaoAtual.defeitosLeves * 2 + avaliacaoAtual.defeitosGraves * 4
     }
 
+    // Função para salvar no Firebase (apenas uma vez por avaliação)
+    const salvarAvaliacaoFirebase = useCallback(async (avaliacao, isFinalSave = false) => {
+        try {
+            const authInstance = getAuth()
+            const user = authInstance.currentUser
+
+            if (!user) {
+                console.warn("Usuário não autenticado.")
+                return null
+            }
+
+            // Verificar se a avaliação já foi salva e não é um salvamento final
+            if (avaliacao.isSaved && !isFinalSave) {
+                console.log("Avaliação já foi salva, pulando salvamento automático.")
+                return null
+            }
+
+            // Verificar se tem dados mínimos necessários para salvar
+            if (!avaliacao.fornecedorSelecionado || !avaliacao.numeroAmostra || !avaliacao.torraSelecionada) {
+                console.log("Dados insuficientes para salvar.")
+                return null
+            }
+
+            const defeitosLeves = avaliacao.defeitosLeves || 0
+            const defeitosGraves = avaliacao.defeitosGraves || 0
+            const totalDescontos = defeitosLeves * 2 + defeitosGraves * 4
+
+            // Calcular pontuação final
+            let total = 0
+            Object.keys(avaliacao.notas).forEach((key) => {
+                if (!["doçura", "uniformidade", "xicaraLimpa"].includes(key)) {
+                    total += avaliacao.notas[key]
+                }
+            })
+
+            // Adicionar pontuação de xícaras
+            const calcularPontuacaoXicara = (atributo) => {
+                const marcados = avaliacao.notas[atributo].filter((v) => v).length
+                return 10 - marcados * 2
+            }
+
+            total += calcularPontuacaoXicara("xicaraLimpa")
+            total += calcularPontuacaoXicara("uniformidade")
+            total += calcularPontuacaoXicara("doçura")
+            total -= totalDescontos
+
+            const avaliacaoParaSalvar = {
+                ...avaliacao,
+                pontuacaoFinal: total.toFixed(2),
+                totalDescontos,
+                userId: user.uid,
+                dataCriacao: new Date().toISOString(),
+                tipoSalvamento: isFinalSave ? "manual" : "automatico",
+            }
+
+            const docRef = await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), avaliacaoParaSalvar)
+
+            console.log(`Avaliação salva ${isFinalSave ? "manualmente" : "automaticamente"} com ID:`, docRef.id)
+
+            return docRef.id
+        } catch (error) {
+            console.error("Erro ao salvar avaliação:", error)
+            throw error
+        }
+    }, []) // Dependências vazias pois a função não depende de nenhum estado
+
     const handleSalvarAvaliacao = async () => {
-        if (!avaliacaoAtual) return
+        if (!avaliacaoAtual || isSaving) return
 
         if (!avaliacaoAtual.fornecedorSelecionado || !avaliacaoAtual.numeroAmostra || !avaliacaoAtual.torraSelecionada) {
             alert("Por favor, preencha todos os campos obrigatórios.")
             return
         }
 
-        const authInstance = getAuth()
-        const user = authInstance.currentUser
-
-        if (!user) {
-            alert("Usuário não autenticado.")
-            return
-        }
-
-        const totalDescontos = calcularTotalDescontos()
-
-        const avaliacao = {
-            ...avaliacaoAtual,
-            pontuacaoFinal: calcularPontuacaoFinal(),
-            totalDescontos,
-            userId: user.uid,
-            dataCriacao: new Date().toISOString(),
-        }
+        setIsSaving(true)
 
         try {
-            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), avaliacao)
-            alert("Avaliação salva com sucesso!")
-            handlePrintPDF()
+            // Limpar qualquer timeout de salvamento automático pendente
+            if (autoSaveTimeoutRef.current) {
+                clearTimeout(autoSaveTimeoutRef.current)
+                autoSaveTimeoutRef.current = null
+            }
+
+            // Salvar no Firebase (salvamento manual/final)
+            const docId = await salvarAvaliacaoFirebase(avaliacaoAtual, true)
+
+            if (docId) {
+                // Marcar como salva
+                setAvaliacoes((prev) => {
+                    const newAvaliacoes = [...prev]
+                    newAvaliacoes[abaAtiva] = {
+                        ...newAvaliacoes[abaAtiva],
+                        isSaved: true,
+                        firebaseId: docId,
+                    }
+                    return newAvaliacoes
+                })
+
+                alert("Avaliação salva com sucesso!")
+                handlePrintPDF()
+            }
         } catch (error) {
             console.error("Erro ao salvar avaliação:", error)
             alert("Erro ao salvar avaliação. Tente novamente mais tarde.")
+        } finally {
+            setIsSaving(false)
         }
     }
 
@@ -244,40 +314,49 @@ const Scaa = () => {
         })
 
         setAvaliacoes((prev) => [...prev, novaAvaliacao])
-        setAbaAtiva((prev) => (prev === null ? 0 : prev + 1))
+        setAbaAtiva(avaliacoes.length)
     }
 
-    const salvarAvaliacaoFirebase = async (avaliacao) => {
-        try {
-            const authInstance = getAuth()
-            const user = authInstance.currentUser
-
-            if (!user) {
-                console.warn("Usuário não autenticado.")
-                return
+    // Auto-save melhorado - apenas para rascunhos, não para histórico
+    useEffect(() => {
+        if (abaAtiva !== null && avaliacoes[abaAtiva] && !avaliacoes[abaAtiva].isSaved) {
+            // Limpar timeout anterior
+            if (autoSaveTimeoutRef.current) {
+                clearTimeout(autoSaveTimeoutRef.current)
             }
 
-            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), {
-                ...avaliacao,
-                userId: user.uid,
-                dataCriacao: new Date().toISOString(),
-            })
+            // Configurar novo timeout apenas se a avaliação não foi salva manualmente
+            autoSaveTimeoutRef.current = setTimeout(() => {
+                const avaliacaoAtual = avaliacoes[abaAtiva]
 
-            console.log("Avaliação salva automaticamente.")
-        } catch (error) {
-            console.error("Erro ao salvar automaticamente:", error)
+                // Verificar se ainda não foi salva e tem dados mínimos
+                if (
+                    !avaliacaoAtual.isSaved &&
+                    avaliacaoAtual.fornecedorSelecionado &&
+                    avaliacaoAtual.numeroAmostra &&
+                    avaliacaoAtual.torraSelecionada
+                ) {
+                    console.log("Executando auto-save...")
+                    // Salvar como rascunho (não vai para histórico)
+                    salvarAvaliacaoFirebase(avaliacaoAtual, false)
+                        .then((docId) => {
+                            if (docId) {
+                                console.log("Auto-save realizado com sucesso")
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Erro no auto-save:", error)
+                        })
+                }
+            }, 10000) // 10 segundos
+
+            return () => {
+                if (autoSaveTimeoutRef.current) {
+                    clearTimeout(autoSaveTimeoutRef.current)
+                }
+            }
         }
-    }
-
-    useEffect(() => {
-        if (abaAtiva !== null && avaliacoes[abaAtiva]) {
-            const timeout = setTimeout(() => {
-                salvarAvaliacaoFirebase(avaliacoes[abaAtiva])
-            }, 5000) // salva 5s após última alteração
-
-            return () => clearTimeout(timeout)
-        }
-    }, [avaliacoes, abaAtiva])
+    }, [avaliacoes, abaAtiva, salvarAvaliacaoFirebase])
 
     const handlePrintPDF = () => {
         if (!avaliacaoAtual) return
@@ -414,7 +493,6 @@ const Scaa = () => {
         }
     }
 
-    // Helper function to update a field in the current evaluation
     const updateField = (field, value) => {
         if (abaAtiva === null) return
 
@@ -423,6 +501,7 @@ const Scaa = () => {
             newAvaliacoes[abaAtiva] = {
                 ...newAvaliacoes[abaAtiva],
                 [field]: value,
+                isSaved: false, // Marcar como não salva quando houver mudanças
             }
             return newAvaliacoes
         })
@@ -437,7 +516,6 @@ const Scaa = () => {
 
     const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
 
-    // If no evaluation is active, show a loading message or create a new one
     if (!avaliacaoAtual) {
         return (
             <div className="scaa-container">
@@ -477,6 +555,7 @@ const Scaa = () => {
                                 <div className="aba-conteudo">
                                     <div className="aba-numero">{av.numeroAmostra || `#${index + 1}`}</div>
                                     <div className="aba-fornecedor">{av.fornecedorSelecionado || "Sem fornecedor"}</div>
+                                    {av.isSaved && <div className="aba-status">✓</div>}
                                 </div>
                             </button>
                         )
@@ -1034,8 +1113,8 @@ const Scaa = () => {
                 </div>
 
                 {/* Botão de Salvar */}
-                <button className="salvar" onClick={handleSalvarAvaliacao}>
-                    SALVAR
+                <button className="salvar" onClick={handleSalvarAvaliacao} disabled={isSaving}>
+                    {isSaving ? "SALVANDO..." : "SALVAR"}
                 </button>
             </div>
 
