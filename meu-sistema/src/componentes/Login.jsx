@@ -1,11 +1,14 @@
+"use client"
+
 import "./Login.css"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth, db } from "../config/firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { doc, getDoc } from "firebase/firestore"
 import logo from "../assets/logo.svg"
 import { useUser } from "../context/UserContext"
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserPlus, Coffee } from "lucide-react"
 
 const Login = () => {
     const { usuario, setUsuario } = useUser()
@@ -16,26 +19,56 @@ const Login = () => {
     const [mostrarSenha, setMostrarSenha] = useState(false)
     const navigate = useNavigate()
 
-    // ⛔ Redireciona se já estiver logado
+    // Refs para gerenciamento de foco
+    const emailRef = useRef(null)
+    const senhaRef = useRef(null)
+    const erroRef = useRef(null)
+    const mainRef = useRef(null)
+
+    // Redireciona se já estiver logado
     useEffect(() => {
         if (usuario) {
             navigate("/logado", { replace: true })
         }
     }, [usuario, navigate])
 
+    // Foca no primeiro erro quando aparece
+    useEffect(() => {
+        if (erro && erroRef.current) {
+            erroRef.current.focus()
+        }
+    }, [erro])
+
+    const skipToMain = (e) => {
+        e.preventDefault()
+        if (mainRef.current) {
+            mainRef.current.focus()
+        }
+    }
+
     const handleLogin = async (e) => {
         e.preventDefault()
-        if (!email || !senha) {
-            setErro("Preencha todos os campos.")
+
+        // Validação de campos vazios
+        if (!email.trim()) {
+            setErro("Por favor, digite seu e-mail.")
+            emailRef.current?.focus()
             return
         }
+
+        if (!senha.trim()) {
+            setErro("Por favor, digite sua senha.")
+            senhaRef.current?.focus()
+            return
+        }
+
         if (loading) return
 
         setErro("")
         setLoading(true)
 
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, senha)
+            const userCredential = await signInWithEmailAndPassword(auth, email.trim(), senha.trim())
             const user = userCredential.user
 
             let usuarioNome = user.displayName || ""
@@ -48,16 +81,21 @@ const Login = () => {
             localStorage.setItem("usuarioNome", usuarioNome)
             setUsuario({ nome: usuarioNome, email: user.email })
 
-            navigate("/logado", { replace: true }) // ← Impede botão voltar
+            // Anunciar sucesso para leitores de tela
+            const successMessage = `Login realizado com sucesso. Bem-vindo, ${usuarioNome || "usuário"}!`
+            announceToScreenReader(successMessage)
+
+            navigate("/logado", { replace: true })
         } catch (error) {
             const mensagensErro = {
-                "auth/user-not-found": "Usuário não encontrado. Verifique o e-mail.",
-                "auth/wrong-password": "Senha incorreta. Tente novamente.",
-                "auth/invalid-email": "Formato de e-mail inválido.",
-                "auth/too-many-requests": "Muitas tentativas. Tente novamente mais tarde.",
-                "auth/network-request-failed": "Erro de rede. Verifique sua conexão.",
+                "auth/user-not-found": "Usuário não encontrado. Verifique o e-mail digitado.",
+                "auth/wrong-password": "Senha incorreta. Verifique sua senha e tente novamente.",
+                "auth/invalid-email": "Formato de e-mail inválido. Digite um e-mail válido.",
+                "auth/too-many-requests": "Muitas tentativas de login. Aguarde alguns minutos e tente novamente.",
+                "auth/network-request-failed": "Erro de conexão. Verifique sua internet e tente novamente.",
+                "auth/invalid-credential": "Credenciais inválidas. Verifique seu e-mail e senha.",
             }
-            setErro(mensagensErro[error.code] || "Erro ao fazer login. Tente novamente.")
+            setErro(mensagensErro[error.code] || "Erro inesperado ao fazer login. Tente novamente.")
         } finally {
             setLoading(false)
         }
@@ -65,103 +103,195 @@ const Login = () => {
 
     const alternarVisibilidadeSenha = () => {
         setMostrarSenha(!mostrarSenha)
+        // Manter foco no campo de senha após alternar visibilidade
+        setTimeout(() => {
+            senhaRef.current?.focus()
+        }, 0)
+    }
+
+    // Função para anunciar mensagens para leitores de tela
+    const announceToScreenReader = (message) => {
+        const announcement = document.createElement("div")
+        announcement.setAttribute("aria-live", "polite")
+        announcement.setAttribute("aria-atomic", "true")
+        announcement.className = "sr-only"
+        announcement.textContent = message
+        document.body.appendChild(announcement)
+        setTimeout(() => {
+            document.body.removeChild(announcement)
+        }, 1000)
     }
 
     return (
-        <div className="login-container">
-            <div className="login-box">
-                <div className="login-header">
-                    <img src={logo || "/placeholder.svg"} alt="Logotipo do Coffee Grader" className="login-logo" />
-                </div>
+        <>
+            {/* Skip Link */}
+            <a href="#main-content" className="skip-link" onClick={skipToMain}>
+                Pular para o formulário de login
+            </a>
 
-                <h2 className="login-title">FAÇA SEU LOGIN</h2>
+            <div className="page-wrapper">
+                <header className="sr-only">
+                    <h1>Coffee Grader - Login do Sistema</h1>
+                </header>
 
-                <form onSubmit={handleLogin} className="login-form">
-                    <div className="input-group">
-                        <label htmlFor="email" className="input-label">
-                            Email
-                        </label>
-                        <div className="input-wrapper">
-                            <span className="input-icon">✉️</span>
-                            <input
-                                autoFocus
-                                id="email"
-                                type="email"
-                                placeholder="Digite seu email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value.trim())}
-                                className="login-input"
-                                required
-                                aria-label="Digite seu e-mail"
+                <main
+                    id="main-content"
+                    className="login-container"
+                    ref={mainRef}
+                    tabIndex="-1"
+                    role="main"
+                    aria-label="Página de login do Coffee Grader"
+                >
+                    <div className="login-box" role="region" aria-labelledby="login-title">
+                        <div className="login-header">
+                            <img
+                                src={logo || "/placeholder.svg?height=160&width=160"}
+                                alt="Coffee Grader - Sistema de avaliação sensorial de cafés"
+                                className="login-logo"
+                                width="160"
+                                height="160"
                             />
                         </div>
+
+                        <h1 id="login-title" className="login-title">
+                            Faça seu Login
+                        </h1>
+
+                        <form onSubmit={handleLogin} className="login-form" noValidate>
+                            <div className="input-group">
+                                <label htmlFor="email" className="input-label">
+                                    E-mail *
+                                </label>
+                                <div className="input-wrapper">
+                                    <Mail className="input-icon" aria-hidden="true" size={18} />
+                                    <input
+                                        ref={emailRef}
+                                        id="email"
+                                        type="email"
+                                        placeholder="Digite seu e-mail"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="login-input"
+                                        required
+                                        autoComplete="email"
+                                        aria-describedby={erro && erro.includes("e-mail") ? "error-message" : undefined}
+                                        aria-invalid={erro && erro.includes("e-mail") ? "true" : "false"}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="senha" className="input-label">
+                                    Senha *
+                                </label>
+                                <div className="senha-container input-wrapper">
+                                    <Lock className="input-icon" aria-hidden="true" size={18} />
+                                    <input
+                                        ref={senhaRef}
+                                        id="senha"
+                                        type={mostrarSenha ? "text" : "password"}
+                                        placeholder="Digite sua senha"
+                                        value={senha}
+                                        onChange={(e) => setSenha(e.target.value)}
+                                        className="login-input"
+                                        required
+                                        autoComplete="current-password"
+                                        aria-describedby="password-toggle-desc"
+                                        aria-invalid={erro && erro.includes("senha") ? "true" : "false"}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="toggle-senha-btn"
+                                        onClick={alternarVisibilidadeSenha}
+                                        aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                                        aria-describedby="password-toggle-desc"
+                                    >
+                                        {mostrarSenha ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+                                    </button>
+                                </div>
+                                <div id="password-toggle-desc" className="sr-only">
+                                    Use este botão para alternar a visibilidade da senha
+                                </div>
+                            </div>
+
+                            {erro && (
+                                <div
+                                    ref={erroRef}
+                                    id="error-message"
+                                    className="erro-container"
+                                    role="alert"
+                                    aria-live="assertive"
+                                    tabIndex="-1"
+                                >
+                                    <AlertCircle className="erro-icon" aria-hidden="true" size={18} />
+                                    <p className="login-erro">{erro}</p>
+                                </div>
+                            )}
+
+                            <div className="buttons-container">
+                                <button
+                                    className={`login-button ${loading ? "login-button-loading" : ""}`}
+                                    type="submit"
+                                    disabled={loading}
+                                    aria-describedby="login-button-desc"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <Loader2 className="button-icon loading-icon" aria-hidden="true" size={18} />
+                                            <span>Entrando...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Lock className="button-icon" aria-hidden="true" size={18} />
+                                            <span>Fazer Login</span>
+                                        </>
+                                    )}
+                                </button>
+
+                                <div id="login-button-desc" className="sr-only">
+                                    {loading ? "Processando login, aguarde..." : "Clique para fazer login no sistema"}
+                                </div>
+
+                                <button
+                                    className="register-button"
+                                    onClick={() => navigate("/cadastro")}
+                                    type="button"
+                                    aria-describedby="register-button-desc"
+                                >
+                                    <UserPlus className="button-icon" aria-hidden="true" size={18} />
+                                    <span>Criar Conta</span>
+                                </button>
+
+                                <div id="register-button-desc" className="sr-only">
+                                    Clique para ir para a página de cadastro de nova conta
+                                </div>
+                            </div>
+
+                            <div className="forgot-password">
+                                <button
+                                    className="forgot-password-link"
+                                    onClick={() => navigate("/esquecisenha")}
+                                    type="button"
+                                    aria-describedby="forgot-password-desc"
+                                >
+                                    Esqueci minha senha
+                                </button>
+                                <div id="forgot-password-desc" className="sr-only">
+                                    Clique para ir para a página de recuperação de senha
+                                </div>
+                            </div>
+                        </form>
+
+                        <footer className="app-version" role="contentinfo">
+                            <p>
+                                <Coffee className="version-icon" aria-hidden="true" size={14} />
+                                Coffee Grader versão 1.0
+                            </p>
+                        </footer>
                     </div>
-
-                    <div className="input-group">
-                        <label htmlFor="senha" className="input-label">
-                            Senha
-                        </label>
-                        <div className="senha-container input-wrapper">
-                            <span className="input-icon">🔒</span>
-                            <input
-                                id="senha"
-                                type={mostrarSenha ? "text" : "password"}
-                                placeholder="Digite sua senha"
-                                value={senha}
-                                onChange={(e) => setSenha(e.target.value.trim())}
-                                className="login-input"
-                                required
-                                aria-label="Digite sua senha"
-                            />
-                            <button
-                                type="button"
-                                className="toggle-senha-btn"
-                                onClick={alternarVisibilidadeSenha}
-                                aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
-                            >
-                                <i className={`bi ${mostrarSenha ? "bi-eye-slash" : "bi-eye"}`}></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    {erro && (
-                        <div className="erro-container" aria-live="assertive">
-                            <span className="erro-icon">⚠️</span>
-                            <p className="login-erro">{erro}</p>
-                        </div>
-                    )}
-
-                    <div className="buttons-container">
-                        <button
-                            className={`login-button ${loading ? "login-button-loading" : ""}`}
-                            type="submit"
-                            disabled={loading}
-                        >
-                            <span className="button-icon" style={{ opacity: loading ? 0 : 1 }}>
-                                🔑
-                            </span>
-                            <span>{loading ? "Entrando..." : "FAZER LOGIN"}</span>
-                            {loading && <div className="loading-spinner"></div>}
-                        </button>
-
-                        <button className="register-button" onClick={() => navigate("/cadastro")} type="button">
-                            <span className="button-icon">📝</span>
-                            <span>CRIAR CONTA</span>
-                        </button>
-                    </div>
-
-                    <div className="forgot-password">
-                        <button className="forgot-password-link" onClick={() => navigate("/esquecisenha")} type="button">
-                            Esqueci minha senha!
-                        </button>
-                    </div>
-                </form>
-
-                <div className="app-version">
-                    <p>Coffee Grader v1.0</p>
-                </div>
+                </main>
             </div>
-        </div>
+        </>
     )
 }
 
