@@ -4,13 +4,14 @@ import "./Scaa.css"
 import { getAuth } from "firebase/auth"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
-import { db } from "../config/firebase"
-import { collection, getDocs, addDoc } from "firebase/firestore"
+import { db } from "../config/firebase" // ✅ CORRIGIDO
+import { collection, addDoc } from "firebase/firestore"
 import GraoCafe from "./GraoCafe"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import logo from "../assets/logopdf.png"
+import { useData } from "../context/DataContext"
 
 const novaEstruturaAvaliacao = (overrides = {}) => {
     return {
@@ -51,12 +52,14 @@ const novaEstruturaAvaliacao = (overrides = {}) => {
 const Scaa = () => {
     const [avaliacoes, setAvaliacoes] = useState([])
     const [abaAtiva, setAbaAtiva] = useState(null)
-    const [fornecedores, setFornecedores] = useState([])
     const [mostrarTiposAcidez, setMostrarTiposAcidez] = useState(false)
     const [scrollPosition, setScrollPosition] = useState(0)
     const [isSaving, setIsSaving] = useState(false)
     const autoSaveTimeoutRef = useRef(null)
     const navigate = useNavigate()
+
+    // ✅ USANDO DADOS DO CONTEXTO
+    const { fornecedores, loading: dataLoading } = useData()
 
     const avaliacaoAtual = abaAtiva !== null && avaliacoes[abaAtiva] ? avaliacoes[abaAtiva] : null
 
@@ -96,32 +99,10 @@ const Scaa = () => {
         }
 
         inicializarAvaliacao()
-        carregarFornecedores()
+        // ❌ REMOVIDO: carregarFornecedores() - agora vem do contexto
     }, [avaliacoes.length])
 
-    const carregarFornecedores = async () => {
-        try {
-            const authInstance = getAuth()
-            const user = authInstance.currentUser
-
-            if (!user) {
-                alert("Usuário não autenticado.")
-                return
-            }
-
-            const querySnapshot = await getDocs(collection(db, "usuarios", user.uid, "fornecedores"))
-
-            const listaFornecedores = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }))
-
-            setFornecedores(listaFornecedores)
-        } catch (error) {
-            console.error("Erro ao carregar fornecedores:", error)
-            alert("Erro ao carregar fornecedores. Tente novamente.")
-        }
-    }
+    // ❌ REMOVIDO: função carregarFornecedores - não é mais necessária
 
     const handleNotaChange = (categoria, valor) => {
         if (!avaliacaoAtual) return
@@ -595,7 +576,7 @@ const Scaa = () => {
                                 value={avaliacaoAtual.fornecedorSelecionado}
                                 onChange={(e) => updateField("fornecedorSelecionado", e.target.value)}
                             >
-                                <option value="">Selecione um fornecedor</option>
+                                <option value="">{dataLoading ? "Carregando fornecedores..." : "Selecione um fornecedor"}</option>
                                 {fornecedores.map((f) => (
                                     <option key={f.id} value={f.nome}>
                                         {f.nome}

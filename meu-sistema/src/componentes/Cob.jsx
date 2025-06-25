@@ -3,13 +3,14 @@
 import "./Cob.css"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { db } from "../config/firebase"
-import { collection, getDocs, addDoc } from "firebase/firestore"
+import { db } from "../config/firebase" // ✅ CORRIGIDO
+import { collection, addDoc } from "firebase/firestore"
 import { getAuth } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import logo from "../assets/logopdf.png"
+import { useData } from "../context/DataContext"
 
 const classificationTable = [
     { defeitos: 4, label: "2-5" },
@@ -87,7 +88,6 @@ function getClassification(defeitosValue) {
 
 const Cob = () => {
     const [avaliador, setAvaliador] = useState("")
-    const [fornecedores, setFornecedores] = useState([])
     const [fornecedorSelecionado, setFornecedorSelecionado] = useState("")
     const [numeroAmostra, setNumeroAmostra] = useState("")
     const [observacoes, setObservacoes] = useState("")
@@ -115,6 +115,9 @@ const Cob = () => {
     const [salvando, setSalvando] = useState(false)
     const [scrollPosition, setScrollPosition] = useState(0)
     const navigate = useNavigate()
+
+    // ✅ USANDO DADOS DO CONTEXTO
+    const { fornecedores, loading: dataLoading } = useData()
 
     useEffect(() => {
         const bloquearVoltar = (e) => {
@@ -161,37 +164,12 @@ const Cob = () => {
     useEffect(() => {
         const usuarioNome = localStorage.getItem("usuarioNome") || ""
         setAvaliador(usuarioNome)
-        carregarFornecedores()
     }, [])
 
     useEffect(() => {
         const classification = getClassification(equivalenciaTotal)
         setTipo(classification.label)
     }, [equivalenciaTotal])
-
-    const carregarFornecedores = async () => {
-        try {
-            const authInstance = getAuth()
-            const user = authInstance.currentUser
-
-            if (!user) {
-                alert("Usuário não autenticado.")
-                return
-            }
-
-            const querySnapshot = await getDocs(collection(db, "usuarios", user.uid, "fornecedores"))
-
-            const listaFornecedores = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }))
-
-            setFornecedores(listaFornecedores)
-        } catch (error) {
-            console.error("Erro ao carregar fornecedores:", error)
-            alert("Erro ao carregar fornecedores. Tente novamente.")
-        }
-    }
 
     const handleDefeitoChange = (defeito, quantidade) => {
         const validQuantity = isNaN(quantidade) ? 0 : quantidade
@@ -379,8 +357,6 @@ const Cob = () => {
         img.onerror = () => {
             console.warn("Erro ao carregar logo, gerando PDF sem imagem")
             // Continue with PDF generation without the image
-            // Similar code as above but without the image
-            // ...
         }
     }
 
@@ -484,7 +460,7 @@ const Cob = () => {
                             <label>Fornecedor / Produtor:</label>
                             <div className="input-com-botao">
                                 <select value={fornecedorSelecionado} onChange={(e) => setFornecedorSelecionado(e.target.value)}>
-                                    <option value="">Selecione um fornecedor</option>
+                                    <option value="">{dataLoading ? "Carregando fornecedores..." : "Selecione um fornecedor"}</option>
                                     {fornecedores.map((fornecedor) => (
                                         <option key={fornecedor.id} value={fornecedor.nome}>
                                             {fornecedor.nome}

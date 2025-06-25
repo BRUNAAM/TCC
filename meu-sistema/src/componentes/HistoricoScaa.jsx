@@ -3,83 +3,32 @@
 import "./HistoricoScaa.css"
 import { useState, useEffect } from "react"
 import { auth, db } from "../config/firebase"
-import { collection, getDocs, getDoc, deleteDoc, doc } from "firebase/firestore"
+import { deleteDoc, doc, getDoc } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import logo from "../assets/logopdf.png"
 import "bootstrap-icons/font/bootstrap-icons.css"
+import { useData } from "../context/DataContext"
 
 const HistoricoScaa = () => {
-    const [avaliacoes, setAvaliacoes] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    // ✅ USANDO DADOS DO CONTEXTO
+    const { avaliacoesSCAA, loading: dataLoading, refreshData } = useData()
+
     const [selectedAvaliacoes, setSelectedAvaliacoes] = useState({})
-    // // Estado para rastrear avaliações selecionadas para exclusão em lote
     const [hasSelected, setHasSelected] = useState(false)
+    const [deleting, setDeleting] = useState(false)
     const navigate = useNavigate()
 
-    // O nome da função corresponde ao HistoricoCob
-    const fetchAvaliacoes = async () => {
-        setLoading(true)
-        setError(null)
-        try {
-            const user = auth.currentUser
-            if (!user) {
-                console.error("Usuário não autenticado")
-                setError("Usuário não autenticado")
-                setLoading(false)
-                return
-            }
-
-            const q = collection(db, "usuarios", user.uid, "avaliacoes_scaa")
-            const snapshot = await getDocs(q)
-
-            if (snapshot.empty) {
-                console.log("Nenhuma avaliação encontrada")
-                setAvaliacoes([])
-                setLoading(false)
-                return
-            }
-
-            // Processar dados com validação cuidadosa
-            const data = []
-            snapshot.forEach((doc) => {
-                try {
-                    const rawData = doc.data()
-                    // Cria um objeto seguro com todos os campos obrigatórios
-                    data.push({
-                        id: doc.id,
-                        data: rawData.data || rawData.dataCriacao || new Date().toISOString(),
-                        fornecedor: String(rawData.fornecedor || rawData.fornecedorSelecionado || ""),
-                        numeroAmostra: String(rawData.numeroAmostra || ""),
-                        notasSensorias: String(rawData.notasSensorias || ""),
-                        obsAcidez: String(rawData.obsAcidez || ""),
-                        pontuacaoFinal: rawData.pontuacaoFinal ? String(rawData.pontuacaoFinal) : "",
-                        // Armazena os dados brutos para geração de PDF
-                        rawData: rawData,
-                    })
-                } catch (err) {
-                    console.error(`Erro ao processar documento ${doc.id}:`, err)
-                }
-            })
-
-            console.log(`Carregadas ${data.length} avaliações`)
-            setAvaliacoes(data)
-            // Redefinir seleção ao buscar novos dados
-            setSelectedAvaliacoes({})
-            setHasSelected(false)
-        } catch (err) {
-            console.error("Erro ao carregar avaliações:", err)
-            setError("Erro ao carregar avaliações: " + err.message)
-        } finally {
-            setLoading(false)
-        }
-    }
+    // ✅ REMOVIDO: fetchAvaliacoes - agora usa dados do contexto
+    // ✅ REMOVIDO: estados loading, error, avaliacoes - agora vem do contexto
 
     useEffect(() => {
-        fetchAvaliacoes()
-    }, [])
+        // Limpar seleções quando os dados mudarem
+        setSelectedAvaliacoes({})
+        setHasSelected(false)
+    }, [avaliacoesSCAA])
+
     // Função para manipular a seleção da caixa de seleção
     const handleSelectAvaliacao = (id) => {
         const newSelected = { ...selectedAvaliacoes }
@@ -93,11 +42,12 @@ const HistoricoScaa = () => {
         setSelectedAvaliacoes(newSelected)
         setHasSelected(Object.keys(newSelected).length > 0)
     }
+
     // Função para selecionar/desselecionar todas as avaliações
     const handleSelectAll = (event) => {
         if (event.target.checked) {
             const newSelected = {}
-            avaliacoes.forEach((avaliacao) => {
+            avaliacoesSCAA.forEach((avaliacao) => {
                 newSelected[avaliacao.id] = true
             })
             setSelectedAvaliacoes(newSelected)
@@ -126,9 +76,10 @@ const HistoricoScaa = () => {
         }
 
         try {
-            setLoading(true)
+            setDeleting(true)
             let successCount = 0
             let errorCount = 0
+
             // Processe as exclusões uma por uma para lidar com os erros individualmente
             for (const id of selectedIds) {
                 try {
@@ -140,13 +91,15 @@ const HistoricoScaa = () => {
                     errorCount++
                 }
             }
-            // Atualiza a IU após todas as exclusões
-            if (successCount > 0) {
-                setAvaliacoes((prev) => prev.filter((item) => !selectedAvaliacoes[item.id]))
-                setSelectedAvaliacoes({})
-                setHasSelected(false)
-            }
-            //Mostra mensagem de resultado
+
+            // Limpar seleções
+            setSelectedAvaliacoes({})
+            setHasSelected(false)
+
+            // Atualizar dados do contexto
+            refreshData()
+
+            // Mostrar mensagem de resultado
             if (errorCount === 0) {
                 alert(`${successCount} avaliação(ões) excluída(s) com sucesso!`)
             } else {
@@ -156,9 +109,10 @@ const HistoricoScaa = () => {
             console.error("Erro ao excluir avaliações:", err)
             alert("Erro ao excluir avaliações: " + err.message)
         } finally {
-            setLoading(false)
+            setDeleting(false)
         }
     }
+
     const handleDelete = async (id) => {
         if (!id || typeof id !== "string") {
             console.error("ID inválido para exclusão:", id)
@@ -175,12 +129,12 @@ const HistoricoScaa = () => {
                 alert("Usuário não autenticado.")
                 return
             }
-            // Constroe a referência do documento com cuidado
+
+            setDeleting(true)
             const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
             await deleteDoc(docRef)
-            // Atualiza a IU filtrando o item excluído
-            setAvaliacoes((prev) => prev.filter((item) => item.id !== id))
-            // Também remove do selecionado se ele foi selecionado
+
+            // Remover da seleção se estava selecionado
             if (selectedAvaliacoes[id]) {
                 const newSelected = { ...selectedAvaliacoes }
                 delete newSelected[id]
@@ -188,10 +142,14 @@ const HistoricoScaa = () => {
                 setHasSelected(Object.keys(newSelected).length > 0)
             }
 
+            // Atualizar dados do contexto
+            refreshData()
             alert("Avaliação excluída com sucesso!")
         } catch (err) {
             console.error("Erro ao excluir avaliação:", err)
             alert("Erro ao excluir avaliação: " + err.message)
+        } finally {
+            setDeleting(false)
         }
     }
 
@@ -212,12 +170,14 @@ const HistoricoScaa = () => {
                 alert("Usuário não autenticado.")
                 return
             }
-            // Encontre a avaliação em nosso estado local primeiro para evitar uma leitura extra do Firestore
+
+            // Encontrar a avaliação nos dados do contexto
             let avaliacaoData
-            const avaliacaoEncontrada = avaliacoes.find((a) => a.id === id)
+            const avaliacaoEncontrada = avaliacoesSCAA.find((a) => a.id === id)
+
             if (!avaliacaoEncontrada) {
-                console.error("Avaliação não encontrada no estado local")
-                // Retornar ao Firestore se não for encontrado no estado local
+                console.error("Avaliação não encontrada no contexto")
+                // Buscar no Firestore como fallback
                 const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
                 const docSnap = await getDoc(docRef)
 
@@ -226,13 +186,12 @@ const HistoricoScaa = () => {
                     return
                 }
 
-                avaliacaoData = { id: docSnap.id, rawData: docSnap.data() }
+                avaliacaoData = { id: docSnap.id, ...docSnap.data() }
             } else {
                 avaliacaoData = avaliacaoEncontrada
             }
-            // Use os dados brutos para geração de PDF
-            const data = avaliacaoData.rawData || {}
 
+            // Gerar PDF
             const docPDF = new jsPDF({ unit: "mm", format: "a4" })
             const img = new Image()
             img.src = logo
@@ -288,34 +247,34 @@ const HistoricoScaa = () => {
                     autoTableOptions({
                         head: [["Identificação", "Valor"]],
                         body: [
-                            ["Avaliador", data.avaliador || "—"],
-                            ["Data", data.data ? new Date(data.data).toLocaleDateString("pt-BR") : "—"],
-                            ["Fornecedor", data.fornecedor || data.fornecedorSelecionado || "—"],
-                            ["Nº Amostra", data.numeroAmostra || "—"],
-                            ["Torra", data.torraSelecionada || "—"],
+                            ["Avaliador", avaliacaoData.avaliador || "—"],
+                            ["Data", avaliacaoData.data ? new Date(avaliacaoData.data).toLocaleDateString("pt-BR") : "—"],
+                            ["Fornecedor", avaliacaoData.fornecedor || avaliacaoData.fornecedorSelecionado || "—"],
+                            ["Nº Amostra", avaliacaoData.numeroAmostra || "—"],
+                            ["Torra", avaliacaoData.torraSelecionada || "—"],
                             [
                                 { content: "Pontuação Final", styles: { fontStyle: "bold" } },
-                                { content: data.pontuacaoFinal || "—", styles: { fontStyle: "bold" } },
+                                { content: avaliacaoData.pontuacaoFinal || "—", styles: { fontStyle: "bold" } },
                             ],
                             [
                                 { content: "Notas Sensoriais", styles: { fontStyle: "bold" } },
-                                { content: data.notasSensorias || "—", styles: { fontStyle: "bold" } },
+                                { content: avaliacaoData.notasSensorias || "—", styles: { fontStyle: "bold" } },
                             ],
                         ],
                     }),
                 )
 
                 const corpoNotas = [
-                    ["Aroma / Fragrância", data.notas?.AromaFragrancia || "—"],
-                    ["Sabor", data.notas?.sabor || "—"],
-                    ["Finalização", data.notas?.finalizacao || "—"],
-                    ["Acidez", data.notas?.acidez || "—"],
-                    ["Corpo", data.notas?.corpo || "—"],
-                    ["Equilíbrio", data.notas?.equilibrio || "—"],
-                    ["Avaliação Pessoal", data.notas?.avaliacaoPessoal || "—"],
+                    ["Aroma / Fragrância", avaliacaoData.notas?.AromaFragrancia || "—"],
+                    ["Sabor", avaliacaoData.notas?.sabor || "—"],
+                    ["Finalização", avaliacaoData.notas?.finalizacao || "—"],
+                    ["Acidez", avaliacaoData.notas?.acidez || "—"],
+                    ["Corpo", avaliacaoData.notas?.corpo || "—"],
+                    ["Equilíbrio", avaliacaoData.notas?.equilibrio || "—"],
+                    ["Avaliação Pessoal", avaliacaoData.notas?.avaliacaoPessoal || "—"],
                 ]
 
-                if (data.obsAcidez) corpoNotas.push(["Tipo de Acidez", data.obsAcidez])
+                if (avaliacaoData.obsAcidez) corpoNotas.push(["Tipo de Acidez", avaliacaoData.obsAcidez])
 
                 autoTable(
                     docPDF,
@@ -325,8 +284,8 @@ const HistoricoScaa = () => {
                     }),
                 )
 
-                const defeitosLeves = Number.parseInt(data.defeitosLeves) || 0
-                const defeitosGraves = Number.parseInt(data.defeitosGraves) || 0
+                const defeitosLeves = Number.parseInt(avaliacaoData.defeitosLeves) || 0
+                const defeitosGraves = Number.parseInt(avaliacaoData.defeitosGraves) || 0
                 const descontos = defeitosLeves * 2 + defeitosGraves * 4
 
                 autoTable(
@@ -334,18 +293,29 @@ const HistoricoScaa = () => {
                     autoTableOptions({
                         head: [["Critério", "Valor"]],
                         body: [
-                            ["Dry", data.dry !== undefined && intensidades[data.dry] ? intensidades[data.dry] : "—"],
+                            [
+                                "Dry",
+                                avaliacaoData.dry !== undefined && intensidades[avaliacaoData.dry]
+                                    ? intensidades[avaliacaoData.dry]
+                                    : "—",
+                            ],
                             [
                                 "Break",
-                                data.breakValue !== undefined && intensidades[data.breakValue] ? intensidades[data.breakValue] : "—",
+                                avaliacaoData.breakValue !== undefined && intensidades[avaliacaoData.breakValue]
+                                    ? intensidades[avaliacaoData.breakValue]
+                                    : "—",
                             ],
                             [
                                 "Nível de Acidez",
-                                data.nivelAcidez !== undefined && intensidades[data.nivelAcidez] ? intensidades[data.nivelAcidez] : "—",
+                                avaliacaoData.nivelAcidez !== undefined && intensidades[avaliacaoData.nivelAcidez]
+                                    ? intensidades[avaliacaoData.nivelAcidez]
+                                    : "—",
                             ],
                             [
                                 "Nível de Corpo",
-                                data.nivelCorpo !== undefined && intensidades[data.nivelCorpo] ? intensidades[data.nivelCorpo] : "—",
+                                avaliacaoData.nivelCorpo !== undefined && intensidades[avaliacaoData.nivelCorpo]
+                                    ? intensidades[avaliacaoData.nivelCorpo]
+                                    : "—",
                             ],
                             ["Defeitos Leves", `-${defeitosLeves * 2}`],
                             ["Defeitos Graves", `-${defeitosGraves * 4}`],
@@ -358,7 +328,7 @@ const HistoricoScaa = () => {
                     docPDF,
                     autoTableOptions({
                         head: [["Observações", "Conteúdo"]],
-                        body: [["Observações Gerais", data.observacoes || "—"]],
+                        body: [["Observações Gerais", avaliacaoData.observacoes || "—"]],
                     }),
                 )
 
@@ -368,7 +338,7 @@ const HistoricoScaa = () => {
                 docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
                 docPDF.setFont("times", "normal")
                 docPDF.setFontSize(12)
-                docPDF.text(`Avaliador: ${data.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
+                docPDF.text(`Avaliador: ${avaliacaoData.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
 
                 const blob = docPDF.output("blob")
                 const url = URL.createObjectURL(blob)
@@ -378,15 +348,15 @@ const HistoricoScaa = () => {
             img.onerror = () => {
                 console.error("Erro ao carregar a imagem do logo")
                 alert("Erro ao carregar a imagem do logo. O PDF será gerado sem a imagem.")
-                // Continuar com a geração do PDF sem a imagem
             }
         } catch (error) {
             console.error("Erro ao gerar PDF:", error)
             alert("Erro ao gerar PDF: " + error.message)
         }
     }
+
     // Renderiza o estado de carregamento
-    if (loading) {
+    if (dataLoading) {
         return (
             <div className="historico-scaa-container">
                 <div className="historico-header">
@@ -401,34 +371,14 @@ const HistoricoScaa = () => {
             </div>
         )
     }
-    //Renderiza estado de erro
-    if (error) {
-        return (
-            <div className="historico-scaa-container">
-                <div className="historico-header">
-                    <h2>Histórico de Avaliações SCAA</h2>
-                    <div className="botoes-topo">
-                        <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
-                            <i className="bi bi-arrow-return-left"></i>
-                        </button>
-                    </div>
-                </div>
-                <div className="erro-container">
-                    <p className="erro-mensagem">Erro ao carregar avaliações: {error}</p>
-                    <button className="botao-tentar-novamente" onClick={fetchAvaliacoes}>
-                        Tentar Novamente
-                    </button>
-                </div>
-            </div>
-        )
-    }
+
     // Calcula se todos os itens estão selecionados
-    const allSelected = avaliacoes.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoes.length
+    const allSelected = avaliacoesSCAA.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesSCAA.length
 
     return (
         <div className="historico-scaa-container">
             <div className="historico-header">
-                <h2>Histórico de Avaliações SCAA</h2>
+                <h2>Histórico de Avaliações SCAA ({avaliacoesSCAA.length})</h2>
                 <div className="botoes-topo">
                     <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
                         <i className="bi bi-arrow-return-left"></i>
@@ -436,12 +386,15 @@ const HistoricoScaa = () => {
                     <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
                         <i className="bi bi-printer"></i>
                     </button>
-                    {/* Adicionar botão para exclusão em lote */}
+                    <button className="botao-atualizar" onClick={refreshData} title="Atualizar dados" disabled={dataLoading}>
+                        <i className="bi bi-arrow-clockwise"></i>
+                    </button>
                     {hasSelected && (
                         <button
                             className="botao-excluir-selecionados"
                             onClick={handleDeleteSelected}
                             title="Excluir avaliações selecionadas"
+                            disabled={deleting}
                             style={{
                                 backgroundColor: "#dc3545",
                                 color: "white",
@@ -449,19 +402,21 @@ const HistoricoScaa = () => {
                                 borderRadius: "4px",
                                 padding: "6px 12px",
                                 marginLeft: "8px",
-                                cursor: "pointer",
+                                cursor: deleting ? "not-allowed" : "pointer",
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "5px",
+                                opacity: deleting ? 0.6 : 1,
                             }}
                         >
                             <i className="bi bi-trash3"></i>
-                            Excluir Selecionados ({Object.keys(selectedAvaliacoes).length})
+                            {deleting ? "Excluindo..." : `Excluir Selecionados (${Object.keys(selectedAvaliacoes).length})`}
                         </button>
                     )}
                 </div>
             </div>
-            {avaliacoes.length > 0 ? (
+
+            {avaliacoesSCAA.length > 0 ? (
                 <table className="avaliacoes-table">
                     <thead>
                         <tr>
@@ -479,16 +434,16 @@ const HistoricoScaa = () => {
                             <th>Nº Amostra</th>
                             <th>Notas Sensoriais</th>
                             <th>Obs. Acidez</th>
-                            <th>Pontuação final</th>
+                            <th>Pontuação Final</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {avaliacoes.map((avaliacao) => {
-                            //Formate a data com segurança
+                        {avaliacoesSCAA.map((avaliacao) => {
+                            // Formatar a data com segurança
                             let formattedDate = "Data inválida"
                             try {
-                                const dateStr = avaliacao.data
+                                const dateStr = avaliacao.data || avaliacao.dataCriacao
                                 if (dateStr) {
                                     const date = new Date(dateStr)
                                     if (!isNaN(date.getTime())) {
@@ -510,7 +465,7 @@ const HistoricoScaa = () => {
                                         />
                                     </td>
                                     <td>{formattedDate}</td>
-                                    <td>{avaliacao.fornecedor || "—"}</td>
+                                    <td>{avaliacao.fornecedor || avaliacao.fornecedorSelecionado || "—"}</td>
                                     <td>{avaliacao.numeroAmostra || "—"}</td>
                                     <td>{avaliacao.notasSensorias || "—"}</td>
                                     <td>{avaliacao.obsAcidez || "—"}</td>
@@ -521,6 +476,7 @@ const HistoricoScaa = () => {
                                                 className="botao-excluir"
                                                 onClick={() => handleDelete(avaliacao.id)}
                                                 title="Excluir avaliação"
+                                                disabled={deleting}
                                             >
                                                 <i className="bi bi-trash3"></i>
                                             </button>
@@ -539,7 +495,25 @@ const HistoricoScaa = () => {
                     </tbody>
                 </table>
             ) : (
-                <p className="sem-avaliacoes">Nenhuma avaliação encontrada.</p>
+                <div className="sem-avaliacoes">
+                    <p>📝 Nenhuma avaliação SCAA encontrada.</p>
+                    <button
+                        className="botao-nova-avaliacao"
+                        onClick={() => navigate("/scaa")}
+                        style={{
+                            marginTop: "20px",
+                            padding: "10px 20px",
+                            backgroundColor: "#ffba08",
+                            color: "#032b43",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Criar Nova Avaliação SCAA
+                    </button>
+                </div>
             )}
         </div>
     )

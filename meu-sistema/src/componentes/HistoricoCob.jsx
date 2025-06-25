@@ -3,80 +3,31 @@
 import "./HistoricoCob.css"
 import { useState, useEffect } from "react"
 import { auth, db } from "../config/firebase"
-import { collection, getDocs, getDoc, deleteDoc, doc } from "firebase/firestore"
+import { deleteDoc, doc, getDoc } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import logo from "../assets/logopdf.png"
 import "bootstrap-icons/font/bootstrap-icons.css"
+import { useData } from "../context/DataContext"
 
 const HistoricoCob = () => {
-    const [avaliacoes, setAvaliacoes] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    // ✅ USANDO DADOS DO CONTEXTO
+    const { avaliacoesCOB, loading: dataLoading, refreshData } = useData()
+
     const [selectedAvaliacoes, setSelectedAvaliacoes] = useState({})
     const [hasSelected, setHasSelected] = useState(false)
+    const [deleting, setDeleting] = useState(false)
     const navigate = useNavigate()
 
-    const fetchAvaliacoes = async () => {
-        setLoading(true)
-        setError(null)
-        try {
-            const user = auth.currentUser
-            if (!user) {
-                console.error("Usuário não autenticado")
-                setError("Usuário não autenticado")
-                setLoading(false)
-                return
-            }
-
-            const snapshot = await getDocs(collection(db, "usuarios", user.uid, "avaliacoes_cob"))
-
-            if (snapshot.empty) {
-                console.log("Nenhuma avaliação encontrada")
-                setAvaliacoes([])
-                setLoading(false)
-                return
-            }
-
-            // Processar dados com validação cuidadosa
-            const data = []
-            snapshot.forEach((doc) => {
-                try {
-                    const rawData = doc.data()
-                    // Cria um objeto seguro com todos os campos obrigatórios
-                    data.push({
-                        id: doc.id,
-                        data: rawData.data || new Date().toISOString(),
-                        fornecedor: String(rawData.fornecedor || ""),
-                        numeroAmostra: String(rawData.numeroAmostra || ""),
-                        tipo: String(rawData.tipo || ""),
-                        grupoBebida: String(rawData.grupoBebida || ""),
-                        subClassificacaoBebida: String(rawData.subClassificacaoBebida || ""),
-                        // Armazena os dados brutos para geração de PDF
-                        rawData: rawData,
-                    })
-                } catch (err) {
-                    console.error(`Erro ao processar documento ${doc.id}:`, err)
-                }
-            })
-
-            console.log(`Carregadas ${data.length} avaliações`)
-            setAvaliacoes(data)
-            // Redefinir seleção ao buscar novos dados
-            setSelectedAvaliacoes({})
-            setHasSelected(false)
-        } catch (err) {
-            console.error("Erro ao carregar avaliações:", err)
-            setError("Erro ao carregar avaliações: " + err.message)
-        } finally {
-            setLoading(false)
-        }
-    }
+    // ✅ REMOVIDO: fetchAvaliacoes - agora usa dados do contexto
+    // ✅ REMOVIDO: estados loading, error, avaliacoes - agora vem do contexto
 
     useEffect(() => {
-        fetchAvaliacoes()
-    }, [])
+        // Limpar seleções quando os dados mudarem
+        setSelectedAvaliacoes({})
+        setHasSelected(false)
+    }, [avaliacoesCOB])
 
     // Função para manipular a seleção da caixa de seleção
     const handleSelectAvaliacao = (id) => {
@@ -96,7 +47,7 @@ const HistoricoCob = () => {
     const handleSelectAll = (event) => {
         if (event.target.checked) {
             const newSelected = {}
-            avaliacoes.forEach((avaliacao) => {
+            avaliacoesCOB.forEach((avaliacao) => {
                 newSelected[avaliacao.id] = true
             })
             setSelectedAvaliacoes(newSelected)
@@ -125,9 +76,10 @@ const HistoricoCob = () => {
         }
 
         try {
-            setLoading(true)
+            setDeleting(true)
             let successCount = 0
             let errorCount = 0
+
             // Processe as exclusões uma por uma para lidar com os erros individualmente
             for (const id of selectedIds) {
                 try {
@@ -139,13 +91,15 @@ const HistoricoCob = () => {
                     errorCount++
                 }
             }
-            // Atualiza a IU após todas as exclusões
-            if (successCount > 0) {
-                setAvaliacoes((prev) => prev.filter((item) => !selectedAvaliacoes[item.id]))
-                setSelectedAvaliacoes({})
-                setHasSelected(false)
-            }
-            //Mostra mensagem de resultado
+
+            // Limpar seleções
+            setSelectedAvaliacoes({})
+            setHasSelected(false)
+
+            // Atualizar dados do contexto
+            refreshData()
+
+            // Mostrar mensagem de resultado
             if (errorCount === 0) {
                 alert(`${successCount} avaliação(ões) excluída(s) com sucesso!`)
             } else {
@@ -155,7 +109,7 @@ const HistoricoCob = () => {
             console.error("Erro ao excluir avaliações:", err)
             alert("Erro ao excluir avaliações: " + err.message)
         } finally {
-            setLoading(false)
+            setDeleting(false)
         }
     }
 
@@ -175,12 +129,12 @@ const HistoricoCob = () => {
                 alert("Usuário não autenticado.")
                 return
             }
-            // Constroe a referência do documento com cuidado
+
+            setDeleting(true)
             const docRef = doc(db, "usuarios", user.uid, "avaliacoes_cob", id)
             await deleteDoc(docRef)
-            // Atualiza a IU filtrando o item excluído
-            setAvaliacoes((prev) => prev.filter((item) => item.id !== id))
-            // Também remove do selecionado se ele foi selecionado
+
+            // Remover da seleção se estava selecionado
             if (selectedAvaliacoes[id]) {
                 const newSelected = { ...selectedAvaliacoes }
                 delete newSelected[id]
@@ -188,10 +142,14 @@ const HistoricoCob = () => {
                 setHasSelected(Object.keys(newSelected).length > 0)
             }
 
+            // Atualizar dados do contexto
+            refreshData()
             alert("Avaliação excluída com sucesso!")
         } catch (err) {
             console.error("Erro ao excluir avaliação:", err)
             alert("Erro ao excluir avaliação: " + err.message)
+        } finally {
+            setDeleting(false)
         }
     }
 
@@ -213,12 +171,13 @@ const HistoricoCob = () => {
                 return
             }
 
-            // Encontre a avaliação em nosso estado local primeiro para evitar uma leitura extra do Firestore
+            // Encontrar a avaliação nos dados do contexto
             let avaliacaoData
-            const avaliacaoEncontrada = avaliacoes.find((a) => a.id === id)
+            const avaliacaoEncontrada = avaliacoesCOB.find((a) => a.id === id)
+
             if (!avaliacaoEncontrada) {
-                console.error("Avaliação não encontrada no estado local")
-                // Retornar ao Firestore se não for encontrado no estado local
+                console.error("Avaliação não encontrada no contexto")
+                // Buscar no Firestore como fallback
                 const docRef = doc(db, "usuarios", user.uid, "avaliacoes_cob", id)
                 const docSnap = await getDoc(docRef)
 
@@ -227,14 +186,12 @@ const HistoricoCob = () => {
                     return
                 }
 
-                avaliacaoData = { id: docSnap.id, rawData: docSnap.data() }
+                avaliacaoData = { id: docSnap.id, ...docSnap.data() }
             } else {
                 avaliacaoData = avaliacaoEncontrada
             }
 
-            // Use os dados brutos para geração de PDF
-            const data = avaliacaoData.rawData || {}
-
+            // Gerar PDF
             const docPDF = new jsPDF({ unit: "mm", format: "a4" })
             const img = new Image()
             img.src = logo
@@ -288,17 +245,17 @@ const HistoricoCob = () => {
                     autoTableOptions({
                         head: [["Identificação", "Valor"]],
                         body: [
-                            ["Avaliador", data.avaliador || "—"],
-                            ["Data", data.data ? new Date(data.data).toLocaleDateString("pt-BR") : "—"],
-                            ["Fornecedor", data.fornecedor || "—"],
-                            ["Nº Amostra", data.numeroAmostra || "—"],
-                            ["Umidade", data.umidade || "—"],
-                            ["Aparelho", data.aparelho || "—"],
-                            ["Subcategoria", data.subcategoria || "—"],
-                            ["Tipo", data.tipo || "—"],
-                            ["Tipo Café (Chato ou Moca)", data.tipoCafe || "—"],
-                            ["Posto Serviço", data.postoServico || "—"],
-                            ["Classificador MAPA", data.classificadorMapa || "—"],
+                            ["Avaliador", avaliacaoData.avaliador || "—"],
+                            ["Data", avaliacaoData.data ? new Date(avaliacaoData.data).toLocaleDateString("pt-BR") : "—"],
+                            ["Fornecedor", avaliacaoData.fornecedor || "—"],
+                            ["Nº Amostra", avaliacaoData.numeroAmostra || "—"],
+                            ["Umidade", avaliacaoData.umidade || "—"],
+                            ["Aparelho", avaliacaoData.aparelho || "—"],
+                            ["Subcategoria", avaliacaoData.subcategoria || "—"],
+                            ["Tipo", avaliacaoData.tipo || "—"],
+                            ["Tipo Café (Chato ou Moca)", avaliacaoData.tipoCafe || "—"],
+                            ["Posto Serviço", avaliacaoData.postoServico || "—"],
+                            ["Classificador MAPA", avaliacaoData.classificadorMapa || "—"],
                         ],
                     }),
                 )
@@ -307,10 +264,10 @@ const HistoricoCob = () => {
                     docPDF,
                     autoTableOptions({
                         head: [["Defeito", "Quantidade", "Equivalência"]],
-                        body: Object.entries(data.defeitos || {}).map(([nome, qtd]) => [
+                        body: Object.entries(avaliacaoData.defeitos || {}).map(([nome, qtd]) => [
                             nome,
                             qtd,
-                            data.equivalencias?.[nome] || 0,
+                            avaliacaoData.equivalencias?.[nome] || 0,
                         ]),
                     }),
                 )
@@ -319,9 +276,9 @@ const HistoricoCob = () => {
                     docPDF,
                     autoTableOptions({
                         body: [
-                            ["Total de Defeitos", Object.values(data.defeitos || {}).reduce((acc, val) => acc + val, 0)],
-                            ["Total Equivalência", data.equivalenciaTotal],
-                            ["Tipo do Café", data.tipo || "—"],
+                            ["Total de Defeitos", Object.values(avaliacaoData.defeitos || {}).reduce((acc, val) => acc + val, 0)],
+                            ["Total Equivalência", avaliacaoData.equivalenciaTotal],
+                            ["Tipo do Café", avaliacaoData.tipo || "—"],
                         ],
                         head: [],
                     }),
@@ -332,10 +289,10 @@ const HistoricoCob = () => {
                     autoTableOptions({
                         head: [["Categoria", "Valor"]],
                         body: [
-                            ["Peneira/Subcategoria", (data.peneiraSubcategoria || []).join(", ") || "—"],
-                            ["Grupo da Bebida", data.grupoBebida || "—"],
-                            ["Subclassificação", data.subClassificacaoBebida || "—"],
-                            ["Classe da Bebida", (data.classeBebida || []).join(", ") || "—"],
+                            ["Peneira/Subcategoria", (avaliacaoData.peneiraSubcategoria || []).join(", ") || "—"],
+                            ["Grupo da Bebida", avaliacaoData.grupoBebida || "—"],
+                            ["Subclassificação", avaliacaoData.subClassificacaoBebida || "—"],
+                            ["Classe da Bebida", (avaliacaoData.classeBebida || []).join(", ") || "—"],
                         ],
                     }),
                 )
@@ -345,12 +302,12 @@ const HistoricoCob = () => {
                     autoTableOptions({
                         head: [["Laudo Técnico", "Valor"]],
                         body: [
-                            ["Preparo", data.peloPreparo || "—"],
-                            ["Seca", data.pelaSeca || "—"],
-                            ["Aspecto", data.peloAspecto || "—"],
-                            ["Torra Arábica", data.torraArabica || "—"],
-                            ["Torra Canephora", data.torraCanephora || "—"],
-                            ["Teor Cafeína", data.teorCafeina || "—"],
+                            ["Preparo", avaliacaoData.peloPreparo || "—"],
+                            ["Seca", avaliacaoData.pelaSeca || "—"],
+                            ["Aspecto", avaliacaoData.peloAspecto || "—"],
+                            ["Torra Arábica", avaliacaoData.torraArabica || "—"],
+                            ["Torra Canephora", avaliacaoData.torraCanephora || "—"],
+                            ["Teor Cafeína", avaliacaoData.teorCafeina || "—"],
                         ],
                     }),
                 )
@@ -358,7 +315,7 @@ const HistoricoCob = () => {
                 autoTable(
                     docPDF,
                     autoTableOptions({
-                        body: [["Observações", data.observacoes || "—"]],
+                        body: [["Observações", avaliacaoData.observacoes || "—"]],
                         head: [],
                     }),
                 )
@@ -369,8 +326,8 @@ const HistoricoCob = () => {
                 docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
                 docPDF.setFont("times", "normal")
                 docPDF.setFontSize(12)
-                docPDF.text(`Avaliador: ${data.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
-                docPDF.text(`Registro MAPA: ${data.classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, {
+                docPDF.text(`Avaliador: ${avaliacaoData.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
+                docPDF.text(`Registro MAPA: ${avaliacaoData.classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, {
                     align: "center",
                 })
 
@@ -382,7 +339,6 @@ const HistoricoCob = () => {
             img.onerror = () => {
                 console.error("Erro ao carregar a imagem do logo")
                 alert("Erro ao carregar a imagem do logo. O PDF será gerado sem a imagem.")
-                // Continuar com a geração do PDF sem a imagem
             }
         } catch (error) {
             console.error("Erro ao gerar PDF:", error)
@@ -391,7 +347,7 @@ const HistoricoCob = () => {
     }
 
     // Renderiza o estado de carregamento
-    if (loading) {
+    if (dataLoading) {
         return (
             <div className="historico-cob-container">
                 <div className="historico-header">
@@ -407,35 +363,13 @@ const HistoricoCob = () => {
         )
     }
 
-    //Renderiza estado de erro
-    if (error) {
-        return (
-            <div className="historico-cob-container">
-                <div className="historico-header">
-                    <h2>Histórico de Avaliações COB</h2>
-                    <div className="botoes-topo">
-                        <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
-                            <i className="bi bi-arrow-return-left"></i>
-                        </button>
-                    </div>
-                </div>
-                <div className="erro-container">
-                    <p className="erro-mensagem">Erro ao carregar avaliações: {error}</p>
-                    <button className="botao-tentar-novamente" onClick={fetchAvaliacoes}>
-                        Tentar Novamente
-                    </button>
-                </div>
-            </div>
-        )
-    }
-
     // Calcula se todos os itens estão selecionados
-    const allSelected = avaliacoes.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoes.length
+    const allSelected = avaliacoesCOB.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesCOB.length
 
     return (
         <div className="historico-cob-container">
             <div className="historico-header">
-                <h2>Histórico de Avaliações COB</h2>
+                <h2>Histórico de Avaliações COB ({avaliacoesCOB.length})</h2>
                 <div className="botoes-topo">
                     <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
                         <i className="bi bi-arrow-return-left"></i>
@@ -443,12 +377,15 @@ const HistoricoCob = () => {
                     <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
                         <i className="bi bi-printer"></i>
                     </button>
-                    {/* Adicionar botão para exclusão em lote */}
+                    <button className="botao-atualizar" onClick={refreshData} title="Atualizar dados" disabled={dataLoading}>
+                        <i className="bi bi-arrow-clockwise"></i>
+                    </button>
                     {hasSelected && (
                         <button
                             className="botao-excluir-selecionados"
                             onClick={handleDeleteSelected}
                             title="Excluir avaliações selecionadas"
+                            disabled={deleting}
                             style={{
                                 backgroundColor: "#dc3545",
                                 color: "white",
@@ -456,20 +393,21 @@ const HistoricoCob = () => {
                                 borderRadius: "4px",
                                 padding: "6px 12px",
                                 marginLeft: "8px",
-                                cursor: "pointer",
+                                cursor: deleting ? "not-allowed" : "pointer",
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "5px",
+                                opacity: deleting ? 0.6 : 1,
                             }}
                         >
                             <i className="bi bi-trash3"></i>
-                            Excluir Selecionados ({Object.keys(selectedAvaliacoes).length})
+                            {deleting ? "Excluindo..." : `Excluir Selecionados (${Object.keys(selectedAvaliacoes).length})`}
                         </button>
                     )}
                 </div>
             </div>
 
-            {avaliacoes.length > 0 ? (
+            {avaliacoesCOB.length > 0 ? (
                 <table className="avaliacoes-table">
                     <thead>
                         <tr>
@@ -491,11 +429,11 @@ const HistoricoCob = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {avaliacoes.map((avaliacao) => {
-                            //Formate a data com segurança
+                        {avaliacoesCOB.map((avaliacao) => {
+                            // Formatar a data com segurança
                             let formattedDate = "Data inválida"
                             try {
-                                const dateStr = avaliacao.data
+                                const dateStr = avaliacao.data || avaliacao.dataCriacao
                                 if (dateStr) {
                                     const date = new Date(dateStr)
                                     if (!isNaN(date.getTime())) {
@@ -521,7 +459,9 @@ const HistoricoCob = () => {
                                     <td>{avaliacao.numeroAmostra || "—"}</td>
                                     <td>{avaliacao.tipo || "—"}</td>
                                     <td>
-                                        {avaliacao.grupoBebida ? `${avaliacao.grupoBebida} - ${avaliacao.subClassificacaoBebida}` : "—"}
+                                        {avaliacao.grupoBebida
+                                            ? `${avaliacao.grupoBebida} - ${avaliacao.subClassificacaoBebida || ""}`
+                                            : "—"}
                                     </td>
                                     <td className="celula-acoes">
                                         <div className="acoes-botoes">
@@ -529,6 +469,7 @@ const HistoricoCob = () => {
                                                 className="botao-excluir"
                                                 onClick={() => handleDelete(avaliacao.id)}
                                                 title="Excluir avaliação"
+                                                disabled={deleting}
                                             >
                                                 <i className="bi bi-trash3"></i>
                                             </button>
@@ -547,7 +488,25 @@ const HistoricoCob = () => {
                     </tbody>
                 </table>
             ) : (
-                <p className="sem-avaliacoes">Nenhuma avaliação encontrada.</p>
+                <div className="sem-avaliacoes">
+                    <p>📝 Nenhuma avaliação COB encontrada.</p>
+                    <button
+                        className="botao-nova-avaliacao"
+                        onClick={() => navigate("/cob")}
+                        style={{
+                            marginTop: "20px",
+                            padding: "10px 20px",
+                            backgroundColor: "#ffba08",
+                            color: "#032b43",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Criar Nova Avaliação COB
+                    </button>
+                </div>
             )}
         </div>
     )

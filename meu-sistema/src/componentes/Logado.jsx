@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { signOut } from "firebase/auth"
 import { auth } from "../config/firebase"
 import { useUser } from "../context/UserContext"
+import { useData } from "../context/DataContext"
 import logo from "../assets/logo.svg"
 import {
     Coffee,
@@ -19,10 +20,23 @@ import {
     TrendingUp,
     Settings,
     HelpCircle,
+    RefreshCw,
+    Database,
+    WifiOff,
+    Wifi,
 } from "lucide-react"
 
 const Logado = () => {
     const { usuario, setUsuario } = useUser()
+    const {
+        fornecedores,
+        avaliacoesCOB,
+        avaliacoesSCAA,
+        loading: dataLoading,
+        lastSync,
+        refreshData,
+        isOnline,
+    } = useData()
     const navigate = useNavigate()
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -76,11 +90,18 @@ const Logado = () => {
             if (e.key === "Escape" && showLogoutConfirm) {
                 cancelLogout()
             }
+
+            // F5 ou Ctrl+R para atualizar dados
+            if ((e.key === "F5" || (e.ctrlKey && e.key === "r")) && !dataLoading) {
+                e.preventDefault()
+                refreshData()
+                announceToScreenReader("Dados atualizados do servidor")
+            }
         }
 
         document.addEventListener("keydown", handleKeyDown)
         return () => document.removeEventListener("keydown", handleKeyDown)
-    }, [navigate, showLogoutConfirm, shortcutsEnabled])
+    }, [navigate, showLogoutConfirm, shortcutsEnabled, dataLoading, refreshData])
 
     const skipToMain = (e) => {
         e.preventDefault()
@@ -104,9 +125,15 @@ const Logado = () => {
             setUsuario(null)
             localStorage.removeItem("usuarioNome")
 
-            // Anunciar logout para leitores de tela
-            announceToScreenReader("Logout realizado com sucesso. Redirecionando para a página de login.")
+            // Limpa dados específicos do usuário
+            const keys = Object.keys(localStorage)
+            keys.forEach((key) => {
+                if (key.startsWith("coffeeGraderData_")) {
+                    localStorage.removeItem(key)
+                }
+            })
 
+            announceToScreenReader("Logout realizado com sucesso. Redirecionando para a página de login.")
             navigate("/login", { replace: true })
         } catch (error) {
             console.error("Erro ao sair:", error)
@@ -161,6 +188,7 @@ const Logado = () => {
             title: "Avaliação COB",
             description: "Iniciar nova avaliação pelo método COB (Cup of Excellence)",
             shortcut: "Alt+1",
+            count: avaliacoesCOB.length,
         },
         {
             id: "scaa-evaluation",
@@ -169,6 +197,7 @@ const Logado = () => {
             title: "Avaliação SCAA",
             description: "Iniciar nova avaliação pelo método SCAA (Specialty Coffee Association)",
             shortcut: "Alt+2",
+            count: avaliacoesSCAA.length,
         },
         {
             id: "suppliers",
@@ -177,6 +206,7 @@ const Logado = () => {
             title: "Produtores e Fornecedores",
             description: "Gerenciar cadastro de produtores e fornecedores de café",
             shortcut: "Alt+3",
+            count: fornecedores.length,
         },
         {
             id: "cob-history",
@@ -185,6 +215,7 @@ const Logado = () => {
             title: "Histórico COB",
             description: "Visualizar histórico de avaliações COB realizadas",
             shortcut: "Alt+4",
+            count: avaliacoesCOB.length,
         },
         {
             id: "scaa-history",
@@ -193,6 +224,7 @@ const Logado = () => {
             title: "Histórico SCAA",
             description: "Visualizar histórico de avaliações SCAA realizadas",
             shortcut: "Alt+5",
+            count: avaliacoesSCAA.length,
         },
     ]
 
@@ -225,6 +257,43 @@ const Logado = () => {
                                 <span className="user-label">Usuário:</span>
                                 <span className="user-name">{usuario.nome}</span>
                             </div>
+
+                            {/* Status de sincronização e conexão */}
+                            <div className="sync-status">
+                                <div className="connection-status">
+                                    {isOnline ? (
+                                        <Wifi className="connection-icon online" size={14} title="Online" />
+                                    ) : (
+                                        <WifiOff className="connection-icon offline" size={14} title="Offline" />
+                                    )}
+                                </div>
+
+                                {dataLoading ? (
+                                    <div className="sync-loading">
+                                        <Loader2 className="sync-icon" size={14} />
+                                        <span>Sincronizando...</span>
+                                    </div>
+                                ) : (
+                                    <div className="sync-success">
+                                        <Database className="sync-icon" size={14} />
+                                        <span>
+                                            {lastSync
+                                                ? `Última sync: ${new Date(lastSync).toLocaleTimeString()}`
+                                                : isOnline
+                                                    ? "Dados carregados"
+                                                    : "Modo offline"}
+                                        </span>
+                                        <button
+                                            onClick={refreshData}
+                                            className="refresh-button"
+                                            title="Atualizar dados (F5)"
+                                            disabled={dataLoading || !isOnline}
+                                        >
+                                            <RefreshCw size={12} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -242,7 +311,11 @@ const Logado = () => {
                             <h2 id="welcome-title" className="logado-h2" ref={welcomeRef} tabIndex="-1">
                                 Bem-vindo(a), {usuario.nome}!
                             </h2>
-                            <p className="welcome-subtitle">Escolha uma das opções abaixo para começar:</p>
+                            <p className="welcome-subtitle">
+                                Escolha uma das opções abaixo para começar:
+                                {dataLoading && <span className="loading-text"> (Carregando dados...)</span>}
+                                {!isOnline && <span className="offline-text"> (Modo offline)</span>}
+                            </p>
                         </div>
 
                         <nav
@@ -271,6 +344,7 @@ const Logado = () => {
                                                 <IconComponent className="button-icon" aria-hidden="true" size={20} />
                                                 <div className="button-content">
                                                     <span className="button-title">{item.title}</span>
+                                                    <span className="button-count">{item.count > 0 && `(${item.count})`}</span>
                                                     <span className="button-shortcut" aria-label={`Atalho: ${item.shortcut}`}>
                                                         {item.shortcut}
                                                     </span>
@@ -300,6 +374,7 @@ const Logado = () => {
                                                 <IconComponent className="button-icon" aria-hidden="true" size={20} />
                                                 <div className="button-content">
                                                     <span className="button-title">{item.title}</span>
+                                                    <span className="button-count">{item.count > 0 && `(${item.count})`}</span>
                                                     <span className="button-shortcut" aria-label={`Atalho: ${item.shortcut}`}>
                                                         {item.shortcut}
                                                     </span>
@@ -321,10 +396,11 @@ const Logado = () => {
                         <div className="help-section" role="region" aria-label="Ajuda e informações">
                             <button className="help-button" title="Ajuda e atalhos de teclado" aria-describedby="help-desc">
                                 <HelpCircle className="help-icon" aria-hidden="true" size={16} />
-                                <span>Atalhos: Alt+1 a Alt+5 para navegação rápida</span>
+                                <span>Atalhos: Alt+1 a Alt+5 para navegação rápida | F5 para atualizar dados</span>
                             </button>
                             <div id="help-desc" className="sr-only">
-                                Use Alt + número (1 a 5) para navegar rapidamente entre as seções
+                                Use Alt + número (1 a 5) para navegar rapidamente entre as seções. Use F5 para atualizar os dados do
+                                servidor.
                             </div>
                         </div>
 
@@ -346,7 +422,9 @@ const Logado = () => {
                         <footer className="app-version" role="contentinfo">
                             <p>
                                 <Coffee className="version-icon" aria-hidden="true" size={14} />
-                                Coffee Grader versão 1.0
+                                Coffee Grader versão 1.0 | Dados: {fornecedores.length} fornecedores,{" "}
+                                {avaliacoesCOB.length + avaliacoesSCAA.length} avaliações
+                                {!isOnline && " (offline)"}
                             </p>
                         </footer>
                     </div>
