@@ -33,7 +33,7 @@ const Logado = () => {
     const welcomeRef = useRef(null)
 
     // Estado para controlar os atalhos de teclado
-    const [shortcutsEnabled, setShortcutsEnabled] = useState(true)
+    const [shortcutsEnabled] = useState(true)
 
     // Proteção extra: redireciona se não estiver logado
     useEffect(() => {
