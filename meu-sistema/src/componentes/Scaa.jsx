@@ -13,6 +13,7 @@ import "bootstrap-icons/font/bootstrap-icons.css"
 import logo from "../assets/logopdf.png"
 import { useData } from "../context/DataContext"
 
+
 const novaEstruturaAvaliacao = (overrides = {}) => {
     return {
         id: Date.now(),
@@ -355,7 +356,7 @@ const Scaa = () => {
             const logoWidth = 25
             const logoHeight = 25
             const spacing = 5
-            const titulo = "Avaliação Sensorial de Café - Método SCAA"
+            const titulo = "Avaliação Sensorial de Cafés"
             const tituloWidth = docPDF.getTextWidth(titulo)
             const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2
 
