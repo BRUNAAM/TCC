@@ -1,7 +1,7 @@
 "use client"
 
 import "./Logado.css"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { signOut } from "firebase/auth"
 import { auth } from "../config/firebase"
@@ -49,6 +49,44 @@ const Logado = () => {
     // Estado para controlar os atalhos de teclado
     const [shortcutsEnabled] = useState(true)
 
+    const announceToScreenReader = useCallback((message) => {
+        const announcement = document.createElement("div")
+        announcement.setAttribute("aria-live", "polite")
+        announcement.setAttribute("aria-atomic", "true")
+        announcement.className = "sr-only"
+        announcement.textContent = message
+        document.body.appendChild(announcement)
+        setTimeout(() => {
+            document.body.removeChild(announcement)
+        }, 1000)
+    }, [])
+
+    const handleLogout = useCallback(async () => {
+        setLoading(true)
+        try {
+            await signOut(auth)
+            setUsuario(null)
+            localStorage.removeItem("usuarioNome")
+
+            // Limpa dados específicos do usuário
+            const keys = Object.keys(localStorage)
+            keys.forEach((key) => {
+                if (key.startsWith("coffeeGraderData_")) {
+                    localStorage.removeItem(key)
+                }
+            })
+
+            announceToScreenReader("Logout realizado com sucesso. Redirecionando para a página de login.")
+            navigate("/login", { replace: true })
+        } catch (error) {
+            console.error("Erro ao sair:", error)
+            announceToScreenReader("Erro ao fazer logout. Tente novamente.")
+        } finally {
+            setLoading(false)
+            setShowLogoutConfirm(false)
+        }
+    }, [setUsuario, navigate, announceToScreenReader])
+
     // Proteção extra: redireciona se não estiver logado
     useEffect(() => {
         if (!usuario) {
@@ -61,12 +99,57 @@ const Logado = () => {
         }
     }, [usuario, navigate, setUsuario])
 
+    // Proteção contra navegação acidental do browser
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            e.preventDefault()
+            e.returnValue = "Tem certeza que deseja sair do Coffee Grader? Suas alterações não salvas serão perdidas."
+            return "Tem certeza que deseja sair do Coffee Grader?"
+        }
+
+        const handlePopState = (e) => {
+            e.preventDefault()
+
+            // Força o usuário a permanecer na página atual
+            window.history.pushState(null, "", window.location.pathname)
+
+            // Mostra confirmação personalizada
+            const confirmExit = window.confirm(
+                "Você está tentando sair do Coffee Grader.\n\n" +
+                'Para sair com segurança, use o botão "Sair do Sistema" na parte inferior da tela.\n\n' +
+                "Deseja realmente sair agora?",
+            )
+
+            if (confirmExit) {
+                // Se confirmar, faz logout adequado
+                handleLogout()
+            }
+        }
+
+        // Adiciona estado ao histórico para interceptar navegação
+        window.history.pushState(null, "", window.location.pathname)
+
+        // Adiciona listeners
+        window.addEventListener("beforeunload", handleBeforeUnload)
+        window.addEventListener("popstate", handlePopState)
+
+        // Cleanup
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload)
+            window.removeEventListener("popstate", handlePopState)
+        }
+    }, [handleLogout])
+
     // Foca na mensagem de boas-vindas quando carrega
     useEffect(() => {
         if (usuario && welcomeRef.current) {
             welcomeRef.current.focus()
         }
     }, [usuario])
+
+    const cancelLogout = useCallback(() => {
+        setShowLogoutConfirm(false)
+    }, [])
 
     // Adicionar listeners para atalhos de teclado
     useEffect(() => {
@@ -101,73 +184,16 @@ const Logado = () => {
 
         document.addEventListener("keydown", handleKeyDown)
         return () => document.removeEventListener("keydown", handleKeyDown)
-    }, [navigate, showLogoutConfirm, shortcutsEnabled, dataLoading, refreshData])
+    }, [navigate, showLogoutConfirm, shortcutsEnabled, dataLoading, refreshData, announceToScreenReader, cancelLogout])
 
-    const skipToMain = (e) => {
-        e.preventDefault()
-        if (mainRef.current) {
-            mainRef.current.focus()
-        }
-    }
-
-    const skipToNav = (e) => {
-        e.preventDefault()
-        const navElement = document.getElementById("main-navigation")
-        if (navElement) {
-            navElement.focus()
-        }
-    }
-
-    const handleLogout = async () => {
-        setLoading(true)
-        try {
-            await signOut(auth)
-            setUsuario(null)
-            localStorage.removeItem("usuarioNome")
-
-            // Limpa dados específicos do usuário
-            const keys = Object.keys(localStorage)
-            keys.forEach((key) => {
-                if (key.startsWith("coffeeGraderData_")) {
-                    localStorage.removeItem(key)
-                }
-            })
-
-            announceToScreenReader("Logout realizado com sucesso. Redirecionando para a página de login.")
-            navigate("/login", { replace: true })
-        } catch (error) {
-            console.error("Erro ao sair:", error)
-            announceToScreenReader("Erro ao fazer logout. Tente novamente.")
-        } finally {
-            setLoading(false)
-            setShowLogoutConfirm(false)
-        }
-    }
-
-    const confirmLogout = () => {
+    const confirmLogout = useCallback(() => {
         setShowLogoutConfirm(true)
         setTimeout(() => {
             if (logoutConfirmRef.current) {
                 logoutConfirmRef.current.focus()
             }
         }, 100)
-    }
-
-    const cancelLogout = () => {
-        setShowLogoutConfirm(false)
-    }
-
-    const announceToScreenReader = (message) => {
-        const announcement = document.createElement("div")
-        announcement.setAttribute("aria-live", "polite")
-        announcement.setAttribute("aria-atomic", "true")
-        announcement.className = "sr-only"
-        announcement.textContent = message
-        document.body.appendChild(announcement)
-        setTimeout(() => {
-            document.body.removeChild(announcement)
-        }, 1000)
-    }
+    }, [])
 
     // Ainda carregando contexto
     if (!usuario) {
@@ -187,8 +213,8 @@ const Logado = () => {
             icon: Coffee,
             title: "Avaliação COB",
             description: "Iniciar nova avaliação pelo método COB (Cup of Excellence)",
-            shortcut: "Alt+1",
             count: avaliacoesCOB.length,
+            category: "evaluation",
         },
         {
             id: "scaa-evaluation",
@@ -196,17 +222,17 @@ const Logado = () => {
             icon: Award,
             title: "Avaliação SCAA",
             description: "Iniciar nova avaliação pelo método SCAA (Specialty Coffee Association)",
-            shortcut: "Alt+2",
             count: avaliacoesSCAA.length,
+            category: "evaluation",
         },
         {
             id: "suppliers",
             path: "/fornecedores",
             icon: Users,
-            title: "Produtores e Fornecedores",
+            title: "Fornecedores",
             description: "Gerenciar cadastro de produtores e fornecedores de café",
-            shortcut: "Alt+3",
             count: fornecedores.length,
+            category: "management",
         },
         {
             id: "cob-history",
@@ -214,8 +240,8 @@ const Logado = () => {
             icon: ClipboardList,
             title: "Histórico COB",
             description: "Visualizar histórico de avaliações COB realizadas",
-            shortcut: "Alt+4",
             count: avaliacoesCOB.length,
+            category: "management",
         },
         {
             id: "scaa-history",
@@ -223,41 +249,37 @@ const Logado = () => {
             icon: BarChart3,
             title: "Histórico SCAA",
             description: "Visualizar histórico de avaliações SCAA realizadas",
-            shortcut: "Alt+5",
             count: avaliacoesSCAA.length,
+            category: "management",
         },
     ]
 
+    const evaluationItems = navigationItems.filter((item) => item.category === "evaluation")
+    const managementItems = navigationItems.filter((item) => item.category === "management")
+
     return (
         <>
-            {/* Skip Links */}
-            <div className="skip-links">
-                <a href="#main-content" className="skip-link" onClick={skipToMain}>
-                    Pular para o conteúdo principal
-                </a>
-                <a href="#main-navigation" className="skip-link" onClick={skipToNav}>
-                    Pular para a navegação
-                </a>
-            </div>
-
             <div className="page-wrapper">
                 <header className="page-header" role="banner">
                     <div className="header-content">
-                        <img
-                            src={logo || "/placeholder.svg?height=60&width=60"}
-                            alt="Coffee Grader"
-                            className="header-logo"
-                            width="60"
-                            height="60"
-                        />
-                        <div className="header-info">
-                            <h1 className="sr-only">Coffee Grader - Painel Principal</h1>
-                            <div className="user-info">
-                                <User className="user-icon" aria-hidden="true" size={18} />
-                                <span className="user-label">Usuário:</span>
-                                <span className="user-name">{usuario.nome}</span>
+                        <div className="header-left">
+                            <img
+                                src={logo || "/placeholder.svg?height=50&width=50"}
+                                alt="Coffee Grader"
+                                className="header-logo"
+                                width="50"
+                                height="50"
+                            />
+                            <div className="header-info">
+                                <h1 className="sr-only">Coffee Grader - Painel Principal</h1>
+                                <div className="user-info">
+                                    <User className="user-icon" aria-hidden="true" size={16} />
+                                    <span className="user-name">{usuario.nome}</span>
+                                </div>
                             </div>
+                        </div>
 
+                        <div className="header-right">
                             {/* Status de sincronização e conexão */}
                             <div className="sync-status">
                                 <div className="connection-status">
@@ -278,7 +300,7 @@ const Logado = () => {
                                         <Database className="sync-icon" size={14} />
                                         <span>
                                             {lastSync
-                                                ? `Última sync: ${new Date(lastSync).toLocaleTimeString()}`
+                                                ? `${new Date(lastSync).toLocaleTimeString()}`
                                                 : isOnline
                                                     ? "Dados carregados"
                                                     : "Modo offline"}
@@ -308,11 +330,11 @@ const Logado = () => {
                 >
                     <div className="logado-box">
                         <div className="welcome-section" role="region" aria-labelledby="welcome-title">
-                            <h2 id="welcome-title" className="logado-h2" ref={welcomeRef} tabIndex="-1">
+                            <h2 id="welcome-title" className="welcome-title" ref={welcomeRef} tabIndex="-1">
                                 Bem-vindo(a), {usuario.nome}!
                             </h2>
                             <p className="welcome-subtitle">
-                                Escolha uma das opções abaixo para começar:
+                                Escolha uma das opções abaixo para começar suas avaliações
                                 {dataLoading && <span className="loading-text"> (Carregando dados...)</span>}
                                 {!isOnline && <span className="offline-text"> (Modo offline)</span>}
                             </p>
@@ -320,34 +342,37 @@ const Logado = () => {
 
                         <nav
                             id="main-navigation"
-                            className="botoes-container"
+                            className="navigation-container"
                             role="navigation"
                             aria-label="Menu principal de navegação"
                             tabIndex="-1"
                         >
+                            {/* Seção de Avaliações */}
                             <div className="nav-section">
                                 <h3 className="nav-section-title">
                                     <TrendingUp className="section-icon" aria-hidden="true" size={18} />
-                                    Avaliações
+                                    Avaliações Sensoriais
                                 </h3>
-                                <div className="nav-buttons-group">
-                                    {navigationItems.slice(0, 2).map((item) => {
+                                <div className="nav-cards-grid">
+                                    {evaluationItems.map((item) => {
                                         const IconComponent = item.icon
                                         return (
                                             <button
                                                 key={item.id}
                                                 onClick={() => navigate(item.path)}
-                                                className="nav-button"
+                                                className="nav-card nav-card-primary"
                                                 aria-describedby={`${item.id}-desc`}
-                                                title={`${item.description} (${item.shortcut})`}
+                                                title={item.description}
                                             >
-                                                <IconComponent className="button-icon" aria-hidden="true" size={20} />
-                                                <div className="button-content">
-                                                    <span className="button-title">{item.title}</span>
-                                                    <span className="button-count">{item.count > 0 && `(${item.count})`}</span>
-                                                    <span className="button-shortcut" aria-label={`Atalho: ${item.shortcut}`}>
-                                                        {item.shortcut}
-                                                    </span>
+                                                <div className="card-icon-container">
+                                                    <IconComponent className="card-icon" aria-hidden="true" size={24} />
+                                                </div>
+                                                <div className="card-content">
+                                                    <h4 className="card-title">{item.title}</h4>
+                                                    <p className="card-description">{item.description}</p>
+                                                    <div className="card-footer">
+                                                        <span className="card-count">{item.count} registros</span>
+                                                    </div>
                                                 </div>
                                             </button>
                                         )
@@ -355,29 +380,32 @@ const Logado = () => {
                                 </div>
                             </div>
 
+                            {/* Seção de Gerenciamento */}
                             <div className="nav-section">
                                 <h3 className="nav-section-title">
                                     <Settings className="section-icon" aria-hidden="true" size={18} />
-                                    Gerenciamento
+                                    Gerenciamento e Histórico
                                 </h3>
-                                <div className="nav-buttons-group">
-                                    {navigationItems.slice(2).map((item) => {
+                                <div className="nav-cards-grid">
+                                    {managementItems.map((item) => {
                                         const IconComponent = item.icon
                                         return (
                                             <button
                                                 key={item.id}
                                                 onClick={() => navigate(item.path)}
-                                                className="nav-button"
+                                                className="nav-card nav-card-secondary"
                                                 aria-describedby={`${item.id}-desc`}
-                                                title={`${item.description} (${item.shortcut})`}
+                                                title={item.description}
                                             >
-                                                <IconComponent className="button-icon" aria-hidden="true" size={20} />
-                                                <div className="button-content">
-                                                    <span className="button-title">{item.title}</span>
-                                                    <span className="button-count">{item.count > 0 && `(${item.count})`}</span>
-                                                    <span className="button-shortcut" aria-label={`Atalho: ${item.shortcut}`}>
-                                                        {item.shortcut}
-                                                    </span>
+                                                <div className="card-icon-container">
+                                                    <IconComponent className="card-icon" aria-hidden="true" size={24} />
+                                                </div>
+                                                <div className="card-content">
+                                                    <h4 className="card-title">{item.title}</h4>
+                                                    <p className="card-description">{item.description}</p>
+                                                    <div className="card-footer">
+                                                        <span className="card-count">{item.count} registros</span>
+                                                    </div>
                                                 </div>
                                             </button>
                                         )
@@ -393,37 +421,39 @@ const Logado = () => {
                             ))}
                         </nav>
 
-                        <div className="help-section" role="region" aria-label="Ajuda e informações">
-                            <button className="help-button" title="Ajuda e atalhos de teclado" aria-describedby="help-desc">
-                                <HelpCircle className="help-icon" aria-hidden="true" size={16} />
-                                <span>Atalhos: Alt+1 a Alt+5 para navegação rápida | F5 para atualizar dados</span>
-                            </button>
-                            <div id="help-desc" className="sr-only">
-                                Use Alt + número (1 a 5) para navegar rapidamente entre as seções. Use F5 para atualizar os dados do
-                                servidor.
+                        <div className="bottom-section">
+                            <div className="help-section" role="region" aria-label="Ajuda e informações">
+                                <button className="help-button" title="Ajuda e atalhos de teclado" aria-describedby="help-desc">
+                                    <HelpCircle className="help-icon" aria-hidden="true" size={16} />
+                                    <span>Atalhos: Alt+1 a Alt+5 para navegação rápida | F5 para atualizar dados</span>
+                                </button>
+                                <div id="help-desc" className="sr-only">
+                                    Use Alt + número (1 a 5) para navegar rapidamente entre as seções. Use F5 para atualizar os dados do
+                                    servidor.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="logout-section">
-                            <button
-                                className="logout-button"
-                                onClick={confirmLogout}
-                                aria-describedby="logout-desc"
-                                disabled={loading}
-                            >
-                                <LogOut className="logout-icon" aria-hidden="true" size={18} />
-                                <span>{loading ? "Saindo..." : "Sair do Sistema"}</span>
-                            </button>
-                            <div id="logout-desc" className="sr-only">
-                                Clique para sair do sistema e voltar à página de login
+                            <div className="logout-section">
+                                <button
+                                    className="logout-button"
+                                    onClick={confirmLogout}
+                                    aria-describedby="logout-desc"
+                                    disabled={loading}
+                                >
+                                    <LogOut className="logout-icon" aria-hidden="true" size={18} />
+                                    <span>{loading ? "Saindo..." : "Sair do Sistema"}</span>
+                                </button>
+                                <div id="logout-desc" className="sr-only">
+                                    Clique para sair do sistema e voltar à página de login
+                                </div>
                             </div>
                         </div>
 
                         <footer className="app-version" role="contentinfo">
                             <p>
                                 <Coffee className="version-icon" aria-hidden="true" size={14} />
-                                Coffee Grader versão 1.0 | Dados: {fornecedores.length} fornecedores,{" "}
-                                {avaliacoesCOB.length + avaliacoesSCAA.length} avaliações
+                                Coffee Grader v1.0 | {fornecedores.length} fornecedores, {avaliacoesCOB.length + avaliacoesSCAA.length}{" "}
+                                avaliações
                                 {!isOnline && " (offline)"}
                             </p>
                         </footer>

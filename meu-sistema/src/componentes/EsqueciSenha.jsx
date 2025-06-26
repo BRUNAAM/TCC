@@ -172,11 +172,11 @@ const EsqueciSenha = () => {
 
                         <div className="logo-container">
                             <img
-                                src={logo || "/placeholder.svg?height=120&width=120"}
+                                src={logo || "/placeholder.svg?height=100&width=100"}
                                 alt="Coffee Grader - Sistema de avaliação sensorial de cafés"
                                 className="esqueci-logo"
-                                width="120"
-                                height="120"
+                                width="100"
+                                height="100"
                             />
                         </div>
 
@@ -331,3 +331,4 @@ const EsqueciSenha = () => {
 }
 
 export default EsqueciSenha
+    

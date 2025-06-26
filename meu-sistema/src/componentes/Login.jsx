@@ -145,11 +145,11 @@ const Login = () => {
                     <div className="login-box" role="region" aria-labelledby="login-title">
                         <div className="login-header">
                             <img
-                                src={logo || "/placeholder.svg?height=160&width=160"}
+                                src={logo || "/placeholder.svg?height=120&width=120"}
                                 alt="Coffee Grader - Sistema de avaliação sensorial de cafés"
                                 className="login-logo"
-                                width="160"
-                                height="160"
+                                width="120"
+                                height="120"
                             />
                         </div>
 
