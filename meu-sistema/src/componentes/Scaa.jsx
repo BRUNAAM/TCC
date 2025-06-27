@@ -573,7 +573,7 @@ const Scaa = () => {
         return (
             <div className="scaa-container">
                 <div className="scaa-header">
-                    <h2>Avaliação Sensorial de Café - SCAA</h2>
+                    <h2>Avaliação Sensorial de Cafés</h2>
                     <div className="header-buttons">
                         <button onClick={limparDadosLocais} className="btn-small btn-danger" title="Limpar dados locais">
                             🗑️
@@ -614,9 +614,11 @@ const Scaa = () => {
     return (
         <div className="scaa-container">
             <div className="scaa-header">
-                <h2>Avaliação Sensorial de Café - SCAA</h2>
+                <h2>Avaliação Sensorial de Cafés</h2>
                 <div className="header-buttons">
                     <button onClick={limparDadosLocais} className="btn-small btn-danger" title="Limpar dados locais">
+                        <br />
+                        <br />
                         🗑️
                     </button>
                     <button className="fechar" onClick={() => navigate("/logado")}>
