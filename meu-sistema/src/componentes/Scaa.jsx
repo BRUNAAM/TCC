@@ -617,8 +617,6 @@ const Scaa = () => {
                 <h2>Avaliação Sensorial de Cafés</h2>
                 <div className="header-buttons">
                     <button onClick={limparDadosLocais} className="btn-small btn-danger" title="Limpar dados locais">
-                        <br />
-                        <br />
                         🗑️
                     </button>
                     <button className="fechar" onClick={() => navigate("/logado")}>
