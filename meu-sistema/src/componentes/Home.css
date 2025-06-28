@@ -43,8 +43,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Skip Link para acessibilidade - Melhorado */
-.skip-link {
+/* Link para pular conteúdo - acessibilidade - Melhorado */
+.link-pular {
   position: absolute;
   top: -48px;
   left: 8px;
@@ -59,7 +59,7 @@ body {
   font-size: 1rem;
 }
 
-.skip-link:focus {
+.link-pular:focus {
   top: 8px;
   outline: 3px solid var(--cor-texto-branco);
   outline-offset: 2px;
@@ -67,7 +67,7 @@ body {
 }
 
 /* Classe para conteúdo apenas para leitores de tela */
-.sr-only {
+.apenas-leitor-tela {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -80,15 +80,27 @@ body {
 }
 
 /* Container principal da página */
-.page-wrapper {
+.container-pagina {
   min-height: 100vh;
   background-color: var(--cor-primaria);
-  background-image: radial-gradient(circle at 10% 20%, rgba(255, 186, 8, 0.03) 0%, transparent 20%),
-    radial-gradient(circle at 90% 80%, rgba(255, 186, 8, 0.03) 0%, transparent 20%),
-    radial-gradient(circle at 50% 50%, rgba(124, 216, 228, 0.02) 0%, transparent 30%);
+  background-image: radial-gradient(
+      circle at 10% 20%,
+      rgba(255, 186, 8, 0.03) 0%,
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(255, 186, 8, 0.03) 0%,
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(124, 216, 228, 0.02) 0%,
+      transparent 30%
+    );
 }
 
-.home-container {
+.container-inicio {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -103,11 +115,11 @@ body {
   /* Evita scroll desnecessário */
 }
 
-.home-container:focus {
+.container-inicio:focus {
   outline: none;
 }
 
-.home-content {
+.conteudo-inicio {
   background-color: var(--cor-primaria);
   text-align: center;
   border-radius: 15px;
@@ -133,7 +145,6 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -142,7 +153,7 @@ body {
 
 /* Redução de movimento para usuários sensíveis - WCAG */
 @media (prefers-reduced-motion: reduce) {
-  .home-content {
+  .conteudo-inicio {
     animation: fadeIn 0.3s ease-out;
   }
 
@@ -150,14 +161,13 @@ body {
     from {
       opacity: 0;
     }
-
     to {
       opacity: 1;
     }
   }
 
-  .home-logo:hover,
-  .home-button:hover {
+  .logo-inicio:hover,
+  .botao-inicio:hover {
     transform: none;
   }
 
@@ -166,12 +176,12 @@ body {
   }
 }
 
-.logo-container {
+.container-logo {
   margin-bottom: 5px;
   /* Reduzido de 10px */
 }
 
-.home-logo {
+.logo-inicio {
   width: 140px;
   /* Reduzido de 180px */
   height: 140px;
@@ -184,12 +194,12 @@ body {
   image-rendering: crisp-edges;
 }
 
-.home-logo:hover {
+.logo-inicio:hover {
   transform: scale(1.02);
   filter: drop-shadow(0 6px 12px var(--cor-sombra));
 }
 
-.welcome-content {
+.conteudo-boas-vindas {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -197,7 +207,7 @@ body {
   /* Reduzido de 20px */
 }
 
-.home-title {
+.titulo-inicio {
   font-size: clamp(1.5rem, 4vw, 2rem);
   margin: 0;
   color: var(--cor-destaque);
@@ -209,7 +219,7 @@ body {
   /* Melhor legibilidade */
 }
 
-.home-title::after {
+.titulo-inicio::after {
   content: "";
   position: absolute;
   bottom: -8px;
@@ -217,12 +227,22 @@ body {
   transform: translateX(-50%);
   width: 60%;
   height: 3px;
-  background: linear-gradient(to right, transparent, var(--cor-destaque), transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--cor-destaque),
+    transparent
+  );
   border-radius: 2px;
 }
 
-.description-box {
-  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria), var(--cor-primaria));
+.caixa-descricao {
+  background: linear-gradient(
+    135deg,
+    var(--cor-primaria),
+    var(--cor-secundaria),
+    var(--cor-primaria)
+  );
   padding: 16px;
   /* Reduzido de 20px */
   border-radius: var(--border-radius);
@@ -234,7 +254,7 @@ body {
 }
 
 /* Indicador visual sutil para região importante */
-.description-box::before {
+.caixa-descricao::before {
   content: "";
   position: absolute;
   left: 0;
@@ -245,14 +265,14 @@ body {
   border-radius: 2px 0 0 2px;
 }
 
-.home-description {
+.descricao-inicio {
   font-size: clamp(1rem, 3vw, 1.25rem);
   color: var(--cor-texto-claro);
   margin: 0;
   line-height: 1.6;
 }
 
-.home-button {
+.botao-inicio {
   background: linear-gradient(135deg, var(--cor-destaque), #e6a500);
   color: var(--cor-primaria);
   border: 2px solid transparent;
@@ -279,48 +299,53 @@ body {
 }
 
 /* Efeito de brilho no hover */
-.home-button::before {
+.botao-inicio::before {
   content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: var(--transicao-padrao);
 }
 
-.home-button:hover {
+.botao-inicio:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   background: linear-gradient(135deg, var(--cor-destaque-hover), #ffcc33);
 }
 
-.home-button:hover::before {
+.botao-inicio:hover::before {
   left: 100%;
 }
 
-.home-button:focus {
+.botao-inicio:focus {
   outline: 3px solid var(--cor-texto-claro);
   outline-offset: 3px;
   transform: translateY(-1px);
 }
 
-.home-button:active {
+.botao-inicio:active {
   transform: translateY(1px);
   box-shadow: var(--sombra-suave);
 }
 
-.button-icon {
+.icone-botao {
   flex-shrink: 0;
   transition: var(--transicao-padrao);
 }
 
-.home-button:hover .button-icon {
+.botao-inicio:hover .icone-botao {
   transform: scale(1.1);
 }
 
-.app-version {
+.versao-aplicativo {
   margin-top: 10px;
   /* Reduzido de 15px */
   font-size: 0.875rem;
@@ -332,18 +357,16 @@ body {
   gap: 8px;
 }
 
-.version-icon {
+.icone-versao {
   flex-shrink: 0;
   animation: pulse 3s ease-in-out infinite;
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 0.9;
   }
-
   50% {
     opacity: 0.6;
   }
@@ -369,7 +392,7 @@ a:focus {
     font-size: 15px;
   }
 
-  .home-container {
+  .container-inicio {
     padding: 12px;
     /* Menos padding para aproveitar mais espaço */
     min-height: 100vh;
@@ -377,24 +400,24 @@ a:focus {
     /* Remove limitação no mobile */
   }
 
-  .home-content {
+  .conteudo-inicio {
     padding: 25px 20px;
     max-width: 95%;
     /* Aproveita mais a largura */
     gap: 20px;
   }
 
-  .home-logo {
+  .logo-inicio {
     width: 120px;
     /* Menor no mobile para economizar espaço */
     height: 120px;
   }
 
-  .description-box {
+  .caixa-descricao {
     padding: 16px;
   }
 
-  .home-button {
+  .botao-inicio {
     padding: 14px 28px;
     font-size: 0.9rem;
   }
@@ -405,12 +428,12 @@ a:focus {
     font-size: 14px;
   }
 
-  .home-container {
+  .container-inicio {
     padding: 8px;
     /* Mínimo padding */
   }
 
-  .home-content {
+  .conteudo-inicio {
     padding: 20px 16px;
     /* Bem preenchido */
     gap: 16px;
@@ -420,28 +443,28 @@ a:focus {
     /* Margem mínima */
   }
 
-  .home-logo {
+  .logo-inicio {
     width: 100px;
     /* Compacto mas visível */
     height: 100px;
   }
 
-  .description-box {
+  .caixa-descricao {
     padding: 14px;
   }
 
-  .home-button {
+  .botao-inicio {
     padding: 12px 24px;
     font-size: 0.85rem;
     gap: 8px;
     width: 100%;
   }
 
-  .logo-container {
+  .container-logo {
     margin-bottom: 8px;
   }
 
-  .welcome-content {
+  .conteudo-boas-vindas {
     gap: 12px;
   }
 }
@@ -460,47 +483,47 @@ a:focus {
     --cor-texto-claro: #ffffff;
   }
 
-  .home-content {
+  .conteudo-inicio {
     border: 3px solid var(--cor-destaque);
   }
 
-  .home-button {
+  .botao-inicio {
     border: 2px solid var(--cor-primaria);
   }
 }
 
 /* Melhor contraste para impressão */
 @media print {
-  .home-container {
+  .container-inicio {
     background: white;
     color: black;
   }
 
-  .home-content {
+  .conteudo-inicio {
     box-shadow: none;
     border: 2px solid black;
     background: white;
   }
 
-  .home-title {
+  .titulo-inicio {
     color: black;
     text-shadow: none;
   }
 
-  .home-button {
+  .botao-inicio {
     background: white;
     color: black;
     border: 2px solid black;
   }
 
-  .home-description {
+  .descricao-inicio {
     color: black;
   }
 }
 
 /* Suporte para zoom até 200% - WCAG */
 @media (min-resolution: 2dppx) {
-  .home-logo {
+  .logo-inicio {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
   }
@@ -508,19 +531,19 @@ a:focus {
 
 /* Melhorias para telas grandes */
 @media (min-width: 1200px) {
-  .home-content {
+  .conteudo-inicio {
     max-width: 500px;
     padding: 50px 40px;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .home-content {
+  .conteudo-inicio {
     max-width: 400px;
     padding: 30px 25px;
   }
 
-  .home-logo {
+  .logo-inicio {
     width: 130px;
     height: 130px;
   }

@@ -1,5 +1,3 @@
-"use client"
-
 import "./Login.css"
 import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
@@ -15,77 +13,78 @@ const Login = () => {
     const [email, setEmail] = useState("")
     const [senha, setSenha] = useState("")
     const [erro, setErro] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [carregando, setCarregando] = useState(false)
     const [mostrarSenha, setMostrarSenha] = useState(false)
-    const navigate = useNavigate()
+    const navegar = useNavigate()
 
     // Refs para gerenciamento de foco
-    const emailRef = useRef(null)
-    const senhaRef = useRef(null)
-    const erroRef = useRef(null)
-    const mainRef = useRef(null)
+    const refEmail = useRef(null)
+    const refSenha = useRef(null)
+    const refErro = useRef(null)
+    const refPrincipal = useRef(null)
 
     // Redireciona se já estiver logado
     useEffect(() => {
         if (usuario) {
-            navigate("/logado", { replace: true })
+            navegar("/logado", { replace: true })
         }
-    }, [usuario, navigate])
+    }, [usuario, navegar])
 
     // Foca no primeiro erro quando aparece
     useEffect(() => {
-        if (erro && erroRef.current) {
-            erroRef.current.focus()
+        if (erro && refErro.current) {
+            refErro.current.focus()
         }
     }, [erro])
 
-    const skipToMain = (e) => {
-        e.preventDefault()
-        if (mainRef.current) {
-            mainRef.current.focus()
+    const pularParaPrincipal = (evento) => {
+        evento.preventDefault()
+        if (refPrincipal.current) {
+            refPrincipal.current.focus()
         }
     }
 
-    const handleLogin = async (e) => {
-        e.preventDefault()
+    const manipularLogin = async (evento) => {
+        evento.preventDefault()
 
         // Validação de campos vazios
         if (!email.trim()) {
             setErro("Por favor, digite seu e-mail.")
-            emailRef.current?.focus()
+            refEmail.current?.focus()
             return
         }
 
         if (!senha.trim()) {
             setErro("Por favor, digite sua senha.")
-            senhaRef.current?.focus()
+            refSenha.current?.focus()
             return
         }
 
-        if (loading) return
+        if (carregando) return
 
         setErro("")
-        setLoading(true)
+        setCarregando(true)
 
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email.trim(), senha.trim())
-            const user = userCredential.user
+            const credencialUsuario = await signInWithEmailAndPassword(auth, email.trim(), senha.trim())
+            const usuario = credencialUsuario.user
 
-            let usuarioNome = user.displayName || ""
+            let nomeUsuario = usuario.displayName || ""
 
-            const userDoc = await getDoc(doc(db, "usuarios", user.uid))
-            if (userDoc.exists()) {
-                usuarioNome = userDoc.data().nome
+            const documentoUsuario = await getDoc(doc(db, "usuarios", usuario.uid))
+
+            if (documentoUsuario.exists()) {
+                nomeUsuario = documentoUsuario.data().nome
             }
 
-            localStorage.setItem("usuarioNome", usuarioNome)
-            setUsuario({ nome: usuarioNome, email: user.email })
+            localStorage.setItem("usuarioNome", nomeUsuario)
+            setUsuario({ nome: nomeUsuario, email: usuario.email })
 
             // Anunciar sucesso para leitores de tela
-            const successMessage = `Login realizado com sucesso. Bem-vindo, ${usuarioNome || "usuário"}!`
-            announceToScreenReader(successMessage)
+            const mensagemSucesso = `Login realizado com sucesso. Bem-vindo, ${nomeUsuario || "usuário"}!`
+            anunciarParaLeitorTela(mensagemSucesso)
 
-            navigate("/logado", { replace: true })
+            navegar("/logado", { replace: true })
         } catch (error) {
             const mensagensErro = {
                 "auth/user-not-found": "Usuário não encontrado. Verifique o e-mail digitado.",
@@ -95,9 +94,10 @@ const Login = () => {
                 "auth/network-request-failed": "Erro de conexão. Verifique sua internet e tente novamente.",
                 "auth/invalid-credential": "Credenciais inválidas. Verifique seu e-mail e senha.",
             }
+
             setErro(mensagensErro[error.code] || "Erro inesperado ao fazer login. Tente novamente.")
         } finally {
-            setLoading(false)
+            setCarregando(false)
         }
     }
 
@@ -105,186 +105,187 @@ const Login = () => {
         setMostrarSenha(!mostrarSenha)
         // Manter foco no campo de senha após alternar visibilidade
         setTimeout(() => {
-            senhaRef.current?.focus()
+            refSenha.current?.focus()
         }, 0)
     }
 
     // Função para anunciar mensagens para leitores de tela
-    const announceToScreenReader = (message) => {
-        const announcement = document.createElement("div")
-        announcement.setAttribute("aria-live", "polite")
-        announcement.setAttribute("aria-atomic", "true")
-        announcement.className = "sr-only"
-        announcement.textContent = message
-        document.body.appendChild(announcement)
+    const anunciarParaLeitorTela = (mensagem) => {
+        const anuncio = document.createElement("div")
+        anuncio.setAttribute("aria-live", "polite")
+        anuncio.setAttribute("aria-atomic", "true")
+        anuncio.className = "apenas-leitor-tela"
+        anuncio.textContent = mensagem
+        document.body.appendChild(anuncio)
+
         setTimeout(() => {
-            document.body.removeChild(announcement)
+            document.body.removeChild(anuncio)
         }, 1000)
     }
 
     return (
         <>
-            {/* Skip Link */}
-            <a href="#main-content" className="skip-link" onClick={skipToMain}>
+            {/* Link para pular conteúdo */}
+            <a href="#conteudo-principal" className="link-pular" onClick={pularParaPrincipal}>
                 Pular para o formulário de login
             </a>
 
-            <div className="page-wrapper">
-                <header className="sr-only">
+            <div className="container-pagina">
+                <header className="apenas-leitor-tela">
                     <h1>Coffee Grader - Login do Sistema</h1>
                 </header>
 
                 <main
-                    id="main-content"
-                    className="login-container"
-                    ref={mainRef}
+                    id="conteudo-principal"
+                    className="container-login"
+                    ref={refPrincipal}
                     tabIndex="-1"
                     role="main"
                     aria-label="Página de login do Coffee Grader"
                 >
-                    <div className="login-box" role="region" aria-labelledby="login-title">
-                        <div className="login-header">
+                    <div className="caixa-login" role="region" aria-labelledby="titulo-login">
+                        <div className="cabecalho-login">
                             <img
                                 src={logo || "/placeholder.svg?height=120&width=120"}
                                 alt="Coffee Grader - Sistema de avaliação sensorial de cafés"
-                                className="login-logo"
+                                className="logo-login"
                                 width="120"
                                 height="120"
                             />
                         </div>
 
-                        <h1 id="login-title" className="login-title">
+                        <h1 id="titulo-login" className="titulo-login">
                             Faça seu Login
                         </h1>
 
-                        <form onSubmit={handleLogin} className="login-form" noValidate>
-                            <div className="input-group">
-                                <label htmlFor="email" className="input-label">
+                        <form onSubmit={manipularLogin} className="formulario-login" noValidate>
+                            <div className="grupo-input">
+                                <label htmlFor="email" className="rotulo-input">
                                     E-mail *
                                 </label>
-                                <div className="input-wrapper">
-                                    <Mail className="input-icon" aria-hidden="true" size={18} />
+                                <div className="wrapper-input">
+                                    <Mail className="icone-input" aria-hidden="true" size={18} />
                                     <input
-                                        ref={emailRef}
+                                        ref={refEmail}
                                         id="email"
                                         type="email"
                                         placeholder="Digite seu e-mail"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="login-input"
+                                        className="input-login"
                                         required
                                         autoComplete="email"
-                                        aria-describedby={erro && erro.includes("e-mail") ? "error-message" : undefined}
+                                        aria-describedby={erro && erro.includes("e-mail") ? "mensagem-erro" : undefined}
                                         aria-invalid={erro && erro.includes("e-mail") ? "true" : "false"}
                                     />
                                 </div>
                             </div>
 
-                            <div className="input-group">
-                                <label htmlFor="senha" className="input-label">
+                            <div className="grupo-input">
+                                <label htmlFor="senha" className="rotulo-input">
                                     Senha *
                                 </label>
-                                <div className="senha-container input-wrapper">
-                                    <Lock className="input-icon" aria-hidden="true" size={18} />
+                                <div className="container-senha wrapper-input">
+                                    <Lock className="icone-input" aria-hidden="true" size={18} />
                                     <input
-                                        ref={senhaRef}
+                                        ref={refSenha}
                                         id="senha"
                                         type={mostrarSenha ? "text" : "password"}
                                         placeholder="Digite sua senha"
                                         value={senha}
                                         onChange={(e) => setSenha(e.target.value)}
-                                        className="login-input"
+                                        className="input-login"
                                         required
                                         autoComplete="current-password"
-                                        aria-describedby="password-toggle-desc"
+                                        aria-describedby="descricao-alternar-senha"
                                         aria-invalid={erro && erro.includes("senha") ? "true" : "false"}
                                     />
                                     <button
                                         type="button"
-                                        className="toggle-senha-btn"
+                                        className="botao-alternar-senha"
                                         onClick={alternarVisibilidadeSenha}
                                         aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
-                                        aria-describedby="password-toggle-desc"
+                                        aria-describedby="descricao-alternar-senha"
                                     >
                                         {mostrarSenha ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
                                     </button>
                                 </div>
-                                <div id="password-toggle-desc" className="sr-only">
+                                <div id="descricao-alternar-senha" className="apenas-leitor-tela">
                                     Use este botão para alternar a visibilidade da senha
                                 </div>
                             </div>
 
                             {erro && (
                                 <div
-                                    ref={erroRef}
-                                    id="error-message"
-                                    className="erro-container"
+                                    ref={refErro}
+                                    id="mensagem-erro"
+                                    className="container-erro"
                                     role="alert"
                                     aria-live="assertive"
                                     tabIndex="-1"
                                 >
-                                    <AlertCircle className="erro-icon" aria-hidden="true" size={18} />
-                                    <p className="login-erro">{erro}</p>
+                                    <AlertCircle className="icone-erro" aria-hidden="true" size={18} />
+                                    <p className="erro-login">{erro}</p>
                                 </div>
                             )}
 
-                            <div className="buttons-container">
+                            <div className="container-botoes">
                                 <button
-                                    className={`login-button ${loading ? "login-button-loading" : ""}`}
+                                    className={`botao-login ${carregando ? "botao-login-carregando" : ""}`}
                                     type="submit"
-                                    disabled={loading}
-                                    aria-describedby="login-button-desc"
+                                    disabled={carregando}
+                                    aria-describedby="descricao-botao-login"
                                 >
-                                    {loading ? (
+                                    {carregando ? (
                                         <>
-                                            <Loader2 className="button-icon loading-icon" aria-hidden="true" size={18} />
+                                            <Loader2 className="icone-botao icone-carregando" aria-hidden="true" size={18} />
                                             <span>Entrando...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <Lock className="button-icon" aria-hidden="true" size={18} />
+                                            <Lock className="icone-botao" aria-hidden="true" size={18} />
                                             <span>Fazer Login</span>
                                         </>
                                     )}
                                 </button>
 
-                                <div id="login-button-desc" className="sr-only">
-                                    {loading ? "Processando login, aguarde..." : "Clique para fazer login no sistema"}
+                                <div id="descricao-botao-login" className="apenas-leitor-tela">
+                                    {carregando ? "Processando login, aguarde..." : "Clique para fazer login no sistema"}
                                 </div>
 
                                 <button
-                                    className="register-button"
-                                    onClick={() => navigate("/cadastro")}
+                                    className="botao-cadastro"
+                                    onClick={() => navegar("/cadastro")}
                                     type="button"
-                                    aria-describedby="register-button-desc"
+                                    aria-describedby="descricao-botao-cadastro"
                                 >
-                                    <UserPlus className="button-icon" aria-hidden="true" size={18} />
+                                    <UserPlus className="icone-botao" aria-hidden="true" size={18} />
                                     <span>Criar Conta</span>
                                 </button>
 
-                                <div id="register-button-desc" className="sr-only">
+                                <div id="descricao-botao-cadastro" className="apenas-leitor-tela">
                                     Clique para ir para a página de cadastro de nova conta
                                 </div>
                             </div>
 
-                            <div className="forgot-password">
+                            <div className="esqueci-senha">
                                 <button
-                                    className="forgot-password-link"
-                                    onClick={() => navigate("/esquecisenha")}
+                                    className="link-esqueci-senha"
+                                    onClick={() => navegar("/esquecisenha")}
                                     type="button"
-                                    aria-describedby="forgot-password-desc"
+                                    aria-describedby="descricao-esqueci-senha"
                                 >
                                     Esqueci minha senha
                                 </button>
-                                <div id="forgot-password-desc" className="sr-only">
+                                <div id="descricao-esqueci-senha" className="apenas-leitor-tela">
                                     Clique para ir para a página de recuperação de senha
                                 </div>
                             </div>
                         </form>
 
-                        <footer className="app-version" role="contentinfo">
+                        <footer className="versao-aplicativo" role="contentinfo">
                             <p>
-                                <Coffee className="version-icon" aria-hidden="true" size={14} />
+                                <Coffee className="icone-versao" aria-hidden="true" size={14} />
                                 Coffee Grader versão 1.0
                             </p>
                         </footer>

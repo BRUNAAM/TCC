@@ -32,60 +32,61 @@ const Logado = () => {
         fornecedores,
         avaliacoesCOB,
         avaliacoesSCAA,
-        loading: dataLoading,
+        loading: carregandoDados,
         lastSync,
         refreshData,
         isOnline,
     } = useData()
-    const navigate = useNavigate()
-    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const navegar = useNavigate()
+    const [mostrarConfirmacaoLogout, setMostrarConfirmacaoLogout] = useState(false)
+    const [carregando, setCarregando] = useState(false)
 
     // Refs para gerenciamento de foco
-    const mainRef = useRef(null)
-    const logoutConfirmRef = useRef(null)
-    const welcomeRef = useRef(null)
+    const refPrincipal = useRef(null)
+    const refConfirmacaoLogout = useRef(null)
+    const refBoasVindas = useRef(null)
 
     // Estado para controlar os atalhos de teclado
-    const [shortcutsEnabled] = useState(true)
+    const [atalhosTeclado] = useState(true)
 
-    const announceToScreenReader = useCallback((message) => {
-        const announcement = document.createElement("div")
-        announcement.setAttribute("aria-live", "polite")
-        announcement.setAttribute("aria-atomic", "true")
-        announcement.className = "sr-only"
-        announcement.textContent = message
-        document.body.appendChild(announcement)
+    const anunciarParaLeitorTela = useCallback((mensagem) => {
+        const anuncio = document.createElement("div")
+        anuncio.setAttribute("aria-live", "polite")
+        anuncio.setAttribute("aria-atomic", "true")
+        anuncio.className = "apenas-leitor-tela"
+        anuncio.textContent = mensagem
+        document.body.appendChild(anuncio)
+
         setTimeout(() => {
-            document.body.removeChild(announcement)
+            document.body.removeChild(anuncio)
         }, 1000)
     }, [])
 
-    const handleLogout = useCallback(async () => {
-        setLoading(true)
+    const manipularLogout = useCallback(async () => {
+        setCarregando(true)
         try {
             await signOut(auth)
             setUsuario(null)
             localStorage.removeItem("usuarioNome")
 
             // Limpa dados específicos do usuário
-            const keys = Object.keys(localStorage)
-            keys.forEach((key) => {
-                if (key.startsWith("coffeeGraderData_")) {
-                    localStorage.removeItem(key)
+            const chaves = Object.keys(localStorage)
+            chaves.forEach((chave) => {
+                if (chave.startsWith("coffeeGraderData_")) {
+                    localStorage.removeItem(chave)
                 }
             })
 
-            announceToScreenReader("Logout realizado com sucesso. Redirecionando para a página de login.")
-            navigate("/login", { replace: true })
+            anunciarParaLeitorTela("Logout realizado com sucesso. Redirecionando para a página de login.")
+            navegar("/login", { replace: true })
         } catch (error) {
             console.error("Erro ao sair:", error)
-            announceToScreenReader("Erro ao fazer logout. Tente novamente.")
+            anunciarParaLeitorTela("Erro ao fazer logout. Tente novamente.")
         } finally {
-            setLoading(false)
-            setShowLogoutConfirm(false)
+            setCarregando(false)
+            setMostrarConfirmacaoLogout(false)
         }
-    }, [setUsuario, navigate, announceToScreenReader])
+    }, [setUsuario, navegar, anunciarParaLeitorTela])
 
     // Proteção extra: redireciona se não estiver logado
     useEffect(() => {
@@ -94,35 +95,33 @@ const Logado = () => {
             if (nomeSalvo) {
                 setUsuario({ nome: nomeSalvo })
             } else {
-                navigate("/login", { replace: true })
+                navegar("/login", { replace: true })
             }
         }
-    }, [usuario, navigate, setUsuario])
+    }, [usuario, navegar, setUsuario])
 
     // Proteção contra navegação acidental do browser
     useEffect(() => {
-        const handleBeforeUnload = (e) => {
+        const manipularAntesDescarregar = (e) => {
             e.preventDefault()
             e.returnValue = "Tem certeza que deseja sair do Coffee Grader? Suas alterações não salvas serão perdidas."
             return "Tem certeza que deseja sair do Coffee Grader?"
         }
 
-        const handlePopState = (e) => {
+        const manipularEstadoPopulacao = (e) => {
             e.preventDefault()
-
             // Força o usuário a permanecer na página atual
             window.history.pushState(null, "", window.location.pathname)
-
             // Mostra confirmação personalizada
-            const confirmExit = window.confirm(
+            const confirmarSaida = window.confirm(
                 "Você está tentando sair do Coffee Grader.\n\n" +
                 'Para sair com segurança, use o botão "Sair do Sistema" na parte inferior da tela.\n\n' +
                 "Deseja realmente sair agora?",
             )
 
-            if (confirmExit) {
+            if (confirmarSaida) {
                 // Se confirmar, faz logout adequado
-                handleLogout()
+                manipularLogout()
             }
         }
 
@@ -130,32 +129,32 @@ const Logado = () => {
         window.history.pushState(null, "", window.location.pathname)
 
         // Adiciona listeners
-        window.addEventListener("beforeunload", handleBeforeUnload)
-        window.addEventListener("popstate", handlePopState)
+        window.addEventListener("beforeunload", manipularAntesDescarregar)
+        window.addEventListener("popstate", manipularEstadoPopulacao)
 
         // Cleanup
         return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload)
-            window.removeEventListener("popstate", handlePopState)
+            window.removeEventListener("beforeunload", manipularAntesDescarregar)
+            window.removeEventListener("popstate", manipularEstadoPopulacao)
         }
-    }, [handleLogout])
+    }, [manipularLogout])
 
     // Foca na mensagem de boas-vindas quando carrega
     useEffect(() => {
-        if (usuario && welcomeRef.current) {
-            welcomeRef.current.focus()
+        if (usuario && refBoasVindas.current) {
+            refBoasVindas.current.focus()
         }
     }, [usuario])
 
-    const cancelLogout = useCallback(() => {
-        setShowLogoutConfirm(false)
+    const cancelarLogout = useCallback(() => {
+        setMostrarConfirmacaoLogout(false)
     }, [])
 
     // Adicionar listeners para atalhos de teclado
     useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (shortcutsEnabled && e.altKey) {
-                const shortcutMap = {
+        const manipularTeclaPressionada = (e) => {
+            if (atalhosTeclado && e.altKey) {
+                const mapaAtalhos = {
                     1: "/cob",
                     2: "/scaa",
                     3: "/fornecedores",
@@ -163,34 +162,42 @@ const Logado = () => {
                     5: "/historico-scaa",
                 }
 
-                if (shortcutMap[e.key]) {
+                if (mapaAtalhos[e.key]) {
                     e.preventDefault()
-                    navigate(shortcutMap[e.key])
+                    navegar(mapaAtalhos[e.key])
                 }
             }
 
             // Esc para cancelar logout
-            if (e.key === "Escape" && showLogoutConfirm) {
-                cancelLogout()
+            if (e.key === "Escape" && mostrarConfirmacaoLogout) {
+                cancelarLogout()
             }
 
             // F5 ou Ctrl+R para atualizar dados
-            if ((e.key === "F5" || (e.ctrlKey && e.key === "r")) && !dataLoading) {
+            if ((e.key === "F5" || (e.ctrlKey && e.key === "r")) && !carregandoDados) {
                 e.preventDefault()
                 refreshData()
-                announceToScreenReader("Dados atualizados do servidor")
+                anunciarParaLeitorTela("Dados atualizados do servidor")
             }
         }
 
-        document.addEventListener("keydown", handleKeyDown)
-        return () => document.removeEventListener("keydown", handleKeyDown)
-    }, [navigate, showLogoutConfirm, shortcutsEnabled, dataLoading, refreshData, announceToScreenReader, cancelLogout])
+        document.addEventListener("keydown", manipularTeclaPressionada)
+        return () => document.removeEventListener("keydown", manipularTeclaPressionada)
+    }, [
+        navegar,
+        mostrarConfirmacaoLogout,
+        atalhosTeclado,
+        carregandoDados,
+        refreshData,
+        anunciarParaLeitorTela,
+        cancelarLogout,
+    ])
 
-    const confirmLogout = useCallback(() => {
-        setShowLogoutConfirm(true)
+    const confirmarLogout = useCallback(() => {
+        setMostrarConfirmacaoLogout(true)
         setTimeout(() => {
-            if (logoutConfirmRef.current) {
-                logoutConfirmRef.current.focus()
+            if (refConfirmacaoLogout.current) {
+                refConfirmacaoLogout.current.focus()
             }
         }, 100)
     }, [])
@@ -198,106 +205,106 @@ const Logado = () => {
     // Ainda carregando contexto
     if (!usuario) {
         return (
-            <div className="loading-container" role="status" aria-live="polite">
-                <Loader2 className="loading-spinner" aria-hidden="true" size={40} />
+            <div className="container-carregamento" role="status" aria-live="polite">
+                <Loader2 className="spinner-carregamento" aria-hidden="true" size={40} />
                 <p>Carregando painel principal...</p>
-                <span className="sr-only">Aguarde enquanto carregamos suas informações</span>
+                <span className="apenas-leitor-tela">Aguarde enquanto carregamos suas informações</span>
             </div>
         )
     }
 
-    const navigationItems = [
+    const itensNavegacao = [
         {
-            id: "cob-evaluation",
+            id: "avaliacao-cob",
             path: "/cob",
             icon: Coffee,
             title: "Avaliação COB",
             description: "Iniciar nova avaliação pelo método COB (Cup of Excellence)",
             count: avaliacoesCOB.length,
-            category: "evaluation",
+            category: "avaliacao",
         },
         {
-            id: "scaa-evaluation",
+            id: "avaliacao-scaa",
             path: "/scaa",
             icon: Award,
             title: "Avaliação SCAA",
             description: "Iniciar nova avaliação pelo método SCAA (Specialty Coffee Association)",
             count: avaliacoesSCAA.length,
-            category: "evaluation",
+            category: "avaliacao",
         },
         {
-            id: "suppliers",
+            id: "fornecedores",
             path: "/fornecedores",
             icon: Users,
             title: "Fornecedores",
             description: "Gerenciar cadastro de produtores e fornecedores de café",
             count: fornecedores.length,
-            category: "management",
+            category: "gerenciamento",
         },
         {
-            id: "cob-history",
+            id: "historico-cob",
             path: "/historico-cob",
             icon: ClipboardList,
             title: "Histórico COB",
             description: "Visualizar histórico de avaliações COB realizadas",
             count: avaliacoesCOB.length,
-            category: "management",
+            category: "gerenciamento",
         },
         {
-            id: "scaa-history",
+            id: "historico-scaa",
             path: "/historico-scaa",
             icon: BarChart3,
             title: "Histórico SCAA",
             description: "Visualizar histórico de avaliações SCAA realizadas",
             count: avaliacoesSCAA.length,
-            category: "management",
+            category: "gerenciamento",
         },
     ]
 
-    const evaluationItems = navigationItems.filter((item) => item.category === "evaluation")
-    const managementItems = navigationItems.filter((item) => item.category === "management")
+    const itensAvaliacao = itensNavegacao.filter((item) => item.category === "avaliacao")
+    const itensGerenciamento = itensNavegacao.filter((item) => item.category === "gerenciamento")
 
     return (
         <>
-            <div className="page-wrapper">
-                <header className="page-header" role="banner">
-                    <div className="header-content">
-                        <div className="header-left">
+            <div className="container-pagina">
+                <header className="cabecalho-pagina" role="banner">
+                    <div className="conteudo-cabecalho">
+                        <div className="cabecalho-esquerda">
                             <img
                                 src={logo || "/placeholder.svg?height=50&width=50"}
                                 alt="Coffee Grader"
-                                className="header-logo"
+                                className="logo-cabecalho"
                                 width="50"
                                 height="50"
                             />
-                            <div className="header-info">
-                                <h1 className="sr-only">Coffee Grader - Painel Principal</h1>
-                                <div className="user-info">
-                                    <User className="user-icon" aria-hidden="true" size={16} />
-                                    <span className="user-name">{usuario.nome}</span>
+                            <div className="info-cabecalho">
+                                <h1 className="apenas-leitor-tela">Coffee Grader - Painel Principal</h1>
+                                <div className="info-usuario">
+                                    <User className="icone-usuario" aria-hidden="true" size={16} />
+                                    <span className="nome-usuario">{usuario.nome}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="header-right">
+                        <div className="cabecalho-direita">
                             {/* Status de sincronização e conexão */}
-                            <div className="sync-status">
-                                <div className="connection-status">
+                            <div className="status-sincronizacao">
+                                <div className="status-conexao">
                                     {isOnline ? (
-                                        <Wifi className="connection-icon online" size={14} title="Online" />
+                                        <Wifi className="icone-conexao online" size={14} title="Online" />
                                     ) : (
-                                        <WifiOff className="connection-icon offline" size={14} title="Offline" />
+                                        <WifiOff className="icone-conexao offline" size={14} title="Offline" />
                                     )}
                                 </div>
 
-                                {dataLoading ? (
-                                    <div className="sync-loading">
-                                        <Loader2 className="sync-icon" size={14} />
+                                {carregandoDados ? (
+                                    <div className="carregamento-sincronizacao">
+                                        <Loader2 className="icone-sincronizacao" size={14} />
                                         <span>Sincronizando...</span>
                                     </div>
                                 ) : (
-                                    <div className="sync-success">
-                                        <Database className="sync-icon" size={14} />
+                                    <div className="sucesso-sincronizacao">
+                                        <Database className="icone-sincronizacao" size={14} />
                                         <span>
                                             {lastSync
                                                 ? `${new Date(lastSync).toLocaleTimeString()}`
@@ -307,9 +314,9 @@ const Logado = () => {
                                         </span>
                                         <button
                                             onClick={refreshData}
-                                            className="refresh-button"
+                                            className="botao-atualizar"
                                             title="Atualizar dados (F5)"
-                                            disabled={dataLoading || !isOnline}
+                                            disabled={carregandoDados || !isOnline}
                                         >
                                             <RefreshCw size={12} />
                                         </button>
@@ -321,57 +328,57 @@ const Logado = () => {
                 </header>
 
                 <main
-                    id="main-content"
-                    className="logado-container"
-                    ref={mainRef}
+                    id="conteudo-principal"
+                    className="container-logado"
+                    ref={refPrincipal}
                     tabIndex="-1"
                     role="main"
                     aria-label="Painel principal do Coffee Grader"
                 >
-                    <div className="logado-box">
-                        <div className="welcome-section" role="region" aria-labelledby="welcome-title">
-                            <h2 id="welcome-title" className="welcome-title" ref={welcomeRef} tabIndex="-1">
+                    <div className="caixa-logado">
+                        <div className="secao-boas-vindas" role="region" aria-labelledby="titulo-boas-vindas">
+                            <h2 id="titulo-boas-vindas" className="titulo-boas-vindas" ref={refBoasVindas} tabIndex="-1">
                                 Bem-vindo(a), {usuario.nome}!
                             </h2>
-                            <p className="welcome-subtitle">
+                            <p className="subtitulo-boas-vindas">
                                 Escolha uma das opções abaixo para começar suas avaliações
-                                {dataLoading && <span className="loading-text"> (Carregando dados...)</span>}
-                                {!isOnline && <span className="offline-text"> (Modo offline)</span>}
+                                {carregandoDados && <span className="texto-carregamento"> (Carregando dados...)</span>}
+                                {!isOnline && <span className="texto-offline"> (Modo offline)</span>}
                             </p>
                         </div>
 
                         <nav
-                            id="main-navigation"
-                            className="navigation-container"
+                            id="navegacao-principal"
+                            className="container-navegacao"
                             role="navigation"
                             aria-label="Menu principal de navegação"
                             tabIndex="-1"
                         >
                             {/* Seção de Avaliações */}
-                            <div className="nav-section">
-                                <h3 className="nav-section-title">
-                                    <TrendingUp className="section-icon" aria-hidden="true" size={18} />
+                            <div className="secao-navegacao">
+                                <h3 className="titulo-secao-navegacao">
+                                    <TrendingUp className="icone-secao" aria-hidden="true" size={18} />
                                     Avaliações Sensoriais
                                 </h3>
-                                <div className="nav-cards-grid">
-                                    {evaluationItems.map((item) => {
-                                        const IconComponent = item.icon
+                                <div className="grade-cartoes-navegacao">
+                                    {itensAvaliacao.map((item) => {
+                                        const ComponenteIcone = item.icon
                                         return (
                                             <button
                                                 key={item.id}
-                                                onClick={() => navigate(item.path)}
-                                                className="nav-card nav-card-primary"
+                                                onClick={() => navegar(item.path)}
+                                                className="cartao-navegacao cartao-navegacao-primario"
                                                 aria-describedby={`${item.id}-desc`}
                                                 title={item.description}
                                             >
-                                                <div className="card-icon-container">
-                                                    <IconComponent className="card-icon" aria-hidden="true" size={24} />
+                                                <div className="container-icone-cartao">
+                                                    <ComponenteIcone className="icone-cartao" aria-hidden="true" size={24} />
                                                 </div>
-                                                <div className="card-content">
-                                                    <h4 className="card-title">{item.title}</h4>
-                                                    <p className="card-description">{item.description}</p>
-                                                    <div className="card-footer">
-                                                        <span className="card-count">{item.count} registros</span>
+                                                <div className="conteudo-cartao">
+                                                    <h4 className="titulo-cartao">{item.title}</h4>
+                                                    <p className="descricao-cartao">{item.description}</p>
+                                                    <div className="rodape-cartao">
+                                                        <span className="contador-cartao">{item.count} registros</span>
                                                     </div>
                                                 </div>
                                             </button>
@@ -381,30 +388,30 @@ const Logado = () => {
                             </div>
 
                             {/* Seção de Gerenciamento */}
-                            <div className="nav-section">
-                                <h3 className="nav-section-title">
-                                    <Settings className="section-icon" aria-hidden="true" size={18} />
+                            <div className="secao-navegacao">
+                                <h3 className="titulo-secao-navegacao">
+                                    <Settings className="icone-secao" aria-hidden="true" size={18} />
                                     Gerenciamento e Histórico
                                 </h3>
-                                <div className="nav-cards-grid">
-                                    {managementItems.map((item) => {
-                                        const IconComponent = item.icon
+                                <div className="grade-cartoes-navegacao">
+                                    {itensGerenciamento.map((item) => {
+                                        const ComponenteIcone = item.icon
                                         return (
                                             <button
                                                 key={item.id}
-                                                onClick={() => navigate(item.path)}
-                                                className="nav-card nav-card-secondary"
+                                                onClick={() => navegar(item.path)}
+                                                className="cartao-navegacao cartao-navegacao-secundario"
                                                 aria-describedby={`${item.id}-desc`}
                                                 title={item.description}
                                             >
-                                                <div className="card-icon-container">
-                                                    <IconComponent className="card-icon" aria-hidden="true" size={24} />
+                                                <div className="container-icone-cartao">
+                                                    <ComponenteIcone className="icone-cartao" aria-hidden="true" size={24} />
                                                 </div>
-                                                <div className="card-content">
-                                                    <h4 className="card-title">{item.title}</h4>
-                                                    <p className="card-description">{item.description}</p>
-                                                    <div className="card-footer">
-                                                        <span className="card-count">{item.count} registros</span>
+                                                <div className="conteudo-cartao">
+                                                    <h4 className="titulo-cartao">{item.title}</h4>
+                                                    <p className="descricao-cartao">{item.description}</p>
+                                                    <div className="rodape-cartao">
+                                                        <span className="contador-cartao">{item.count} registros</span>
                                                     </div>
                                                 </div>
                                             </button>
@@ -414,44 +421,44 @@ const Logado = () => {
                             </div>
 
                             {/* Descrições ocultas para leitores de tela */}
-                            {navigationItems.map((item) => (
-                                <div key={`${item.id}-desc`} id={`${item.id}-desc`} className="sr-only">
+                            {itensNavegacao.map((item) => (
+                                <div key={`${item.id}-desc`} id={`${item.id}-desc`} className="apenas-leitor-tela">
                                     {item.description}
                                 </div>
                             ))}
                         </nav>
 
-                        <div className="bottom-section">
-                            <div className="help-section" role="region" aria-label="Ajuda e informações">
-                                <button className="help-button" title="Ajuda e atalhos de teclado" aria-describedby="help-desc">
-                                    <HelpCircle className="help-icon" aria-hidden="true" size={16} />
+                        <div className="secao-inferior">
+                            <div className="secao-ajuda" role="region" aria-label="Ajuda e informações">
+                                <button className="botao-ajuda" title="Ajuda e atalhos de teclado" aria-describedby="desc-ajuda">
+                                    <HelpCircle className="icone-ajuda" aria-hidden="true" size={16} />
                                     <span>Atalhos: Alt+1 a Alt+5 para navegação rápida | F5 para atualizar dados</span>
                                 </button>
-                                <div id="help-desc" className="sr-only">
+                                <div id="desc-ajuda" className="apenas-leitor-tela">
                                     Use Alt + número (1 a 5) para navegar rapidamente entre as seções. Use F5 para atualizar os dados do
                                     servidor.
                                 </div>
                             </div>
 
-                            <div className="logout-section">
+                            <div className="secao-logout">
                                 <button
-                                    className="logout-button"
-                                    onClick={confirmLogout}
-                                    aria-describedby="logout-desc"
-                                    disabled={loading}
+                                    className="botao-logout"
+                                    onClick={confirmarLogout}
+                                    aria-describedby="desc-logout"
+                                    disabled={carregando}
                                 >
-                                    <LogOut className="logout-icon" aria-hidden="true" size={18} />
-                                    <span>{loading ? "Saindo..." : "Sair do Sistema"}</span>
+                                    <LogOut className="icone-logout" aria-hidden="true" size={18} />
+                                    <span>{carregando ? "Saindo..." : "Sair do Sistema"}</span>
                                 </button>
-                                <div id="logout-desc" className="sr-only">
+                                <div id="desc-logout" className="apenas-leitor-tela">
                                     Clique para sair do sistema e voltar à página de login
                                 </div>
                             </div>
                         </div>
 
-                        <footer className="app-version" role="contentinfo">
+                        <footer className="versao-aplicativo" role="contentinfo">
                             <p>
-                                <Coffee className="version-icon" aria-hidden="true" size={14} />
+                                <Coffee className="icone-versao" aria-hidden="true" size={14} />
                                 Coffee Grader v1.0 | {fornecedores.length} fornecedores, {avaliacoesCOB.length + avaliacoesSCAA.length}{" "}
                                 avaliações
                                 {!isOnline && " (offline)"}
@@ -461,42 +468,43 @@ const Logado = () => {
                 </main>
 
                 {/* Modal de confirmação de logout */}
-                {showLogoutConfirm && (
+                {mostrarConfirmacaoLogout && (
                     <div
-                        className="logout-modal-overlay"
+                        className="sobreposicao-modal-logout"
                         role="dialog"
                         aria-modal="true"
-                        aria-labelledby="logout-modal-title"
-                        aria-describedby="logout-modal-desc"
+                        aria-labelledby="titulo-modal-logout"
+                        aria-describedby="desc-modal-logout"
                     >
-                        <div className="logout-modal">
-                            <h3 id="logout-modal-title" className="modal-title">
+                        <div className="modal-logout">
+                            <h3 id="titulo-modal-logout" className="titulo-modal">
                                 Confirmar Saída
                             </h3>
-                            <p id="logout-modal-desc" className="modal-description">
+                            <p id="desc-modal-logout" className="descricao-modal">
                                 Tem certeza de que deseja sair do sistema? Você precisará fazer login novamente para acessar suas
                                 avaliações.
                             </p>
-                            <div className="modal-buttons">
+
+                            <div className="botoes-modal">
                                 <button
-                                    ref={logoutConfirmRef}
-                                    className="modal-button modal-button-danger"
-                                    onClick={handleLogout}
-                                    disabled={loading}
+                                    ref={refConfirmacaoLogout}
+                                    className="botao-modal botao-modal-perigo"
+                                    onClick={manipularLogout}
+                                    disabled={carregando}
                                 >
-                                    {loading ? (
+                                    {carregando ? (
                                         <>
-                                            <Loader2 className="button-icon loading-icon" aria-hidden="true" size={16} />
+                                            <Loader2 className="icone-botao icone-carregando" aria-hidden="true" size={16} />
                                             <span>Saindo...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <LogOut className="button-icon" aria-hidden="true" size={16} />
+                                            <LogOut className="icone-botao" aria-hidden="true" size={16} />
                                             <span>Sim, Sair</span>
                                         </>
                                     )}
                                 </button>
-                                <button className="modal-button modal-button-secondary" onClick={cancelLogout} disabled={loading}>
+                                <button className="botao-modal botao-modal-secundario" onClick={cancelarLogout} disabled={carregando}>
                                     Cancelar
                                 </button>
                             </div>

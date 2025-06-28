@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react"
 import "./Fornecedores.css"
-import { useData } from "../context/DataContext" // ✅ CORRIGIDO - removido import duplicado
-import { db } from "../config/firebase" // ✅ ADICIONADO - import do Firebase
-import { collection, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore" // ✅ ADICIONADO
-import { getAuth } from "firebase/auth" // ✅ ADICIONADO
-import { useNavigate } from "react-router-dom" // ✅ ADICIONADO
+import { useData } from "../context/DataContext"
+import { db } from "../config/firebase"
+import { collection, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore"
+import { getAuth } from "firebase/auth"
+import { useNavigate } from "react-router-dom"
 
 function Fornecedores() {
     const [nome, setNome] = useState("")
@@ -16,10 +16,10 @@ function Fornecedores() {
     const [cep, setCep] = useState("")
     const [telefone, setTelefone] = useState("")
     const [idParaEditar, setIdParaEditar] = useState(null)
-    const [salvando, setSalvando] = useState(false) // ✅ ADICIONADO
+    const [salvando, setSalvando] = useState(false)
 
     const { fornecedores, loading } = useData()
-    const navigate = useNavigate() // ✅ ADICIONADO
+    const navigate = useNavigate()
 
     useEffect(() => {
         // Bloquear voltar
@@ -106,6 +106,7 @@ function Fornecedores() {
         } catch (error) {
             console.error("Erro ao salvar fornecedor:", error)
             alert("Erro ao salvar fornecedor. Tente novamente mais tarde.")
+            setSalvando(false)
         }
     }
 
@@ -126,7 +127,6 @@ function Fornecedores() {
         const confirmar = window.confirm(`Tem certeza que deseja excluir o fornecedor "${fornecedor.nome}"?`)
 
         if (confirmar) {
-            // código de exclusão aqui
             const authInstance = getAuth()
             const user = authInstance.currentUser
 
@@ -178,10 +178,12 @@ function Fornecedores() {
                         required
                     />
                 </div>
+
                 <div className="form-group">
                     <label htmlFor="rua">Rua:</label>
                     <input type="text" id="rua" value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Digite a rua" />
                 </div>
+
                 <div className="form-group">
                     <label htmlFor="bairro">Bairro:</label>
                     <input
@@ -192,6 +194,7 @@ function Fornecedores() {
                         placeholder="Digite o bairro"
                     />
                 </div>
+
                 <div className="form-group">
                     <label htmlFor="cidade">Cidade:</label>
                     <input
@@ -202,10 +205,12 @@ function Fornecedores() {
                         placeholder="Digite a cidade"
                     />
                 </div>
+
                 <div className="form-group">
                     <label htmlFor="cep">CEP:</label>
                     <input type="text" id="cep" value={cep} onChange={(e) => setCep(e.target.value)} placeholder="Digite o CEP" />
                 </div>
+
                 <div className="form-group">
                     <label htmlFor="telefone">Telefone:</label>
                     <input
@@ -230,6 +235,7 @@ function Fornecedores() {
             </form>
 
             <h2>Lista de Fornecedores ({fornecedores.length})</h2>
+
             <div className="tabela-container">
                 <table className="tabela-fornecedores">
                     <thead>
@@ -246,13 +252,13 @@ function Fornecedores() {
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan="7" style={{ textAlign: "center", padding: "20px" }}>
+                                <td colSpan="7" className="loading-message">
                                     🔄 Carregando fornecedores...
                                 </td>
                             </tr>
                         ) : fornecedores.length === 0 ? (
                             <tr>
-                                <td colSpan="7" style={{ textAlign: "center", padding: "20px" }}>
+                                <td colSpan="7" className="empty-message">
                                     📝 Nenhum fornecedor cadastrado ainda
                                 </td>
                             </tr>

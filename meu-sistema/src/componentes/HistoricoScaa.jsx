@@ -13,32 +13,26 @@ import { useData } from "../context/DataContext"
 
 const HistoricoScaa = () => {
     // ✅ USANDO DADOS DO CONTEXTO
-    const { avaliacoesSCAA, loading: dataLoading, refreshData } = useData()
-
+    const { avaliacoesScaa = [], loading: dataLoading, refreshData } = useData()
     const [selectedAvaliacoes, setSelectedAvaliacoes] = useState({})
     const [hasSelected, setHasSelected] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const navigate = useNavigate()
 
-    // ✅ REMOVIDO: fetchAvaliacoes - agora usa dados do contexto
-    // ✅ REMOVIDO: estados loading, error, avaliacoes - agora vem do contexto
-
     useEffect(() => {
         // Limpar seleções quando os dados mudarem
         setSelectedAvaliacoes({})
         setHasSelected(false)
-    }, [avaliacoesSCAA])
+    }, [avaliacoesScaa])
 
     // Função para manipular a seleção da caixa de seleção
     const handleSelectAvaliacao = (id) => {
         const newSelected = { ...selectedAvaliacoes }
-
         if (newSelected[id]) {
             delete newSelected[id]
         } else {
             newSelected[id] = true
         }
-
         setSelectedAvaliacoes(newSelected)
         setHasSelected(Object.keys(newSelected).length > 0)
     }
@@ -47,7 +41,7 @@ const HistoricoScaa = () => {
     const handleSelectAll = (event) => {
         if (event.target.checked) {
             const newSelected = {}
-            avaliacoesSCAA.forEach((avaliacao) => {
+            avaliacoesScaa.forEach((avaliacao) => {
                 newSelected[avaliacao.id] = true
             })
             setSelectedAvaliacoes(newSelected)
@@ -173,19 +167,16 @@ const HistoricoScaa = () => {
 
             // Encontrar a avaliação nos dados do contexto
             let avaliacaoData
-            const avaliacaoEncontrada = avaliacoesSCAA.find((a) => a.id === id)
-
+            const avaliacaoEncontrada = avaliacoesScaa.find((a) => a.id === id)
             if (!avaliacaoEncontrada) {
                 console.error("Avaliação não encontrada no contexto")
                 // Buscar no Firestore como fallback
                 const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
                 const docSnap = await getDoc(docRef)
-
                 if (!docSnap.exists()) {
                     alert("Documento não encontrado.")
                     return
                 }
-
                 avaliacaoData = { id: docSnap.id, ...docSnap.data() }
             } else {
                 avaliacaoData = avaliacaoEncontrada
@@ -240,8 +231,7 @@ const HistoricoScaa = () => {
                     },
                 })
 
-                const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
-
+                // Informações gerais
                 autoTable(
                     docPDF,
                     autoTableOptions({
@@ -249,96 +239,83 @@ const HistoricoScaa = () => {
                         body: [
                             ["Avaliador", avaliacaoData.avaliador || "—"],
                             ["Data", avaliacaoData.data ? new Date(avaliacaoData.data).toLocaleDateString("pt-BR") : "—"],
-                            ["Fornecedor", avaliacaoData.fornecedor || avaliacaoData.fornecedorSelecionado || "—"],
+                            ["Fornecedor", avaliacaoData.fornecedorSelecionado || "—"],
                             ["Nº Amostra", avaliacaoData.numeroAmostra || "—"],
                             ["Torra", avaliacaoData.torraSelecionada || "—"],
-                            [
-                                { content: "Pontuação Final", styles: { fontStyle: "bold" } },
-                                { content: avaliacaoData.pontuacaoFinal || "—", styles: { fontStyle: "bold" } },
-                            ],
-                            [
-                                { content: "Notas Sensoriais", styles: { fontStyle: "bold" } },
-                                { content: avaliacaoData.notasSensorias || "—", styles: { fontStyle: "bold" } },
-                            ],
+                            ["Notas Sensoriais", avaliacaoData.notasSensorias || "—"],
                         ],
                     }),
                 )
 
-                const corpoNotas = [
-                    ["Aroma / Fragrância", avaliacaoData.notas?.AromaFragrancia || "—"],
-                    ["Sabor", avaliacaoData.notas?.sabor || "—"],
-                    ["Finalização", avaliacaoData.notas?.finalizacao || "—"],
-                    ["Acidez", avaliacaoData.notas?.acidez || "—"],
-                    ["Corpo", avaliacaoData.notas?.corpo || "—"],
-                    ["Equilíbrio", avaliacaoData.notas?.equilibrio || "—"],
-                    ["Avaliação Pessoal", avaliacaoData.notas?.avaliacaoPessoal || "—"],
-                ]
-
-                if (avaliacaoData.obsAcidez) corpoNotas.push(["Tipo de Acidez", avaliacaoData.obsAcidez])
-
+                // Notas sensoriais
+                const notas = avaliacaoData.notas || {}
                 autoTable(
                     docPDF,
                     autoTableOptions({
                         head: [["Atributo Sensorial", "Nota"]],
-                        body: corpoNotas,
+                        body: [
+                            ["Aroma/Fragrância", notas.AromaFragrancia || "—"],
+                            ["Sabor", notas.sabor || "—"],
+                            ["Finalização", notas.finalizacao || "—"],
+                            ["Acidez", notas.acidez || "—"],
+                            ["Corpo", notas.corpo || "—"],
+                            ["Equilíbrio", notas.equilibrio || "—"],
+                            ["Avaliação Pessoal", notas.avaliacaoPessoal || "—"],
+                        ],
                     }),
                 )
 
-                const defeitosLeves = Number.parseInt(avaliacaoData.defeitosLeves) || 0
-                const defeitosGraves = Number.parseInt(avaliacaoData.defeitosGraves) || 0
-                const descontos = defeitosLeves * 2 + defeitosGraves * 4
-
+                // Intensidades e observações
+                const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
                 autoTable(
                     docPDF,
                     autoTableOptions({
                         head: [["Critério", "Valor"]],
                         body: [
-                            [
-                                "Dry",
-                                avaliacaoData.dry !== undefined && intensidades[avaliacaoData.dry]
-                                    ? intensidades[avaliacaoData.dry]
-                                    : "—",
-                            ],
-                            [
-                                "Break",
-                                avaliacaoData.breakValue !== undefined && intensidades[avaliacaoData.breakValue]
-                                    ? intensidades[avaliacaoData.breakValue]
-                                    : "—",
-                            ],
-                            [
-                                "Nível de Acidez",
-                                avaliacaoData.nivelAcidez !== undefined && intensidades[avaliacaoData.nivelAcidez]
-                                    ? intensidades[avaliacaoData.nivelAcidez]
-                                    : "—",
-                            ],
-                            [
-                                "Nível de Corpo",
-                                avaliacaoData.nivelCorpo !== undefined && intensidades[avaliacaoData.nivelCorpo]
-                                    ? intensidades[avaliacaoData.nivelCorpo]
-                                    : "—",
-                            ],
-                            ["Defeitos Leves", `-${defeitosLeves * 2}`],
-                            ["Defeitos Graves", `-${defeitosGraves * 4}`],
-                            ["Total de Pontos Descontados", `-${descontos}`],
+                            ["Dry", intensidades[avaliacaoData.dry] || "—"],
+                            ["Break", intensidades[avaliacaoData.breakValue] || "—"],
+                            ["Nível de Acidez", intensidades[avaliacaoData.nivelAcidez] || "—"],
+                            ["Nível de Corpo", intensidades[avaliacaoData.nivelCorpo] || "—"],
+                            ["Defeitos Leves", `-${(avaliacaoData.defeitosLeves || 0) * 2}`],
+                            ["Defeitos Graves", `-${(avaliacaoData.defeitosGraves || 0) * 4}`],
                         ],
                     }),
                 )
 
+                // Pontuação final
                 autoTable(
                     docPDF,
                     autoTableOptions({
-                        head: [["Observações", "Conteúdo"]],
-                        body: [["Observações Gerais", avaliacaoData.observacoes || "—"]],
+                        head: [["Resultado Final", "Valor"]],
+                        body: [
+                            ["Pontuação Total", avaliacaoData.pontuacaoFinal || "—"],
+                            ["Total Descontos", avaliacaoData.totalDescontos || "—"],
+                        ],
                     }),
                 )
+
+                // Observações
+                if (avaliacaoData.observacoes) {
+                    autoTable(
+                        docPDF,
+                        autoTableOptions({
+                            head: [["Observações"]],
+                            body: [[avaliacaoData.observacoes]],
+                        }),
+                    )
+                }
 
                 const assinaturaY = docPDF.lastAutoTable.finalY + 30
                 const linhaLargura = 80
                 const linhaInicioX = (pageWidth - linhaLargura) / 2
+
                 docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
                 docPDF.setFont("times", "normal")
                 docPDF.setFontSize(12)
                 docPDF.text(`Avaliador: ${avaliacaoData.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
+                docPDF.text(`Q Grader Certificado`, pageWidth / 2, assinaturaY + 14, {
+                    align: "center",
+                })
 
                 const blob = docPDF.output("blob")
                 const url = URL.createObjectURL(blob)
@@ -373,12 +350,12 @@ const HistoricoScaa = () => {
     }
 
     // Calcula se todos os itens estão selecionados
-    const allSelected = avaliacoesSCAA.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesSCAA.length
+    const allSelected = avaliacoesScaa.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesScaa.length
 
     return (
         <div className="historico-scaa-container">
             <div className="historico-header">
-                <h2>Histórico de Avaliações SCAA ({avaliacoesSCAA.length})</h2>
+                <h2>Histórico de Avaliações SCAA ({avaliacoesScaa.length})</h2>
                 <div className="botoes-topo">
                     <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
                         <i className="bi bi-arrow-return-left"></i>
@@ -416,7 +393,7 @@ const HistoricoScaa = () => {
                 </div>
             </div>
 
-            {avaliacoesSCAA.length > 0 ? (
+            {avaliacoesScaa.length > 0 ? (
                 <table className="avaliacoes-table">
                     <thead>
                         <tr>
@@ -432,14 +409,13 @@ const HistoricoScaa = () => {
                             <th>Data</th>
                             <th>Fornecedor</th>
                             <th>Nº Amostra</th>
-                            <th>Notas Sensoriais</th>
-                            <th>Obs. Acidez</th>
-                            <th>Pontuação Final</th>
+                            <th>Torra</th>
+                            <th>Pontuação</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {avaliacoesSCAA.map((avaliacao) => {
+                        {avaliacoesScaa.map((avaliacao) => {
                             // Formatar a data com segurança
                             let formattedDate = "Data inválida"
                             try {
@@ -465,10 +441,9 @@ const HistoricoScaa = () => {
                                         />
                                     </td>
                                     <td>{formattedDate}</td>
-                                    <td>{avaliacao.fornecedor || avaliacao.fornecedorSelecionado || "—"}</td>
+                                    <td>{avaliacao.fornecedorSelecionado || "—"}</td>
                                     <td>{avaliacao.numeroAmostra || "—"}</td>
-                                    <td>{avaliacao.notasSensorias || "—"}</td>
-                                    <td>{avaliacao.obsAcidez || "—"}</td>
+                                    <td>{avaliacao.torraSelecionada || "—"}</td>
                                     <td>{avaliacao.pontuacaoFinal || "—"}</td>
                                     <td className="celula-acoes">
                                         <div className="acoes-botoes">

@@ -14,14 +14,10 @@ import { useData } from "../context/DataContext"
 const HistoricoCob = () => {
     // ✅ USANDO DADOS DO CONTEXTO
     const { avaliacoesCOB, loading: dataLoading, refreshData } = useData()
-
     const [selectedAvaliacoes, setSelectedAvaliacoes] = useState({})
     const [hasSelected, setHasSelected] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const navigate = useNavigate()
-
-    // ✅ REMOVIDO: fetchAvaliacoes - agora usa dados do contexto
-    // ✅ REMOVIDO: estados loading, error, avaliacoes - agora vem do contexto
 
     useEffect(() => {
         // Limpar seleções quando os dados mudarem
@@ -32,13 +28,11 @@ const HistoricoCob = () => {
     // Função para manipular a seleção da caixa de seleção
     const handleSelectAvaliacao = (id) => {
         const newSelected = { ...selectedAvaliacoes }
-
         if (newSelected[id]) {
             delete newSelected[id]
         } else {
             newSelected[id] = true
         }
-
         setSelectedAvaliacoes(newSelected)
         setHasSelected(Object.keys(newSelected).length > 0)
     }
@@ -174,18 +168,15 @@ const HistoricoCob = () => {
             // Encontrar a avaliação nos dados do contexto
             let avaliacaoData
             const avaliacaoEncontrada = avaliacoesCOB.find((a) => a.id === id)
-
             if (!avaliacaoEncontrada) {
                 console.error("Avaliação não encontrada no contexto")
                 // Buscar no Firestore como fallback
                 const docRef = doc(db, "usuarios", user.uid, "avaliacoes_cob", id)
                 const docSnap = await getDoc(docRef)
-
                 if (!docSnap.exists()) {
                     alert("Documento não encontrado.")
                     return
                 }
-
                 avaliacaoData = { id: docSnap.id, ...docSnap.data() }
             } else {
                 avaliacaoData = avaliacaoEncontrada
@@ -323,6 +314,7 @@ const HistoricoCob = () => {
                 const assinaturaY = docPDF.lastAutoTable.finalY + 30
                 const linhaLargura = 80
                 const linhaInicioX = (pageWidth - linhaLargura) / 2
+
                 docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
                 docPDF.setFont("times", "normal")
                 docPDF.setFontSize(12)

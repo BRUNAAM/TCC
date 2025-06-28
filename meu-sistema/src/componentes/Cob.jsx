@@ -31,78 +31,79 @@ import {
     EyeOff,
 } from "lucide-react"
 
-const classificationTable = [
-    { defeitos: 4, label: "2-5" },
-    { defeitos: 5, label: "2-10" },
-    { defeitos: 6, label: "2-15" },
-    { defeitos: 7, label: "2-20" },
-    { defeitos: 8, label: "2-25" },
-    { defeitos: 9, label: "2-30" },
-    { defeitos: 10, label: "2-35" },
-    { defeitos: 11, label: "2-40" },
-    { defeitos: 11.05, label: "2-45" },
-    { defeitos: 12, label: "3" },
-    { defeitos: 13, label: "3-5" },
-    { defeitos: 15, label: "3-10" },
-    { defeitos: 17, label: "3-15" },
-    { defeitos: 18, label: "3-20" },
-    { defeitos: 19, label: "3-25" },
-    { defeitos: 20, label: "3-30" },
-    { defeitos: 22, label: "3-35" },
-    { defeitos: 23, label: "3-40" },
-    { defeitos: 25, label: "3-45" },
-    { defeitos: 26, label: "4" },
-    { defeitos: 28, label: "4-5" },
-    { defeitos: 30, label: "4-10" },
-    { defeitos: 32, label: "4-15" },
-    { defeitos: 34, label: "4-20" },
-    { defeitos: 36, label: "4-25" },
-    { defeitos: 38, label: "4-30" },
-    { defeitos: 40, label: "4-35" },
-    { defeitos: 42, label: "4-40" },
-    { defeitos: 44, label: "4-45" },
-    { defeitos: 46, label: "5" },
-    { defeitos: 49, label: "5-5" },
-    { defeitos: 53, label: "5-10" },
-    { defeitos: 57, label: "5-15" },
-    { defeitos: 64, label: "5-25" },
-    { defeitos: 68, label: "5-30" },
-    { defeitos: 71, label: "5-35" },
-    { defeitos: 75, label: "5-40" },
-    { defeitos: 79, label: "5-45" },
-    { defeitos: 86, label: "6" },
-    { defeitos: 93, label: "6-5" },
-    { defeitos: 100, label: "6-10" },
-    { defeitos: 108, label: "6-15" },
-    { defeitos: 115, label: "6-20" },
-    { defeitos: 123, label: "6-25" },
-    { defeitos: 130, label: "6-30" },
-    { defeitos: 138, label: "6-35" },
-    { defeitos: 145, label: "6-40" },
-    { defeitos: 153, label: "6-45" },
-    { defeitos: 160, label: "7" },
-    { defeitos: 180, label: "7-5" },
-    { defeitos: 200, label: "7-10" },
-    { defeitos: 220, label: "7-15" },
-    { defeitos: 240, label: "7-20" },
-    { defeitos: 260, label: "7-25" },
-    { defeitos: 280, label: "7-30" },
-    { defeitos: 300, label: "7-35" },
-    { defeitos: 320, label: "7-40" },
-    { defeitos: 340, label: "7-45" },
-    { defeitos: 360, label: "8" },
-    { defeitos: Number.POSITIVE_INFINITY, label: "Fora de Tipo" },
+const tabelaClassificacao = [
+    { defeitos: 4, rotulo: "2-5" },
+    { defeitos: 5, rotulo: "2-10" },
+    { defeitos: 6, rotulo: "2-15" },
+    { defeitos: 7, rotulo: "2-20" },
+    { defeitos: 8, rotulo: "2-25" },
+    { defeitos: 9, rotulo: "2-30" },
+    { defeitos: 10, rotulo: "2-35" },
+    { defeitos: 11, rotulo: "2-40" },
+    { defeitos: 11.05, rotulo: "2-45" },
+    { defeitos: 12, rotulo: "3" },
+    { defeitos: 13, rotulo: "3-5" },
+    { defeitos: 15, rotulo: "3-10" },
+    { defeitos: 17, rotulo: "3-15" },
+    { defeitos: 18, rotulo: "3-20" },
+    { defeitos: 19, rotulo: "3-25" },
+    { defeitos: 20, rotulo: "3-30" },
+    { defeitos: 22, rotulo: "3-35" },
+    { defeitos: 23, rotulo: "3-40" },
+    { defeitos: 25, rotulo: "3-45" },
+    { defeitos: 26, rotulo: "4" },
+    { defeitos: 28, rotulo: "4-5" },
+    { defeitos: 30, rotulo: "4-10" },
+    { defeitos: 32, rotulo: "4-15" },
+    { defeitos: 34, rotulo: "4-20" },
+    { defeitos: 36, rotulo: "4-25" },
+    { defeitos: 38, rotulo: "4-30" },
+    { defeitos: 40, rotulo: "4-35" },
+    { defeitos: 42, rotulo: "4-40" },
+    { defeitos: 44, rotulo: "4-45" },
+    { defeitos: 46, rotulo: "5" },
+    { defeitos: 49, rotulo: "5-5" },
+    { defeitos: 53, rotulo: "5-10" },
+    { defeitos: 57, rotulo: "5-15" },
+    { defeitos: 64, rotulo: "5-25" },
+    { defeitos: 68, rotulo: "5-30" },
+    { defeitos: 71, rotulo: "5-35" },
+    { defeitos: 75, rotulo: "5-40" },
+    { defeitos: 79, rotulo: "5-45" },
+    { defeitos: 86, rotulo: "6" },
+    { defeitos: 93, rotulo: "6-5" },
+    { defeitos: 100, rotulo: "6-10" },
+    { defeitos: 108, rotulo: "6-15" },
+    { defeitos: 115, rotulo: "6-20" },
+    { defeitos: 123, rotulo: "6-25" },
+    { defeitos: 130, rotulo: "6-30" },
+    { defeitos: 138, rotulo: "6-35" },
+    { defeitos: 145, rotulo: "6-40" },
+    { defeitos: 153, rotulo: "6-45" },
+    { defeitos: 160, rotulo: "7" },
+    { defeitos: 180, rotulo: "7-5" },
+    { defeitos: 200, rotulo: "7-10" },
+    { defeitos: 220, rotulo: "7-15" },
+    { defeitos: 240, rotulo: "7-20" },
+    { defeitos: 260, rotulo: "7-25" },
+    { defeitos: 280, rotulo: "7-30" },
+    { defeitos: 300, rotulo: "7-35" },
+    { defeitos: 320, rotulo: "7-40" },
+    { defeitos: 340, rotulo: "7-45" },
+    { defeitos: 360, rotulo: "8" },
+    { defeitos: Number.POSITIVE_INFINITY, rotulo: "Fora de Tipo" },
 ]
 
-function getClassification(defeitosValue) {
-    if (defeitosValue <= 0) return { label: "2-5" }
+function obterClassificacao(valorDefeitos) {
+    if (valorDefeitos <= 0) return { rotulo: "2-5" }
 
-    for (let i = 0; i < classificationTable.length; i++) {
-        if (defeitosValue <= classificationTable[i].defeitos) {
-            return classificationTable[i]
+    for (let i = 0; i < tabelaClassificacao.length; i++) {
+        if (valorDefeitos <= tabelaClassificacao[i].defeitos) {
+            return tabelaClassificacao[i]
         }
     }
-    return classificationTable[classificationTable.length - 1]
+
+    return tabelaClassificacao[tabelaClassificacao.length - 1]
 }
 
 // Tabela de defeitos como constante fora do componente
@@ -154,64 +155,65 @@ const Cob = () => {
     const [torraCanephora, setTorraCanephora] = useState("")
     const [teorCafeina, setTeorCafeina] = useState("")
     const [salvando, setSalvando] = useState(false)
-    const [scrollPosition, setScrollPosition] = useState(0)
-    const [showDefeitosDetails, setShowDefeitosDetails] = useState(false)
-    const [errors, setErrors] = useState({})
-    const [touched, setTouched] = useState({})
+    const [posicaoScroll, setPosicaoScroll] = useState(0)
+    const [mostrarDetalhesDefeitos, setMostrarDetalhesDefeitos] = useState(false)
+    const [erros, setErros] = useState({})
+    const [tocados, setTocados] = useState({})
 
-    const navigate = useNavigate()
+    const navegar = useNavigate()
 
     // Refs para acessibilidade
-    const mainRef = useRef(null)
-    const errorRef = useRef(null)
-    const successRef = useRef(null)
+    const refPrincipal = useRef(null)
+    const refErro = useRef(null)
+    const refSucesso = useRef(null)
 
     // Usando dados do contexto
-    const { fornecedores, loading: dataLoading } = useData()
+    const { fornecedores, loading: carregandoDados } = useData()
 
     // Skip link para acessibilidade
-    const skipToMain = useCallback((e) => {
+    const pularParaPrincipal = useCallback((e) => {
         e.preventDefault()
-        if (mainRef.current) {
-            mainRef.current.focus()
+        if (refPrincipal.current) {
+            refPrincipal.current.focus()
         }
     }, [])
 
     // Função para anunciar para leitores de tela
-    const announceToScreenReader = useCallback((message) => {
-        const announcement = document.createElement("div")
-        announcement.setAttribute("aria-live", "polite")
-        announcement.setAttribute("aria-atomic", "true")
-        announcement.className = "sr-only"
-        announcement.textContent = message
-        document.body.appendChild(announcement)
+    const anunciarParaLeitorTela = useCallback((mensagem) => {
+        const anuncio = document.createElement("div")
+        anuncio.setAttribute("aria-live", "polite")
+        anuncio.setAttribute("aria-atomic", "true")
+        anuncio.className = "apenas-leitor-tela"
+        anuncio.textContent = mensagem
+        document.body.appendChild(anuncio)
+
         setTimeout(() => {
-            document.body.removeChild(announcement)
+            document.body.removeChild(anuncio)
         }, 1000)
     }, [])
 
     // Validação de campos
-    const validateField = useCallback((field, value) => {
-        switch (field) {
+    const validarCampo = useCallback((campo, valor) => {
+        switch (campo) {
             case "fornecedorSelecionado":
-                return !value ? "Fornecedor é obrigatório" : ""
+                return !valor ? "Fornecedor é obrigatório" : ""
             case "numeroAmostra":
-                return !value ? "Número da amostra é obrigatório" : ""
+                return !valor ? "Número da amostra é obrigatório" : ""
             case "umidade":
-                return value && (isNaN(value) || value < 0 || value > 100) ? "Umidade deve ser entre 0 e 100%" : ""
+                return valor && (isNaN(valor) || valor < 0 || valor > 100) ? "Umidade deve ser entre 0 e 100%" : ""
             default:
                 return ""
         }
     }, [])
 
     // Atualizar erros
-    const updateErrors = useCallback(() => {
-        const newErrors = {}
-        newErrors.fornecedorSelecionado = validateField("fornecedorSelecionado", fornecedorSelecionado)
-        newErrors.numeroAmostra = validateField("numeroAmostra", numeroAmostra)
-        newErrors.umidade = validateField("umidade", umidade)
-        setErrors(newErrors)
-    }, [fornecedorSelecionado, numeroAmostra, umidade, validateField])
+    const atualizarErros = useCallback(() => {
+        const novosErros = {}
+        novosErros.fornecedorSelecionado = validarCampo("fornecedorSelecionado", fornecedorSelecionado)
+        novosErros.numeroAmostra = validarCampo("numeroAmostra", numeroAmostra)
+        novosErros.umidade = validarCampo("umidade", umidade)
+        setErros(novosErros)
+    }, [fornecedorSelecionado, numeroAmostra, umidade, validarCampo])
 
     useEffect(() => {
         const bloquearVoltar = (e) => {
@@ -222,92 +224,92 @@ const Cob = () => {
         window.history.pushState(null, null, window.location.href)
         window.addEventListener("popstate", bloquearVoltar)
 
-        const handleScroll = () => {
-            setScrollPosition(window.scrollY)
+        const manipularScroll = () => {
+            setPosicaoScroll(window.scrollY)
         }
-        window.addEventListener("scroll", handleScroll)
+
+        window.addEventListener("scroll", manipularScroll)
 
         return () => {
             window.removeEventListener("popstate", bloquearVoltar)
-            window.removeEventListener("scroll", handleScroll)
+            window.removeEventListener("scroll", manipularScroll)
         }
     }, [])
 
     useEffect(() => {
-        const usuarioNome = localStorage.getItem("usuarioNome") || ""
-        setAvaliador(usuarioNome)
+        const nomeUsuario = localStorage.getItem("usuarioNome") || ""
+        setAvaliador(nomeUsuario)
     }, [])
 
     useEffect(() => {
-        const classification = getClassification(equivalenciaTotal)
-        setTipo(classification.label)
+        const classificacao = obterClassificacao(equivalenciaTotal)
+        setTipo(classificacao.rotulo)
     }, [equivalenciaTotal])
 
     useEffect(() => {
-        updateErrors()
-    }, [updateErrors])
+        atualizarErros()
+    }, [atualizarErros])
 
-    // REMOVER tabelaDefeitos das dependências do useCallback
-    const handleDefeitoChange = useCallback(
+    const manipularMudancaDefeito = useCallback(
         (defeito, quantidade) => {
-            const validQuantity = isNaN(quantidade) ? 0 : quantidade
-
-            const updatedDefeitos = { ...defeitos, [defeito]: validQuantity }
-            setDefeitos(updatedDefeitos)
+            const quantidadeValida = isNaN(quantidade) ? 0 : quantidade
+            const defeitosAtualizados = { ...defeitos, [defeito]: quantidadeValida }
+            setDefeitos(defeitosAtualizados)
 
             let totalEquivalencia = 0
-            const updatedEquivalencias = {}
+            const equivalenciasAtualizadas = {}
 
-            for (const [key, value] of Object.entries(updatedDefeitos)) {
-                if (tabelaDefeitos[key]) {
-                    const equivalencia = Math.floor(value / tabelaDefeitos[key].quantidade) * tabelaDefeitos[key].equivalencia
-                    updatedEquivalencias[key] = equivalencia
+            for (const [chave, valor] of Object.entries(defeitosAtualizados)) {
+                if (tabelaDefeitos[chave]) {
+                    const equivalencia = Math.floor(valor / tabelaDefeitos[chave].quantidade) * tabelaDefeitos[chave].equivalencia
+                    equivalenciasAtualizadas[chave] = equivalencia
                     totalEquivalencia += equivalencia
                 }
             }
-            setEquivalencias(updatedEquivalencias)
+
+            setEquivalencias(equivalenciasAtualizadas)
             setEquivalenciaTotal(totalEquivalencia)
 
             // Anunciar mudança para leitores de tela
-            announceToScreenReader(
-                `${defeito}: ${validQuantity} unidades, equivalência: ${updatedEquivalencias[defeito] || 0}`,
+            anunciarParaLeitorTela(
+                `${defeito}: ${quantidadeValida} unidades, equivalência: ${equivalenciasAtualizadas[defeito] || 0}`,
             )
         },
-        [defeitos, announceToScreenReader], // Removido tabelaDefeitos das dependências
+        [defeitos, anunciarParaLeitorTela],
     )
 
-    const handleClasseChange = useCallback((e) => {
+    const manipularMudancaClasse = useCallback((e) => {
         const { value, checked } = e.target
         if (checked) {
-            setClasseBebida((prev) => [...prev, value])
+            setClasseBebida((anterior) => [...anterior, value])
         } else {
-            setClasseBebida((prev) => prev.filter((item) => item !== value))
+            setClasseBebida((anterior) => anterior.filter((item) => item !== value))
         }
     }, [])
 
-    const handlePeneiraChange = useCallback((e) => {
+    const manipularMudancaPeneira = useCallback((e) => {
         const { value, checked } = e.target
         if (checked) {
-            setPeneiraSubcategoria((prev) => [...prev, value])
+            setPeneiraSubcategoria((anterior) => [...anterior, value])
         } else {
-            setPeneiraSubcategoria((prev) => prev.filter((item) => item !== value))
+            setPeneiraSubcategoria((anterior) => anterior.filter((item) => item !== value))
         }
     }, [])
 
-    const handleFieldBlur = useCallback((field) => {
-        setTouched((prev) => ({ ...prev, [field]: true }))
+    const manipularDesfoqueCampo = useCallback((campo) => {
+        setTocados((anterior) => ({ ...anterior, [campo]: true }))
     }, [])
 
-    const handlePrintPDF = useCallback(() => {
+    const manipularGerarPDF = useCallback(() => {
         if (!fornecedorSelecionado || !numeroAmostra) {
-            announceToScreenReader("Erro: Preencha os campos obrigatórios antes de gerar o PDF")
-            if (errorRef.current) {
-                errorRef.current.focus()
+            anunciarParaLeitorTela("Erro: Preencha os campos obrigatórios antes de gerar o PDF")
+            if (refErro.current) {
+                refErro.current.focus()
             }
             return
         }
 
-        announceToScreenReader("Gerando PDF da avaliação...")
+        anunciarParaLeitorTela("Gerando PDF da avaliação...")
 
         const docPDF = new jsPDF({ unit: "mm", format: "a4" })
         const img = new Image()
@@ -315,27 +317,28 @@ const Cob = () => {
         img.crossOrigin = "anonymous"
 
         img.onload = () => {
-            const pageWidth = docPDF.internal.pageSize.getWidth()
-            const pageHeight = docPDF.internal.pageSize.getHeight()
-            const marginX = 20
-            const boxY = 10
-            const logoWidth = 25
-            const logoHeight = 25
-            const spacing = 5
-            const titulo = "Avaliação Física de Café - Método COB"
-            const tituloWidth = docPDF.getTextWidth(titulo)
-            const startX = (pageWidth - (logoWidth + spacing + tituloWidth)) / 2
+            const larguraPagina = docPDF.internal.pageSize.getWidth()
+            const alturaPagina = docPDF.internal.pageSize.getHeight()
+            const margemX = 20
+            const caixaY = 10
+            const larguraLogo = 25
+            const alturaLogo = 25
+            const espacamento = 5
 
-            docPDF.addImage(img, "PNG", startX, boxY, logoWidth, logoHeight)
+            const titulo = "Avaliação Física de Café - Método COB"
+            const larguraTitulo = docPDF.getTextWidth(titulo)
+            const inicioX = (larguraPagina - (larguraLogo + espacamento + larguraTitulo)) / 2
+
+            docPDF.addImage(img, "PNG", inicioX, caixaY, larguraLogo, alturaLogo)
             docPDF.setFont("times", "bold")
             docPDF.setFontSize(14)
-            docPDF.text(titulo, startX + logoWidth + spacing, boxY + 16)
+            docPDF.text(titulo, inicioX + larguraLogo + espacamento, caixaY + 16)
 
-            const autoTableOptions = (config) => ({
+            const opcoesTabelaAuto = (config) => ({
                 ...config,
                 theme: "grid",
-                margin: { left: marginX, right: marginX },
-                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : boxY + logoHeight + 10,
+                margin: { left: margemX, right: margemX },
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : caixaY + alturaLogo + 10,
                 headStyles: {
                     fillColor: [3, 43, 67],
                     textColor: 255,
@@ -347,20 +350,20 @@ const Cob = () => {
                     textColor: 0,
                 },
                 didDrawPage: (data) => {
-                    const pageCount = docPDF.internal.getNumberOfPages()
+                    const contadorPaginas = docPDF.internal.getNumberOfPages()
                     docPDF.setFontSize(10)
                     docPDF.setTextColor(150)
-                    docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, {
+                    docPDF.text(`Página ${data.pageNumber} de ${contadorPaginas}`, larguraPagina - margemX, alturaPagina - 10, {
                         align: "right",
                     })
-                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10)
+                    docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, margemX, alturaPagina - 10)
                 },
             })
 
             // Tabelas do PDF
             autoTable(
                 docPDF,
-                autoTableOptions({
+                opcoesTabelaAuto({
                     head: [["Identificação", "Valor"]],
                     body: [
                         ["Avaliador", avaliador || "—"],
@@ -380,7 +383,7 @@ const Cob = () => {
 
             autoTable(
                 docPDF,
-                autoTableOptions({
+                opcoesTabelaAuto({
                     head: [["Defeito", "Quantidade", "Equivalência"]],
                     body: Object.entries(defeitos || {}).map(([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]),
                 }),
@@ -388,7 +391,7 @@ const Cob = () => {
 
             autoTable(
                 docPDF,
-                autoTableOptions({
+                opcoesTabelaAuto({
                     body: [
                         ["Total de Defeitos", Object.values(defeitos || {}).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0)],
                         ["Total Equivalência", equivalenciaTotal],
@@ -400,7 +403,7 @@ const Cob = () => {
 
             autoTable(
                 docPDF,
-                autoTableOptions({
+                opcoesTabelaAuto({
                     head: [["Categoria", "Valor"]],
                     body: [
                         ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
@@ -413,7 +416,7 @@ const Cob = () => {
 
             autoTable(
                 docPDF,
-                autoTableOptions({
+                opcoesTabelaAuto({
                     head: [["Laudo Técnico", "Valor"]],
                     body: [
                         ["Preparo", peloPreparo || "—"],
@@ -428,30 +431,31 @@ const Cob = () => {
 
             autoTable(
                 docPDF,
-                autoTableOptions({
+                opcoesTabelaAuto({
                     body: [["Observações", observacoes || "—"]],
                     head: [],
                 }),
             )
 
             const assinaturaY = docPDF.lastAutoTable.finalY + 30
-            const linhaLargura = 80
-            const linhaInicioX = (pageWidth - linhaLargura) / 2
-            docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
+            const larguraLinha = 80
+            const inicioLinhaX = (larguraPagina - larguraLinha) / 2
+
+            docPDF.line(inicioLinhaX, assinaturaY, inicioLinhaX + larguraLinha, assinaturaY)
             docPDF.setFont("times", "normal")
             docPDF.setFontSize(12)
-            docPDF.text(`Avaliador: ${avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
-            docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, pageWidth / 2, assinaturaY + 14, {
+            docPDF.text(`Avaliador: ${avaliador || "—"}`, larguraPagina / 2, assinaturaY + 7, { align: "center" })
+            docPDF.text(`Registro MAPA: ${classificadorMapa || "—"}`, larguraPagina / 2, assinaturaY + 14, {
                 align: "center",
             })
 
             docPDF.save(`laudo_cob_${numeroAmostra}_${new Date().toISOString().split("T")[0]}.pdf`)
-            announceToScreenReader("PDF gerado com sucesso!")
+            anunciarParaLeitorTela("PDF gerado com sucesso!")
         }
 
         img.onerror = () => {
             console.warn("Erro ao carregar logo, gerando PDF sem imagem")
-            announceToScreenReader("Aviso: PDF gerado sem logo devido a erro no carregamento da imagem")
+            anunciarParaLeitorTela("Aviso: PDF gerado sem logo devido a erro no carregamento da imagem")
         }
     }, [
         fornecedorSelecionado,
@@ -478,36 +482,36 @@ const Cob = () => {
         torraCanephora,
         teorCafeina,
         observacoes,
-        announceToScreenReader,
+        anunciarParaLeitorTela,
     ])
 
-    const handleSalvarAvaliacao = useCallback(async () => {
+    const manipularSalvarAvaliacao = useCallback(async () => {
         if (salvando) return
 
         // Validar campos obrigatórios
         if (!fornecedorSelecionado || !numeroAmostra) {
-            announceToScreenReader("Erro: Preencha todos os campos obrigatórios")
-            if (errorRef.current) {
-                errorRef.current.focus()
+            anunciarParaLeitorTela("Erro: Preencha todos os campos obrigatórios")
+            if (refErro.current) {
+                refErro.current.focus()
             }
             return
         }
 
         setSalvando(true)
-        announceToScreenReader("Salvando avaliação...")
+        anunciarParaLeitorTela("Salvando avaliação...")
 
         try {
-            const authInstance = getAuth()
-            const user = authInstance.currentUser
+            const instanciaAuth = getAuth()
+            const usuario = instanciaAuth.currentUser
 
-            if (!user) {
-                announceToScreenReader("Erro: Usuário não autenticado")
+            if (!usuario) {
+                anunciarParaLeitorTela("Erro: Usuário não autenticado")
                 setSalvando(false)
                 return
             }
 
             const avaliacao = {
-                userId: user.uid,
+                userId: usuario.uid,
                 avaliador,
                 fornecedor: fornecedorSelecionado,
                 numeroAmostra,
@@ -536,20 +540,20 @@ const Cob = () => {
                 data: new Date().toISOString(),
             }
 
-            await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_cob"), avaliacao)
+            await addDoc(collection(db, "usuarios", usuario.uid, "avaliacoes_cob"), avaliacao)
+            anunciarParaLeitorTela("Avaliação salva com sucesso!")
 
-            announceToScreenReader("Avaliação salva com sucesso!")
-            if (successRef.current) {
-                successRef.current.focus()
+            if (refSucesso.current) {
+                refSucesso.current.focus()
             }
 
             const querVerPDF = window.confirm("Deseja gerar o PDF da avaliação?")
             if (querVerPDF) {
-                handlePrintPDF()
+                manipularGerarPDF()
             }
         } catch (error) {
             console.error("Erro ao salvar avaliação:", error)
-            announceToScreenReader("Erro ao salvar avaliação. Tente novamente.")
+            anunciarParaLeitorTela("Erro ao salvar avaliação. Tente novamente.")
         } finally {
             setSalvando(false)
         }
@@ -580,39 +584,38 @@ const Cob = () => {
         torraArabica,
         torraCanephora,
         teorCafeina,
-        announceToScreenReader,
-        handlePrintPDF,
+        anunciarParaLeitorTela,
+        manipularGerarPDF,
     ])
 
-    const scrollToTop = useCallback(() => {
+    const voltarAoTopo = useCallback(() => {
         window.scrollTo({
             top: 0,
             behavior: "smooth",
         })
-        announceToScreenReader("Voltando ao topo da página")
-    }, [announceToScreenReader])
+        anunciarParaLeitorTela("Voltando ao topo da página")
+    }, [anunciarParaLeitorTela])
 
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0)
-
-    const hasErrors = Object.values(errors).some((error) => error !== "")
+    const temErros = Object.values(erros).some((erro) => erro !== "")
 
     return (
         <>
-            {/* Skip Link */}
-            <a href="#main-content" className="skip-link" onClick={skipToMain}>
+            {/* Link para pular conteúdo */}
+            <a href="#conteudo-principal" className="link-pular" onClick={pularParaPrincipal}>
                 Pular para o conteúdo principal
             </a>
 
-            <div className="page-wrapper">
-                <header className="cob-header" role="banner">
-                    <div className="header-content">
-                        <h1 className="header-title">
-                            <Coffee className="header-icon" aria-hidden="true" size={24} />
+            <div className="container-pagina">
+                <header className="cabecalho-cob" role="banner">
+                    <div className="conteudo-cabecalho">
+                        <h1 className="titulo-cabecalho">
+                            <Coffee className="icone-cabecalho" aria-hidden="true" size={24} />
                             Avaliação COB
                         </h1>
                         <button
-                            className="close-button"
-                            onClick={() => navigate("/logado")}
+                            className="botao-fechar"
+                            onClick={() => navegar("/logado")}
                             aria-label="Fechar avaliação e voltar ao painel principal"
                             title="Fechar (Esc)"
                         >
@@ -622,19 +625,19 @@ const Cob = () => {
                 </header>
 
                 <main
-                    id="main-content"
-                    className="cob-container"
-                    ref={mainRef}
+                    id="conteudo-principal"
+                    className="container-cob"
+                    ref={refPrincipal}
                     tabIndex="-1"
                     role="main"
                     aria-label="Formulário de avaliação COB"
                 >
-                    <div className="cob-form">
+                    <div className="formulario-cob">
                         {/* Indicador de progresso */}
-                        <div className="progress-indicator" role="progressbar" aria-label="Progresso do preenchimento">
-                            <div className="progress-bar">
+                        <div className="indicador-progresso" role="progressbar" aria-label="Progresso do preenchimento">
+                            <div className="barra-progresso">
                                 <div
-                                    className="progress-fill"
+                                    className="preenchimento-progresso"
                                     style={{
                                         width: `${Math.min(
                                             100,
@@ -647,7 +650,7 @@ const Cob = () => {
                                     }}
                                 ></div>
                             </div>
-                            <span className="progress-text">
+                            <span className="texto-progresso">
                                 {Math.min(
                                     100,
                                     ((fornecedorSelecionado ? 1 : 0) +
@@ -661,17 +664,17 @@ const Cob = () => {
                         </div>
 
                         {/* Alertas de erro */}
-                        {hasErrors && (
-                            <div ref={errorRef} className="alert alert-error" role="alert" aria-live="assertive" tabIndex="-1">
-                                <AlertCircle className="alert-icon" aria-hidden="true" size={20} />
-                                <div className="alert-content">
-                                    <h3 className="alert-title">Atenção: Campos obrigatórios</h3>
-                                    <ul className="alert-list">
-                                        {Object.entries(errors).map(
-                                            ([field, error]) =>
-                                                error && (
-                                                    <li key={field} className="alert-item">
-                                                        {error}
+                        {temErros && (
+                            <div ref={refErro} className="alerta alerta-erro" role="alert" aria-live="assertive" tabIndex="-1">
+                                <AlertCircle className="icone-alerta" aria-hidden="true" size={20} />
+                                <div className="conteudo-alerta">
+                                    <h3 className="titulo-alerta">Atenção: Campos obrigatórios</h3>
+                                    <ul className="lista-alerta">
+                                        {Object.entries(erros).map(
+                                            ([campo, erro]) =>
+                                                erro && (
+                                                    <li key={campo} className="item-alerta">
+                                                        {erro}
                                                     </li>
                                                 ),
                                         )}
@@ -681,73 +684,74 @@ const Cob = () => {
                         )}
 
                         {/* Seção: Identificação */}
-                        <section className="cob-section" aria-labelledby="identificacao-title">
-                            <h2 id="identificacao-title" className="section-title">
-                                <User className="section-icon" aria-hidden="true" size={20} />
+                        <section className="secao-cob" aria-labelledby="titulo-identificacao">
+                            <h2 id="titulo-identificacao" className="titulo-secao">
+                                <User className="icone-secao" aria-hidden="true" size={20} />
                                 Identificação
                             </h2>
-                            <div className="campos-form">
-                                <div className="campo-form">
-                                    <label htmlFor="avaliador" className="campo-label">
+
+                            <div className="campos-formulario">
+                                <div className="campo-formulario">
+                                    <label htmlFor="avaliador" className="rotulo-campo">
                                         Nome do Avaliador:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <User className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <User className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="avaliador"
                                             type="text"
                                             value={avaliador}
                                             onChange={(e) => setAvaliador(e.target.value)}
                                             disabled
-                                            className="campo-input"
-                                            aria-describedby="avaliador-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-avaliador"
                                         />
                                     </div>
-                                    <div id="avaliador-desc" className="sr-only">
+                                    <div id="desc-avaliador" className="apenas-leitor-tela">
                                         Nome do avaliador logado no sistema
                                     </div>
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="data-avaliacao" className="campo-label">
+                                <div className="campo-formulario">
+                                    <label htmlFor="data-avaliacao" className="rotulo-campo">
                                         Data da avaliação:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Calendar className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Calendar className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="data-avaliacao"
                                             type="text"
                                             value={new Date().toLocaleDateString("pt-BR")}
                                             disabled
-                                            className="campo-input"
-                                            aria-describedby="data-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-data"
                                         />
                                     </div>
-                                    <div id="data-desc" className="sr-only">
+                                    <div id="desc-data" className="apenas-leitor-tela">
                                         Data atual da avaliação
                                     </div>
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="fornecedor" className="campo-label required">
+                                <div className="campo-formulario">
+                                    <label htmlFor="fornecedor" className="rotulo-campo obrigatorio">
                                         Fornecedor / Produtor: *
                                     </label>
                                     <div className="input-com-botao">
-                                        <div className="input-wrapper">
-                                            <Building className="input-icon" aria-hidden="true" size={18} />
+                                        <div className="wrapper-input">
+                                            <Building className="icone-input" aria-hidden="true" size={18} />
                                             <select
                                                 id="fornecedor"
                                                 value={fornecedorSelecionado}
                                                 onChange={(e) => setFornecedorSelecionado(e.target.value)}
-                                                onBlur={() => handleFieldBlur("fornecedorSelecionado")}
-                                                className={`campo-input ${touched.fornecedorSelecionado && errors.fornecedorSelecionado ? "input-error" : ""
+                                                onBlur={() => manipularDesfoqueCampo("fornecedorSelecionado")}
+                                                className={`input-campo ${tocados.fornecedorSelecionado && erros.fornecedorSelecionado ? "input-erro" : ""
                                                     }`}
-                                                aria-describedby="fornecedor-desc fornecedor-error"
-                                                aria-invalid={touched.fornecedorSelecionado && errors.fornecedorSelecionado ? "true" : "false"}
+                                                aria-describedby="desc-fornecedor erro-fornecedor"
+                                                aria-invalid={tocados.fornecedorSelecionado && erros.fornecedorSelecionado ? "true" : "false"}
                                                 required
                                             >
                                                 <option value="">
-                                                    {dataLoading ? "Carregando fornecedores..." : "Selecione um fornecedor"}
+                                                    {carregandoDados ? "Carregando fornecedores..." : "Selecione um fornecedor"}
                                                 </option>
                                                 {fornecedores.map((fornecedor) => (
                                                     <option key={fornecedor.id} value={fornecedor.nome}>
@@ -758,52 +762,52 @@ const Cob = () => {
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => navigate("/fornecedores")}
+                                            onClick={() => navegar("/fornecedores")}
                                             className="botao-icone"
                                             aria-label="Cadastrar novo fornecedor"
                                             title="Novo fornecedor"
                                         >
                                             <Plus size={18} aria-hidden="true" />
-                                            <span className="botao-texto">Novo</span>
+                                            <span className="texto-botao">Novo</span>
                                         </button>
                                     </div>
-                                    <div id="fornecedor-desc" className="sr-only">
+                                    <div id="desc-fornecedor" className="apenas-leitor-tela">
                                         Selecione o fornecedor ou produtor do café a ser avaliado
                                     </div>
-                                    {touched.fornecedorSelecionado && errors.fornecedorSelecionado && (
-                                        <div id="fornecedor-error" className="field-error" role="alert">
+                                    {tocados.fornecedorSelecionado && erros.fornecedorSelecionado && (
+                                        <div id="erro-fornecedor" className="erro-campo" role="alert">
                                             <AlertCircle size={14} aria-hidden="true" />
-                                            {errors.fornecedorSelecionado}
+                                            {erros.fornecedorSelecionado}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="numero-amostra" className="campo-label required">
+                                <div className="campo-formulario">
+                                    <label htmlFor="numero-amostra" className="rotulo-campo obrigatorio">
                                         Nº da Amostra: *
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Hash className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Hash className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="numero-amostra"
                                             type="text"
                                             value={numeroAmostra}
                                             onChange={(e) => setNumeroAmostra(e.target.value)}
-                                            onBlur={() => handleFieldBlur("numeroAmostra")}
+                                            onBlur={() => manipularDesfoqueCampo("numeroAmostra")}
                                             placeholder="Digite o número da amostra"
-                                            className={`campo-input ${touched.numeroAmostra && errors.numeroAmostra ? "input-error" : ""}`}
-                                            aria-describedby="numero-desc numero-error"
-                                            aria-invalid={touched.numeroAmostra && errors.numeroAmostra ? "true" : "false"}
+                                            className={`input-campo ${tocados.numeroAmostra && erros.numeroAmostra ? "input-erro" : ""}`}
+                                            aria-describedby="desc-numero erro-numero"
+                                            aria-invalid={tocados.numeroAmostra && erros.numeroAmostra ? "true" : "false"}
                                             required
                                         />
                                     </div>
-                                    <div id="numero-desc" className="sr-only">
+                                    <div id="desc-numero" className="apenas-leitor-tela">
                                         Número de identificação da amostra de café
                                     </div>
-                                    {touched.numeroAmostra && errors.numeroAmostra && (
-                                        <div id="numero-error" className="field-error" role="alert">
+                                    {tocados.numeroAmostra && erros.numeroAmostra && (
+                                        <div id="erro-numero" className="erro-campo" role="alert">
                                             <AlertCircle size={14} aria-hidden="true" />
-                                            {errors.numeroAmostra}
+                                            {erros.numeroAmostra}
                                         </div>
                                     )}
                                 </div>
@@ -811,66 +815,70 @@ const Cob = () => {
                         </section>
 
                         {/* Seção: Classificação Física */}
-                        <section className="cob-section" aria-labelledby="classificacao-title">
-                            <h2 id="classificacao-title" className="section-title">
-                                <Scale className="section-icon" aria-hidden="true" size={20} />
+                        <section className="secao-cob" aria-labelledby="titulo-classificacao">
+                            <h2 id="titulo-classificacao" className="titulo-secao">
+                                <Scale className="icone-secao" aria-hidden="true" size={20} />
                                 Classificação Física do Café
                             </h2>
 
-                            <div className="defeitos-header">
+                            <div className="cabecalho-defeitos">
                                 <button
                                     type="button"
-                                    className="toggle-details-button"
-                                    onClick={() => setShowDefeitosDetails(!showDefeitosDetails)}
-                                    aria-expanded={showDefeitosDetails}
-                                    aria-controls="defeitos-details"
-                                    aria-describedby="toggle-desc"
+                                    className="botao-alternar-detalhes"
+                                    onClick={() => setMostrarDetalhesDefeitos(!mostrarDetalhesDefeitos)}
+                                    aria-expanded={mostrarDetalhesDefeitos}
+                                    aria-controls="detalhes-defeitos"
+                                    aria-describedby="desc-alternar"
                                 >
-                                    {showDefeitosDetails ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
-                                    {showDefeitosDetails ? "Ocultar detalhes" : "Mostrar detalhes dos defeitos"}
+                                    {mostrarDetalhesDefeitos ? (
+                                        <EyeOff size={18} aria-hidden="true" />
+                                    ) : (
+                                        <Eye size={18} aria-hidden="true" />
+                                    )}
+                                    {mostrarDetalhesDefeitos ? "Ocultar detalhes" : "Mostrar detalhes dos defeitos"}
                                 </button>
-                                <div id="toggle-desc" className="sr-only">
+                                <div id="desc-alternar" className="apenas-leitor-tela">
                                     Clique para mostrar ou ocultar informações detalhadas sobre cada tipo de defeito
                                 </div>
                             </div>
 
-                            {showDefeitosDetails && (
+                            {mostrarDetalhesDefeitos && (
                                 <div
-                                    id="defeitos-details"
-                                    className="defeitos-info"
+                                    id="detalhes-defeitos"
+                                    className="info-defeitos"
                                     role="region"
                                     aria-label="Informações sobre defeitos"
                                 >
-                                    <p className="info-text">
+                                    <p className="texto-info">
                                         <strong>Como usar:</strong> Digite a quantidade encontrada de cada defeito. O sistema calculará
                                         automaticamente a equivalência baseada na tabela COB.
                                     </p>
                                 </div>
                             )}
 
-                            <div className="defeitos-container" role="group" aria-labelledby="classificacao-title">
+                            <div className="container-defeitos" role="group" aria-labelledby="titulo-classificacao">
                                 {Object.entries(tabelaDefeitos).map(([defeito, info]) => (
-                                    <div key={defeito} className="defeito-item">
-                                        <label htmlFor={`defeito-${defeito}`} className="defeito-label">
+                                    <div key={defeito} className="item-defeito">
+                                        <label htmlFor={`defeito-${defeito}`} className="rotulo-defeito">
                                             {defeito}:
-                                            {showDefeitosDetails && (
-                                                <span className="defeito-info">
+                                            {mostrarDetalhesDefeitos && (
+                                                <span className="info-defeito">
                                                     (Cada {info.quantidade} = {info.equivalencia} equiv.)
                                                 </span>
                                             )}
                                         </label>
-                                        <div className="defeito-inputs">
+                                        <div className="inputs-defeito">
                                             <input
                                                 id={`defeito-${defeito}`}
                                                 type="number"
                                                 min="0"
                                                 value={defeitos[defeito] || ""}
-                                                onChange={(e) => handleDefeitoChange(defeito, Number.parseInt(e.target.value) || 0)}
-                                                className="defeito-quantidade"
+                                                onChange={(e) => manipularMudancaDefeito(defeito, Number.parseInt(e.target.value) || 0)}
+                                                className="quantidade-defeito"
                                                 aria-describedby={`equiv-${defeito}`}
                                                 placeholder="0"
                                             />
-                                            <div id={`equiv-${defeito}`} className="defeito-equivalencia" aria-live="polite">
+                                            <div id={`equiv-${defeito}`} className="equivalencia-defeito" aria-live="polite">
                                                 Equiv: <span>{equivalencias[defeito] || 0}</span>
                                             </div>
                                         </div>
@@ -878,12 +886,12 @@ const Cob = () => {
                                 ))}
                             </div>
 
-                            <div className="totais-container" role="region" aria-labelledby="totais-title">
-                                <h3 id="totais-title" className="sr-only">
+                            <div className="container-totais" role="region" aria-labelledby="titulo-totais">
+                                <h3 id="titulo-totais" className="apenas-leitor-tela">
                                     Totais da classificação
                                 </h3>
-                                <div className="total-item">
-                                    <label htmlFor="total-defeitos" className="total-label">
+                                <div className="item-total">
+                                    <label htmlFor="total-defeitos" className="rotulo-total">
                                         Total de Defeitos:
                                     </label>
                                     <input
@@ -891,15 +899,16 @@ const Cob = () => {
                                         type="text"
                                         readOnly
                                         value={totalDefeitos}
-                                        className="total-input"
-                                        aria-describedby="total-defeitos-desc"
+                                        className="input-total"
+                                        aria-describedby="desc-total-defeitos"
                                     />
-                                    <div id="total-defeitos-desc" className="sr-only">
+                                    <div id="desc-total-defeitos" className="apenas-leitor-tela">
                                         Soma total de todos os defeitos encontrados
                                     </div>
                                 </div>
-                                <div className="total-item">
-                                    <label htmlFor="total-equivalencia" className="total-label">
+
+                                <div className="item-total">
+                                    <label htmlFor="total-equivalencia" className="rotulo-total">
                                         Total da Equivalência:
                                     </label>
                                     <input
@@ -907,16 +916,17 @@ const Cob = () => {
                                         type="text"
                                         readOnly
                                         value={equivalenciaTotal}
-                                        className="total-input"
-                                        aria-describedby="total-equiv-desc"
+                                        className="input-total"
+                                        aria-describedby="desc-total-equiv"
                                         aria-live="polite"
                                     />
-                                    <div id="total-equiv-desc" className="sr-only">
+                                    <div id="desc-total-equiv" className="apenas-leitor-tela">
                                         Equivalência total calculada baseada na tabela COB
                                     </div>
                                 </div>
-                                <div className="total-item">
-                                    <label htmlFor="tipo-cafe" className="total-label">
+
+                                <div className="item-total">
+                                    <label htmlFor="tipo-cafe" className="rotulo-total">
                                         Tipo do Café:
                                     </label>
                                     <input
@@ -924,11 +934,11 @@ const Cob = () => {
                                         type="text"
                                         readOnly
                                         value={tipo}
-                                        className="total-input tipo-resultado"
-                                        aria-describedby="tipo-desc"
+                                        className="input-total resultado-tipo"
+                                        aria-describedby="desc-tipo"
                                         aria-live="polite"
                                     />
-                                    <div id="tipo-desc" className="sr-only">
+                                    <div id="desc-tipo" className="apenas-leitor-tela">
                                         Classificação automática baseada no total de equivalências
                                     </div>
                                 </div>
@@ -936,85 +946,86 @@ const Cob = () => {
                         </section>
 
                         {/* Seção: Categoria */}
-                        <section className="cob-section" aria-labelledby="categoria-title">
-                            <h2 id="categoria-title" className="section-title">
-                                <Coffee className="section-icon" aria-hidden="true" size={20} />
+                        <section className="secao-cob" aria-labelledby="titulo-categoria">
+                            <h2 id="titulo-categoria" className="titulo-secao">
+                                <Coffee className="icone-secao" aria-hidden="true" size={20} />
                                 Categoria
                             </h2>
-                            <div className="categoria-grid">
-                                <div className="categoria-card">
-                                    <h3 className="categoria-card-title">Subcategoria % Peneira</h3>
-                                    <fieldset className="checkbox-group" aria-labelledby="peneira-legend">
-                                        <legend id="peneira-legend" className="sr-only">
+
+                            <div className="grade-categoria">
+                                <div className="cartao-categoria">
+                                    <h3 className="titulo-cartao-categoria">Subcategoria % Peneira</h3>
+                                    <fieldset className="grupo-checkbox" aria-labelledby="legenda-peneira">
+                                        <legend id="legenda-peneira" className="apenas-leitor-tela">
                                             Selecione as subcategorias de peneira aplicáveis
                                         </legend>
                                         {["15 AC", "16 AC", "17 AC", "18 AC", "19", "Bica Corrida"].map((item) => (
-                                            <label key={item} className="checkbox-label">
+                                            <label key={item} className="rotulo-checkbox">
                                                 <input
                                                     type="checkbox"
                                                     value={item}
                                                     checked={peneiraSubcategoria.includes(item)}
-                                                    onChange={handlePeneiraChange}
-                                                    className="checkbox-input"
+                                                    onChange={manipularMudancaPeneira}
+                                                    className="input-checkbox"
                                                 />
-                                                <span className="checkbox-text">{item}</span>
+                                                <span className="texto-checkbox">{item}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="categoria-card">
-                                    <h3 className="categoria-card-title">Chato</h3>
-                                    <fieldset className="radio-group" aria-labelledby="chato-legend">
-                                        <legend id="chato-legend" className="sr-only">
+                                <div className="cartao-categoria">
+                                    <h3 className="titulo-cartao-categoria">Chato</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-chato">
+                                        <legend id="legenda-chato" className="apenas-leitor-tela">
                                             Selecione o tamanho do café tipo Chato
                                         </legend>
                                         {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                            <label key={`chato-${tamanho}`} className="radio-label">
+                                            <label key={`chato-${tamanho}`} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="tipoCafeChato"
                                                     value={tamanho}
                                                     checked={tipoCafe.grupo === "CHATO" && tipoCafe.tamanho === tamanho}
                                                     onChange={() => setTipoCafe({ grupo: "CHATO", tamanho })}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{tamanho}</span>
+                                                <span className="texto-radio">{tamanho}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="categoria-card">
-                                    <h3 className="categoria-card-title">Moca</h3>
-                                    <fieldset className="radio-group" aria-labelledby="moca-legend">
-                                        <legend id="moca-legend" className="sr-only">
+                                <div className="cartao-categoria">
+                                    <h3 className="titulo-cartao-categoria">Moca</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-moca">
+                                        <legend id="legenda-moca" className="apenas-leitor-tela">
                                             Selecione o tamanho do café tipo Moca
                                         </legend>
                                         {["Graúdo", "Médio", "Miúdo"].map((tamanho) => (
-                                            <label key={`moca-${tamanho}`} className="radio-label">
+                                            <label key={`moca-${tamanho}`} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="tipoCafeMoca"
                                                     value={tamanho}
                                                     checked={tipoCafe.grupo === "MOCA" && tipoCafe.tamanho === tamanho}
                                                     onChange={() => setTipoCafe({ grupo: "MOCA", tamanho })}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{tamanho}</span>
+                                                <span className="texto-radio">{tamanho}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="categoria-card">
-                                    <h3 className="categoria-card-title">Grupo I: Arábica</h3>
-                                    <fieldset className="radio-group" aria-labelledby="arabica-legend">
-                                        <legend id="arabica-legend" className="sr-only">
+                                <div className="cartao-categoria">
+                                    <h3 className="titulo-cartao-categoria">Grupo I: Arábica</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-arabica">
+                                        <legend id="legenda-arabica" className="apenas-leitor-tela">
                                             Selecione a classificação para café Arábica
                                         </legend>
                                         {["Estritamente Mole", "Mole", "Apenas Mole", "Duro", "Riado", "Rio", "Rio Zona"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="subClassificacaoArabica"
@@ -1024,22 +1035,22 @@ const Cob = () => {
                                                         setGrupoBebida("ARABICA")
                                                         setSubClassificacaoBebida(opcao)
                                                     }}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="categoria-card">
-                                    <h3 className="categoria-card-title">Grupo II: Robusta</h3>
-                                    <fieldset className="radio-group" aria-labelledby="robusta-legend">
-                                        <legend id="robusta-legend" className="sr-only">
+                                <div className="cartao-categoria">
+                                    <h3 className="titulo-cartao-categoria">Grupo II: Robusta</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-robusta">
+                                        <legend id="legenda-robusta" className="apenas-leitor-tela">
                                             Selecione a classificação para café Robusta
                                         </legend>
                                         {["Excelente", "Regular", "Boa", "Anormal"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="subClassificacaoRobusta"
@@ -1049,18 +1060,18 @@ const Cob = () => {
                                                         setGrupoBebida("ROBUSTA")
                                                         setSubClassificacaoBebida(opcao)
                                                     }}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="categoria-card">
-                                    <h3 className="categoria-card-title">Classe</h3>
-                                    <fieldset className="checkbox-group" aria-labelledby="classe-legend">
-                                        <legend id="classe-legend" className="sr-only">
+                                <div className="cartao-categoria">
+                                    <h3 className="titulo-cartao-categoria">Classe</h3>
+                                    <fieldset className="grupo-checkbox" aria-labelledby="legenda-classe">
+                                        <legend id="legenda-classe" className="apenas-leitor-tela">
                                             Selecione as classes de cor aplicáveis
                                         </legend>
                                         {[
@@ -1075,15 +1086,15 @@ const Cob = () => {
                                             "Esbranquiçada",
                                             "Discrepante",
                                         ].map((item) => (
-                                            <label key={item} className="checkbox-label">
+                                            <label key={item} className="rotulo-checkbox">
                                                 <input
                                                     type="checkbox"
                                                     value={item}
                                                     checked={classeBebida.includes(item)}
-                                                    onChange={handleClasseChange}
-                                                    className="checkbox-input"
+                                                    onChange={manipularMudancaClasse}
+                                                    className="input-checkbox"
                                                 />
-                                                <span className="checkbox-text">{item}</span>
+                                                <span className="texto-checkbox">{item}</span>
                                             </label>
                                         ))}
                                     </fieldset>
@@ -1092,18 +1103,19 @@ const Cob = () => {
                         </section>
 
                         {/* Seção: Conclusão */}
-                        <section className="cob-section" aria-labelledby="conclusao-title">
-                            <h2 id="conclusao-title" className="section-title">
-                                <FileCheck className="section-icon" aria-hidden="true" size={20} />
+                        <section className="secao-cob" aria-labelledby="titulo-conclusao">
+                            <h2 id="titulo-conclusao" className="titulo-secao">
+                                <FileCheck className="icone-secao" aria-hidden="true" size={20} />
                                 Conclusão
                             </h2>
-                            <div className="campos-form">
-                                <div className="campo-form">
-                                    <label htmlFor="umidade" className="campo-label">
+
+                            <div className="campos-formulario">
+                                <div className="campo-formulario">
+                                    <label htmlFor="umidade" className="rotulo-campo">
                                         Umidade (%):
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Droplets className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Droplets className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="umidade"
                                             type="number"
@@ -1112,233 +1124,234 @@ const Cob = () => {
                                             step="0.1"
                                             value={umidade}
                                             onChange={(e) => setUmidade(e.target.value)}
-                                            onBlur={() => handleFieldBlur("umidade")}
+                                            onBlur={() => manipularDesfoqueCampo("umidade")}
                                             placeholder="Digite a umidade"
-                                            className={`campo-input ${touched.umidade && errors.umidade ? "input-error" : ""}`}
-                                            aria-describedby="umidade-desc umidade-error"
-                                            aria-invalid={touched.umidade && errors.umidade ? "true" : "false"}
+                                            className={`input-campo ${tocados.umidade && erros.umidade ? "input-erro" : ""}`}
+                                            aria-describedby="desc-umidade erro-umidade"
+                                            aria-invalid={tocados.umidade && erros.umidade ? "true" : "false"}
                                         />
                                     </div>
-                                    <div id="umidade-desc" className="sr-only">
+                                    <div id="desc-umidade" className="apenas-leitor-tela">
                                         Percentual de umidade do café, valor entre 0 e 100
                                     </div>
-                                    {touched.umidade && errors.umidade && (
-                                        <div id="umidade-error" className="field-error" role="alert">
+                                    {tocados.umidade && erros.umidade && (
+                                        <div id="erro-umidade" className="erro-campo" role="alert">
                                             <AlertCircle size={14} aria-hidden="true" />
-                                            {errors.umidade}
+                                            {erros.umidade}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="aparelho" className="campo-label">
+                                <div className="campo-formulario">
+                                    <label htmlFor="aparelho" className="rotulo-campo">
                                         Aparelho:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Settings className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Settings className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="aparelho"
                                             type="text"
                                             value={aparelho}
                                             onChange={(e) => setAparelho(e.target.value)}
                                             placeholder="Informe o aparelho utilizado"
-                                            className="campo-input"
-                                            aria-describedby="aparelho-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-aparelho"
                                         />
                                     </div>
-                                    <div id="aparelho-desc" className="sr-only">
+                                    <div id="desc-aparelho" className="apenas-leitor-tela">
                                         Equipamento utilizado para medição da umidade
                                     </div>
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="subcategoria" className="campo-label">
+                                <div className="campo-formulario">
+                                    <label htmlFor="subcategoria" className="rotulo-campo">
                                         Subcategoria:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Coffee className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Coffee className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="subcategoria"
                                             type="text"
                                             value={subcategoria}
                                             onChange={(e) => setSubcategoria(e.target.value)}
                                             placeholder="Preencha a subcategoria"
-                                            className="campo-input"
-                                            aria-describedby="subcategoria-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-subcategoria"
                                         />
                                     </div>
-                                    <div id="subcategoria-desc" className="sr-only">
+                                    <div id="desc-subcategoria" className="apenas-leitor-tela">
                                         Subcategoria específica do café avaliado
                                     </div>
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="tipo-conclusao" className="campo-label">
+                                <div className="campo-formulario">
+                                    <label htmlFor="tipo-conclusao" className="rotulo-campo">
                                         Tipo:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Scale className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Scale className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="tipo-conclusao"
                                             type="text"
                                             value={tipo}
                                             onChange={(e) => setTipo(e.target.value)}
                                             placeholder="Tipo do café"
-                                            className="campo-input"
-                                            aria-describedby="tipo-conclusao-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-tipo-conclusao"
                                         />
                                     </div>
-                                    <div id="tipo-conclusao-desc" className="sr-only">
+                                    <div id="desc-tipo-conclusao" className="apenas-leitor-tela">
                                         Tipo final do café baseado na classificação
                                     </div>
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="posto-servico" className="campo-label">
+                                <div className="campo-formulario">
+                                    <label htmlFor="posto-servico" className="rotulo-campo">
                                         Posto de Serviço:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <Building className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <Building className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="posto-servico"
                                             type="text"
                                             value={postoServico}
                                             onChange={(e) => setPostoServico(e.target.value)}
                                             placeholder="Informe o posto de serviço"
-                                            className="campo-input"
-                                            aria-describedby="posto-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-posto"
                                         />
                                     </div>
-                                    <div id="posto-desc" className="sr-only">
+                                    <div id="desc-posto" className="apenas-leitor-tela">
                                         Local ou posto de serviço onde foi realizada a avaliação
                                     </div>
                                 </div>
 
-                                <div className="campo-form">
-                                    <label htmlFor="classificador-mapa" className="campo-label">
+                                <div className="campo-formulario">
+                                    <label htmlFor="classificador-mapa" className="rotulo-campo">
                                         Classificador/Reg. MAPA:
                                     </label>
-                                    <div className="input-wrapper">
-                                        <User className="input-icon" aria-hidden="true" size={18} />
+                                    <div className="wrapper-input">
+                                        <User className="icone-input" aria-hidden="true" size={18} />
                                         <input
                                             id="classificador-mapa"
                                             type="text"
                                             value={classificadorMapa}
                                             onChange={(e) => setClassificadorMapa(e.target.value)}
                                             placeholder="Informe o registro MAPA"
-                                            className="campo-input"
-                                            aria-describedby="mapa-desc"
+                                            className="input-campo"
+                                            aria-describedby="desc-mapa"
                                         />
                                     </div>
-                                    <div id="mapa-desc" className="sr-only">
+                                    <div id="desc-mapa" className="apenas-leitor-tela">
                                         Número de registro do classificador no Ministério da Agricultura
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="campo-form observacoes-campo">
-                                <label htmlFor="observacoes" className="campo-label">
+                            <div className="campo-formulario campo-observacoes">
+                                <label htmlFor="observacoes" className="rotulo-campo">
                                     Observações:
                                 </label>
-                                <div className="textarea-wrapper">
-                                    <FileText className="textarea-icon" aria-hidden="true" size={18} />
+                                <div className="wrapper-textarea">
+                                    <FileText className="icone-textarea" aria-hidden="true" size={18} />
                                     <textarea
                                         id="observacoes"
                                         value={observacoes}
                                         onChange={(e) => setObservacoes(e.target.value)}
                                         placeholder="Digite observações adicionais sobre a avaliação..."
-                                        className="observacoes-textarea"
+                                        className="textarea-observacoes"
                                         rows="4"
-                                        aria-describedby="observacoes-desc"
+                                        aria-describedby="desc-observacoes"
                                     />
                                 </div>
-                                <div id="observacoes-desc" className="sr-only">
+                                <div id="desc-observacoes" className="apenas-leitor-tela">
                                     Campo para observações gerais sobre a avaliação realizada
                                 </div>
                             </div>
                         </section>
 
                         {/* Seção: Laudo de Classificação */}
-                        <section className="cob-section" aria-labelledby="laudo-title">
-                            <h2 id="laudo-title" className="section-title">
-                                <FileCheck className="section-icon" aria-hidden="true" size={20} />
+                        <section className="secao-cob" aria-labelledby="titulo-laudo">
+                            <h2 id="titulo-laudo" className="titulo-secao">
+                                <FileCheck className="icone-secao" aria-hidden="true" size={20} />
                                 Laudo de Classificação
                             </h2>
-                            <div className="laudo-grid">
-                                <div className="laudo-card">
-                                    <h3 className="laudo-card-title">Preparo</h3>
-                                    <fieldset className="radio-group" aria-labelledby="preparo-legend">
-                                        <legend id="preparo-legend" className="sr-only">
+
+                            <div className="grade-laudo">
+                                <div className="cartao-laudo">
+                                    <h3 className="titulo-cartao-laudo">Preparo</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-preparo">
+                                        <legend id="legenda-preparo" className="apenas-leitor-tela">
                                             Selecione o método de preparo do café
                                         </legend>
                                         {["Via Seca", "Via Úmida"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="preparo"
                                                     value={opcao}
                                                     checked={peloPreparo === opcao}
                                                     onChange={() => setPeloPreparo(opcao)}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="laudo-card">
-                                    <h3 className="laudo-card-title">Seca</h3>
-                                    <fieldset className="radio-group" aria-labelledby="seca-legend">
-                                        <legend id="seca-legend" className="sr-only">
+                                <div className="cartao-laudo">
+                                    <h3 className="titulo-cartao-laudo">Seca</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-seca">
+                                        <legend id="legenda-seca" className="apenas-leitor-tela">
                                             Avalie a qualidade da secagem do café
                                         </legend>
                                         {["Seca Boa", "Seca Regular", "Seca Má"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="seca"
                                                     value={opcao}
                                                     checked={pelaSeca === opcao}
                                                     onChange={() => setPelaSeca(opcao)}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="laudo-card">
-                                    <h3 className="laudo-card-title">Pelo Aspecto</h3>
-                                    <fieldset className="radio-group" aria-labelledby="aspecto-legend">
-                                        <legend id="aspecto-legend" className="sr-only">
+                                <div className="cartao-laudo">
+                                    <h3 className="titulo-cartao-laudo">Pelo Aspecto</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-aspecto">
+                                        <legend id="legenda-aspecto" className="apenas-leitor-tela">
                                             Avalie o aspecto visual geral do café
                                         </legend>
                                         {["Bom", "Regular", "Mau"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="aspecto"
                                                     value={opcao}
                                                     checked={peloAspecto === opcao}
                                                     onChange={() => setPeloAspecto(opcao)}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="laudo-card">
-                                    <h3 className="laudo-card-title">Torra (Coffea Arábica)</h3>
-                                    <fieldset className="radio-group" aria-labelledby="torra-arabica-legend">
-                                        <legend id="torra-arabica-legend" className="sr-only">
+                                <div className="cartao-laudo">
+                                    <h3 className="titulo-cartao-laudo">Torra (Coffea Arábica)</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-torra-arabica">
+                                        <legend id="legenda-torra-arabica" className="apenas-leitor-tela">
                                             Avalie a qualidade da torra para café Arábica
                                         </legend>
                                         {["Torração Fina", "Torração Boa", "Torração Regular", "Torração Má"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="torra-arabica"
@@ -1348,18 +1361,18 @@ const Cob = () => {
                                                         setTorraArabica(opcao)
                                                         setTorraCanephora("")
                                                     }}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="laudo-card">
-                                    <h3 className="laudo-card-title">Torra (Coffea Canephora)</h3>
-                                    <fieldset className="radio-group" aria-labelledby="torra-canephora-legend">
-                                        <legend id="torra-canephora-legend" className="sr-only">
+                                <div className="cartao-laudo">
+                                    <h3 className="titulo-cartao-laudo">Torra (Coffea Canephora)</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-torra-canephora">
+                                        <legend id="legenda-torra-canephora" className="apenas-leitor-tela">
                                             Avalie a qualidade da torra para café Canephora
                                         </legend>
                                         {[
@@ -1370,7 +1383,7 @@ const Cob = () => {
                                             "Torração Regular",
                                             "Torração Má",
                                         ].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="torra-canephora"
@@ -1380,31 +1393,31 @@ const Cob = () => {
                                                         setTorraCanephora(opcao)
                                                         setTorraArabica("")
                                                     }}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
                                 </div>
 
-                                <div className="laudo-card">
-                                    <h3 className="laudo-card-title">Teor de Cafeína</h3>
-                                    <fieldset className="radio-group" aria-labelledby="cafeina-legend">
-                                        <legend id="cafeina-legend" className="sr-only">
+                                <div className="cartao-laudo">
+                                    <h3 className="titulo-cartao-laudo">Teor de Cafeína</h3>
+                                    <fieldset className="grupo-radio" aria-labelledby="legenda-cafeina">
+                                        <legend id="legenda-cafeina" className="apenas-leitor-tela">
                                             Selecione o teor de cafeína do café
                                         </legend>
                                         {["Café", "Café descafeinado"].map((opcao) => (
-                                            <label key={opcao} className="radio-label">
+                                            <label key={opcao} className="rotulo-radio">
                                                 <input
                                                     type="radio"
                                                     name="teor-cafeina"
                                                     value={opcao}
                                                     checked={teorCafeina === opcao}
                                                     onChange={() => setTeorCafeina(opcao)}
-                                                    className="radio-input"
+                                                    className="input-radio"
                                                 />
-                                                <span className="radio-text">{opcao}</span>
+                                                <span className="texto-radio">{opcao}</span>
                                             </label>
                                         ))}
                                     </fieldset>
@@ -1413,59 +1426,61 @@ const Cob = () => {
                         </section>
 
                         {/* Botões de ação */}
-                        <div className="action-buttons">
+                        <div className="botoes-acao">
                             <button
-                                className="action-button action-button-primary"
-                                onClick={handleSalvarAvaliacao}
-                                disabled={salvando || hasErrors}
-                                aria-describedby="salvar-desc"
+                                className="botao-acao botao-acao-primario"
+                                onClick={manipularSalvarAvaliacao}
+                                disabled={salvando || temErros}
+                                aria-describedby="desc-salvar"
                             >
                                 {salvando ? (
                                     <>
-                                        <Loader2 className="button-icon loading-icon" aria-hidden="true" size={20} />
+                                        <Loader2 className="icone-botao icone-carregando" aria-hidden="true" size={20} />
                                         <span>Salvando...</span>
                                     </>
                                 ) : (
                                     <>
-                                        <Save className="button-icon" aria-hidden="true" size={20} />
+                                        <Save className="icone-botao" aria-hidden="true" size={20} />
                                         <span>Salvar Avaliação</span>
                                     </>
                                 )}
                             </button>
-                            <div id="salvar-desc" className="sr-only">
+
+                            <div id="desc-salvar" className="apenas-leitor-tela">
                                 {salvando
                                     ? "Salvando avaliação no banco de dados"
-                                    : hasErrors
+                                    : temErros
                                         ? "Corrija os erros antes de salvar"
                                         : "Clique para salvar a avaliação no sistema"}
                             </div>
 
                             <button
-                                className="action-button action-button-secondary"
-                                onClick={handlePrintPDF}
+                                className="botao-acao botao-acao-secundario"
+                                onClick={manipularGerarPDF}
                                 disabled={!fornecedorSelecionado || !numeroAmostra}
-                                aria-describedby="pdf-desc"
+                                aria-describedby="desc-pdf"
                             >
-                                <FileText className="button-icon" aria-hidden="true" size={20} />
+                                <FileText className="icone-botao" aria-hidden="true" size={20} />
                                 <span>Gerar PDF</span>
                             </button>
-                            <div id="pdf-desc" className="sr-only">
+
+                            <div id="desc-pdf" className="apenas-leitor-tela">
                                 Gerar relatório em PDF da avaliação realizada
                             </div>
                         </div>
 
                         {/* Mensagem de sucesso */}
-                        <div ref={successRef} className="sr-only" tabIndex="-1" role="status" aria-live="polite">
+                        <div ref={refSucesso} className="apenas-leitor-tela" tabIndex="-1" role="status" aria-live="polite">
                             Avaliação processada com sucesso
                         </div>
                     </div>
                 </main>
 
                 {/* Botão de voltar ao topo */}
-                {scrollPosition > 300 && (
+                {posicaoScroll > 300 && (
                     <button
-                        className="scroll-to-top"
-                        onClick={scrollToTop}
+                        className="voltar-ao-topo"
+                        onClick={voltarAoTopo}
                         title="Voltar ao topo (Ctrl + Home)"
                         aria-label="Voltar ao topo da página"
                     >

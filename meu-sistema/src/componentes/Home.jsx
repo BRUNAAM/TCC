@@ -9,84 +9,77 @@ import { Key, Coffee } from "lucide-react"
 
 const Home = () => {
     const { usuario } = useUser()
-    const navigate = useNavigate()
-    const mainRef = useRef(null)
+    const navegar = useNavigate()
+    const refPrincipal = useRef(null)
 
     useEffect(() => {
         if (usuario) {
-            navigate("/logado", { replace: true })
+            navegar("/logado", { replace: true })
         }
-    }, [usuario, navigate])
+    }, [usuario, navegar])
 
     // Função para pular para o conteúdo principal
-    const skipToMain = (e) => {
-        e.preventDefault()
-        if (mainRef.current) {
-            mainRef.current.focus()
+    const pularParaPrincipal = (evento) => {
+        evento.preventDefault()
+        if (refPrincipal.current) {
+            refPrincipal.current.focus()
         }
     }
 
     return (
         <>
-            {/* Skip Link para acessibilidade */}
-            <a href="#main-content" className="skip-link" onClick={skipToMain}>
+            {/* Link para pular conteúdo - acessibilidade */}
+            <a href="#conteudo-principal" className="link-pular" onClick={pularParaPrincipal}>
                 Pular para o conteúdo principal
             </a>
-
-            <div className="page-wrapper">
-                <header className="sr-only">
+            <div className="container-pagina">
+                <header className="apenas-leitor-tela">
                     <h1>Coffee Grader - Sistema de Avaliação Sensorial de Cafés</h1>
                 </header>
-
                 <main
-                    id="main-content"
-                    className="home-container"
-                    ref={mainRef}
+                    id="conteudo-principal"
+                    className="container-inicio"
+                    ref={refPrincipal}
                     tabIndex="-1"
                     role="main"
                     aria-label="Página inicial do Coffee Grader"
                 >
-                    <section className="home-content" aria-labelledby="welcome-title">
-                        <div className="logo-container">
+                    <section className="conteudo-inicio" aria-labelledby="titulo-boas-vindas">
+                        <div className="container-logo">
                             <img
                                 src={logo || "/placeholder.svg?height=180&width=180"}
                                 alt="Coffee Grader - Logotipo do sistema de avaliação sensorial de cafés"
-                                className="home-logo"
+                                className="logo-inicio"
                                 width="180"
                                 height="180"
                             />
                         </div>
-
-                        <div className="welcome-content">
-                            <h1 id="welcome-title" className="home-title">
+                        <div className="conteudo-boas-vindas">
+                            <h1 id="titulo-boas-vindas" className="titulo-inicio">
                                 Bem-vindo ao Coffee Grader
                             </h1>
-
-                            <div className="description-box" role="region" aria-label="Descrição do sistema">
-                                <p className="home-description">
+                            <div className="caixa-descricao" role="region" aria-label="Descrição do sistema">
+                                <p className="descricao-inicio">
                                     O sistema que vai te ajudar a administrar com praticidade e organização suas avaliações sensoriais de
                                     café.
                                 </p>
                             </div>
-
                             <button
-                                onClick={() => navigate("/login")}
-                                className="home-button"
+                                onClick={() => navegar("/login")}
+                                className="botao-inicio"
                                 type="button"
-                                aria-describedby="button-description"
+                                aria-describedby="descricao-botao"
                             >
-                                <Key className="button-icon" aria-hidden="true" size={18} />
+                                <Key className="icone-botao" aria-hidden="true" size={18} />
                                 <span>Entrar no Sistema</span>
                             </button>
-
-                            <div id="button-description" className="sr-only">
+                            <div id="descricao-botao" className="apenas-leitor-tela">
                                 Clique para acessar a página de login do sistema
                             </div>
                         </div>
-
-                        <footer className="app-version" role="contentinfo">
+                        <footer className="versao-aplicativo" role="contentinfo">
                             <p>
-                                <Coffee className="version-icon" aria-hidden="true" size={14} />
+                                <Coffee className="icone-versao" aria-hidden="true" size={14} />
                                 Coffee Grader versão 1.0
                             </p>
                         </footer>

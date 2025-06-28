@@ -14,57 +14,58 @@ const EsqueciSenha = () => {
     const [email, setEmail] = useState("")
     const [mensagem, setMensagem] = useState("")
     const [erro, setErro] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [carregando, setCarregando] = useState(false)
     const [emailEnviado, setEmailEnviado] = useState(false)
-    const [countdown, setCountdown] = useState(0)
-    const navigate = useNavigate()
+    const [contadorRegressivo, setContadorRegressivo] = useState(0)
+    const navegar = useNavigate()
 
     // Refs para gerenciamento de foco
-    const emailRef = useRef(null)
-    const erroRef = useRef(null)
-    const sucessoRef = useRef(null)
-    const mainRef = useRef(null)
+    const refEmail = useRef(null)
+    const refErro = useRef(null)
+    const refSucesso = useRef(null)
+    const refPrincipal = useRef(null)
 
     // Impede usuários logados de acessar
     useEffect(() => {
         if (usuario) {
-            navigate("/logado", { replace: true })
+            navegar("/logado", { replace: true })
         }
-    }, [usuario, navigate])
+    }, [usuario, navegar])
 
     // Foca no erro quando aparece
     useEffect(() => {
-        if (erro && erroRef.current) {
-            erroRef.current.focus()
+        if (erro && refErro.current) {
+            refErro.current.focus()
         }
     }, [erro])
 
     // Foca na mensagem de sucesso quando aparece
     useEffect(() => {
-        if (mensagem && sucessoRef.current) {
-            sucessoRef.current.focus()
+        if (mensagem && refSucesso.current) {
+            refSucesso.current.focus()
         }
     }, [mensagem])
 
     // Countdown para redirecionamento
     useEffect(() => {
-        let interval = null
-        if (emailEnviado && countdown > 0) {
-            interval = setInterval(() => {
-                setCountdown((prev) => prev - 1)
+        let intervalo = null
+        if (emailEnviado && contadorRegressivo > 0) {
+            intervalo = setInterval(() => {
+                setContadorRegressivo((anterior) => anterior - 1)
             }, 1000)
-        } else if (countdown === 0 && emailEnviado) {
-            navigate("/login")
+        } else if (contadorRegressivo === 0 && emailEnviado) {
+            navegar("/login")
         }
-        return () => {
-            if (interval) clearInterval(interval)
-        }
-    }, [countdown, emailEnviado, navigate])
 
-    const skipToMain = (e) => {
-        e.preventDefault()
-        if (mainRef.current) {
-            mainRef.current.focus()
+        return () => {
+            if (intervalo) clearInterval(intervalo)
+        }
+    }, [contadorRegressivo, emailEnviado, navegar])
+
+    const pularParaPrincipal = (evento) => {
+        evento.preventDefault()
+        if (refPrincipal.current) {
+            refPrincipal.current.focus()
         }
     }
 
@@ -73,40 +74,40 @@ const EsqueciSenha = () => {
         return regex.test(email)
     }
 
-    const handleResetPassword = async (e) => {
-        e.preventDefault()
+    const manipularRedefinirSenha = async (evento) => {
+        evento.preventDefault()
         setMensagem("")
         setErro("")
-        setLoading(true)
+        setCarregando(true)
 
-        const emailTrimmed = email.trim()
+        const emailLimpo = email.trim()
 
         // Validação de email
-        if (!emailTrimmed) {
+        if (!emailLimpo) {
             setErro("Por favor, digite seu e-mail.")
-            emailRef.current?.focus()
-            setLoading(false)
+            refEmail.current?.focus()
+            setCarregando(false)
             return
         }
 
-        if (!validarEmail(emailTrimmed)) {
+        if (!validarEmail(emailLimpo)) {
             setErro("Por favor, digite um e-mail válido.")
-            emailRef.current?.focus()
-            setLoading(false)
+            refEmail.current?.focus()
+            setCarregando(false)
             return
         }
 
         try {
-            await sendPasswordResetEmail(auth, emailTrimmed)
+            await sendPasswordResetEmail(auth, emailLimpo)
             setMensagem(
-                `Um link para redefinir sua senha foi enviado para ${emailTrimmed}. Verifique sua caixa de entrada e spam.`,
+                `Um link para redefinir sua senha foi enviado para ${emailLimpo}. Verifique sua caixa de entrada e spam.`,
             )
             setEmailEnviado(true)
-            setCountdown(5) // 5 segundos para redirecionamento
+            setContadorRegressivo(5) // 5 segundos para redirecionamento
 
             // Anunciar sucesso para leitores de tela
-            announceToScreenReader(
-                `E-mail de recuperação enviado com sucesso para ${emailTrimmed}. Você será redirecionado para a página de login em 5 segundos.`,
+            anunciarParaLeitorTela(
+                `E-mail de recuperação enviado com sucesso para ${emailLimpo}. Você será redirecionado para a página de login em 5 segundos.`,
             )
         } catch (error) {
             console.error("Erro ao enviar email de recuperação:", error)
@@ -116,53 +117,55 @@ const EsqueciSenha = () => {
                 "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
                 "auth/network-request-failed": "Erro de conexão. Verifique sua internet e tente novamente.",
             }
+
             setErro(mensagensErro[error.code] || "Erro inesperado ao enviar e-mail. Tente novamente mais tarde.")
         } finally {
-            setLoading(false)
+            setCarregando(false)
         }
     }
 
-    const handleClose = () => {
-        navigate("/login")
+    const manipularFechar = () => {
+        navegar("/login")
     }
 
-    const announceToScreenReader = (message) => {
-        const announcement = document.createElement("div")
-        announcement.setAttribute("aria-live", "polite")
-        announcement.setAttribute("aria-atomic", "true")
-        announcement.className = "sr-only"
-        announcement.textContent = message
-        document.body.appendChild(announcement)
+    const anunciarParaLeitorTela = (mensagem) => {
+        const anuncio = document.createElement("div")
+        anuncio.setAttribute("aria-live", "polite")
+        anuncio.setAttribute("aria-atomic", "true")
+        anuncio.className = "apenas-leitor-tela"
+        anuncio.textContent = mensagem
+        document.body.appendChild(anuncio)
+
         setTimeout(() => {
-            document.body.removeChild(announcement)
+            document.body.removeChild(anuncio)
         }, 1000)
     }
 
     return (
         <>
-            {/* Skip Link */}
-            <a href="#main-content" className="skip-link" onClick={skipToMain}>
+            {/* Link para pular conteúdo */}
+            <a href="#conteudo-principal" className="link-pular" onClick={pularParaPrincipal}>
                 Pular para o formulário de recuperação de senha
             </a>
 
-            <div className="page-wrapper">
-                <header className="sr-only">
+            <div className="container-pagina">
+                <header className="apenas-leitor-tela">
                     <h1>Coffee Grader - Recuperação de Senha</h1>
                 </header>
 
                 <main
-                    id="main-content"
-                    className="esqueci-container"
-                    ref={mainRef}
+                    id="conteudo-principal"
+                    className="container-esqueci"
+                    ref={refPrincipal}
                     tabIndex="-1"
                     role="main"
                     aria-label="Página de recuperação de senha do Coffee Grader"
                 >
-                    <div className="esqueci-box" role="region" aria-labelledby="esqueci-title">
-                        <div className="esqueci-header">
+                    <div className="caixa-esqueci" role="region" aria-labelledby="titulo-esqueci">
+                        <div className="cabecalho-esqueci">
                             <button
-                                className="fechar"
-                                onClick={handleClose}
+                                className="botao-fechar"
+                                onClick={manipularFechar}
                                 aria-label="Fechar formulário de recuperação e voltar ao login"
                                 type="button"
                             >
@@ -170,85 +173,85 @@ const EsqueciSenha = () => {
                             </button>
                         </div>
 
-                        <div className="logo-container">
+                        <div className="container-logo">
                             <img
                                 src={logo || "/placeholder.svg?height=100&width=100"}
                                 alt="Coffee Grader - Sistema de avaliação sensorial de cafés"
-                                className="esqueci-logo"
+                                className="logo-esqueci"
                                 width="100"
                                 height="100"
                             />
                         </div>
 
-                        <h1 id="esqueci-title" className="esqueci-title">
+                        <h1 id="titulo-esqueci" className="titulo-esqueci">
                             Recuperar Senha
                         </h1>
 
                         {/* Informações sobre o processo */}
-                        <div className="info-box" role="region" aria-label="Informações sobre recuperação de senha">
-                            <Info className="info-icon" aria-hidden="true" size={18} />
-                            <p className="info-text">
+                        <div className="caixa-info" role="region" aria-label="Informações sobre recuperação de senha">
+                            <Info className="icone-info" aria-hidden="true" size={18} />
+                            <p className="texto-info">
                                 Digite seu e-mail cadastrado e enviaremos um link seguro para redefinir sua senha.
                             </p>
                         </div>
 
-                        <form onSubmit={handleResetPassword} className="esqueci-form" noValidate>
-                            <div className="input-group">
-                                <label htmlFor="email" className="input-label">
+                        <form onSubmit={manipularRedefinirSenha} className="formulario-esqueci" noValidate>
+                            <div className="grupo-input">
+                                <label htmlFor="email" className="rotulo-input">
                                     E-mail Cadastrado *
                                 </label>
-                                <div className="input-wrapper">
-                                    <Mail className="input-icon" aria-hidden="true" size={18} />
+                                <div className="wrapper-input">
+                                    <Mail className="icone-input" aria-hidden="true" size={18} />
                                     <input
-                                        ref={emailRef}
+                                        ref={refEmail}
                                         id="email"
                                         type="email"
                                         placeholder="Digite seu e-mail cadastrado"
-                                        className="esqueci-input"
+                                        className="input-esqueci"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                         autoComplete="email"
-                                        aria-describedby="email-desc"
+                                        aria-describedby="descricao-email"
                                         aria-invalid={erro && erro.includes("e-mail") ? "true" : "false"}
                                         disabled={emailEnviado}
                                     />
                                 </div>
-                                <div id="email-desc" className="sr-only">
+                                <div id="descricao-email" className="apenas-leitor-tela">
                                     Digite o e-mail que você usou para criar sua conta
                                 </div>
                             </div>
 
                             {erro && (
                                 <div
-                                    ref={erroRef}
-                                    id="error-message"
-                                    className="erro-container"
+                                    ref={refErro}
+                                    id="mensagem-erro"
+                                    className="container-erro"
                                     role="alert"
                                     aria-live="assertive"
                                     tabIndex="-1"
                                 >
-                                    <AlertCircle className="erro-icon" aria-hidden="true" size={18} />
-                                    <p className="erro-mensagem">{erro}</p>
+                                    <AlertCircle className="icone-erro" aria-hidden="true" size={18} />
+                                    <p className="mensagem-erro">{erro}</p>
                                 </div>
                             )}
 
                             {mensagem && (
                                 <div
-                                    ref={sucessoRef}
-                                    id="success-message"
-                                    className="sucesso-container"
+                                    ref={refSucesso}
+                                    id="mensagem-sucesso"
+                                    className="container-sucesso"
                                     role="status"
                                     aria-live="polite"
                                     tabIndex="-1"
                                 >
-                                    <CheckCircle className="sucesso-icon" aria-hidden="true" size={18} />
-                                    <div className="sucesso-content">
-                                        <p className="sucesso-mensagem">{mensagem}</p>
-                                        {countdown > 0 && (
-                                            <div className="countdown" aria-live="polite">
-                                                <Clock className="countdown-icon" aria-hidden="true" size={14} />
-                                                <span>Redirecionando em {countdown} segundos...</span>
+                                    <CheckCircle className="icone-sucesso" aria-hidden="true" size={18} />
+                                    <div className="conteudo-sucesso">
+                                        <p className="mensagem-sucesso">{mensagem}</p>
+                                        {contadorRegressivo > 0 && (
+                                            <div className="contador-regressivo" aria-live="polite">
+                                                <Clock className="icone-contador" aria-hidden="true" size={14} />
+                                                <span>Redirecionando em {contadorRegressivo} segundos...</span>
                                             </div>
                                         )}
                                     </div>
@@ -256,31 +259,31 @@ const EsqueciSenha = () => {
                             )}
 
                             <button
-                                className={`esqueci-botao ${loading ? "esqueci-botao-loading" : ""}`}
+                                className={`botao-esqueci ${carregando ? "botao-esqueci-carregando" : ""}`}
                                 type="submit"
-                                disabled={loading || emailEnviado}
-                                aria-describedby="botao-desc"
+                                disabled={carregando || emailEnviado}
+                                aria-describedby="descricao-botao"
                             >
-                                {loading ? (
+                                {carregando ? (
                                     <>
-                                        <Loader2 className="button-icon loading-icon" aria-hidden="true" size={18} />
+                                        <Loader2 className="icone-botao icone-carregando" aria-hidden="true" size={18} />
                                         <span>Enviando...</span>
                                     </>
                                 ) : emailEnviado ? (
                                     <>
-                                        <CheckCircle className="button-icon" aria-hidden="true" size={18} />
+                                        <CheckCircle className="icone-botao" aria-hidden="true" size={18} />
                                         <span>E-mail Enviado</span>
                                     </>
                                 ) : (
                                     <>
-                                        <RefreshCw className="button-icon" aria-hidden="true" size={18} />
+                                        <RefreshCw className="icone-botao" aria-hidden="true" size={18} />
                                         <span>Enviar Link de Recuperação</span>
                                     </>
                                 )}
                             </button>
 
-                            <div id="botao-desc" className="sr-only">
-                                {loading
+                            <div id="descricao-botao" className="apenas-leitor-tela">
+                                {carregando
                                     ? "Enviando e-mail de recuperação, aguarde..."
                                     : emailEnviado
                                         ? "E-mail de recuperação enviado com sucesso"
@@ -289,9 +292,9 @@ const EsqueciSenha = () => {
                         </form>
 
                         {/* Instruções adicionais */}
-                        <div className="instructions" role="region" aria-label="Instruções adicionais">
-                            <h2 className="instructions-title">Próximos passos:</h2>
-                            <ol className="instructions-list">
+                        <div className="instrucoes" role="region" aria-label="Instruções adicionais">
+                            <h2 className="titulo-instrucoes">Próximos passos:</h2>
+                            <ol className="lista-instrucoes">
                                 <li>Verifique sua caixa de entrada</li>
                                 <li>Procure também na pasta de spam</li>
                                 <li>Clique no link recebido</li>
@@ -299,27 +302,27 @@ const EsqueciSenha = () => {
                             </ol>
                         </div>
 
-                        <div className="login-link">
+                        <div className="link-login">
                             <p>
                                 Lembrou sua senha?{" "}
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/login")}
-                                    className="login-link-button"
-                                    aria-describedby="login-link-desc"
+                                    onClick={() => navegar("/login")}
+                                    className="botao-link-login"
+                                    aria-describedby="descricao-link-login"
                                 >
                                     <ArrowLeft size={14} aria-hidden="true" />
                                     Voltar para login
                                 </button>
                             </p>
-                            <div id="login-link-desc" className="sr-only">
+                            <div id="descricao-link-login" className="apenas-leitor-tela">
                                 Clique para voltar à página de login
                             </div>
                         </div>
 
-                        <footer className="app-version" role="contentinfo">
+                        <footer className="versao-aplicativo" role="contentinfo">
                             <p>
-                                <Coffee className="version-icon" aria-hidden="true" size={14} />
+                                <Coffee className="icone-versao" aria-hidden="true" size={14} />
                                 Coffee Grader versão 1.0
                             </p>
                         </footer>
@@ -331,4 +334,3 @@ const EsqueciSenha = () => {
 }
 
 export default EsqueciSenha
-    
