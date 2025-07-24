@@ -1,30 +1,13 @@
 "use client"
-
 import { useState, useEffect, useCallback } from "react"
 
 export function useLocalStorage(key, initialValue) {
-    // ✅ MOVENDO readValue para useCallback para evitar o warning
-    const readValue = useCallback(() => {
-        if (typeof window === "undefined") {
-            return initialValue
-        }
-
-        try {
-            const item = window.localStorage.getItem(key)
-            return item ? JSON.parse(item) : initialValue
-        } catch (error) {
-            console.warn(`Erro ao ler localStorage key "${key}":`, error)
-            return initialValue
-        }
-    }, [key, initialValue])
-
     // Estado que sincroniza com localStorage
     const [storedValue, setStoredValue] = useState(() => {
         // ✅ INICIALIZANDO diretamente no useState para evitar problemas
         if (typeof window === "undefined") {
             return initialValue
         }
-
         try {
             const item = window.localStorage.getItem(key)
             return item ? JSON.parse(item) : initialValue
@@ -40,10 +23,8 @@ export function useLocalStorage(key, initialValue) {
             try {
                 // Permite que value seja uma função para consistência com useState
                 const valueToStore = value instanceof Function ? value(storedValue) : value
-
                 // Salva no estado
                 setStoredValue(valueToStore)
-
                 // Salva no localStorage
                 if (typeof window !== "undefined") {
                     window.localStorage.setItem(key, JSON.stringify(valueToStore))

@@ -5,13 +5,11 @@ body {
   padding: 0;
   color: #ffffff;
 }
-
 body {
   font-family: var(--fonte-principal);
   background-color: var(--cor-primaria);
   color: var(--cor-texto);
 }
-
 .historico-scaa-container {
   max-width: 1000px;
   margin: 40px auto;
@@ -284,28 +282,23 @@ body,
     justify-content: space-between;
     align-items: center;
   }
-
   .botoes-topo button {
     font-size: 14px;
     padding: 8px 12px;
   }
-
   .historico-scaa-container {
     padding: 15px;
     margin: 20px auto;
   }
-
   .avaliacoes-table th,
   .avaliacoes-table td {
     font-size: 13px;
     padding: 10px 8px;
   }
-
   .acoes-botoes {
     flex-direction: column;
     gap: 5px;
   }
-
   .botao-excluir,
   .botao-imprimir-individual {
     font-size: 14px;
@@ -320,21 +313,17 @@ body,
     font-size: 13px;
     padding: 6px 10px;
   }
-
   .historico-header h2 {
     font-size: 20px;
   }
-
   .avaliacoes-table {
     min-width: 600px;
   }
-
   .avaliacoes-table th,
   .avaliacoes-table td {
     font-size: 12px;
     padding: 8px 6px;
   }
-
   .botao-nova-avaliacao {
     font-size: 14px;
     padding: 12px 20px;
@@ -382,17 +371,14 @@ body,
   .botao-nova-avaliacao {
     display: none !important;
   }
-
   .historico-scaa-container {
     background: white !important;
     color: black !important;
   }
-
   .avaliacoes-table th {
     background: #f0f0f0 !important;
     color: black !important;
   }
-
   .avaliacoes-table td {
     background: white !important;
     color: black !important;

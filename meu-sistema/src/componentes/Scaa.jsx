@@ -10,7 +10,7 @@ import GraoCafe from "./GraoCafe"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import "bootstrap-icons/font/bootstrap-icons.css"
-import logo from "../assets/logopdf.png"
+import logo from "../assets/logopdf.png" // Certifique-se de que o caminho para o logo está correto
 import { useData } from "../context/DataContext"
 // ✅ NOVOS IMPORTS PARA PERSISTÊNCIA
 import { useLocalStorage } from "../hooks/use-local-storage"
@@ -24,11 +24,11 @@ const novaEstruturaAvaliacao = (overrides = {}) => {
         fornecedorSelecionado: "",
         numeroAmostra: "",
         torraSelecionada: "",
-        observacoes: "",
-        notasSensorias: "",
-        obsAcidez: "",
-        obsDry: "",
-        obsBreak: "",
+        observacoes: "", // Observações gerais para toda a avaliação
+        notasSensorias: "", // Campo existente para notas sensoriais gerais
+        obsAcidez: "", // Campo existente para observação de acidez
+        obsDry: "", // Campo existente para observação de dry
+        obsBreak: "", // Campo existente para observação de break
         dry: 2,
         breakValue: 2,
         nivelAcidez: 2,
@@ -48,6 +48,23 @@ const novaEstruturaAvaliacao = (overrides = {}) => {
         defeitosLeves: 0,
         defeitosGraves: 0,
         isSaved: false,
+        fazenda: "",
+        variedade: "",
+        processo: "",
+        altitude: "",
+        umidade: "",
+        densidade: "",
+        // ✅ NOVOS CAMPOS DE OBSERVAÇÃO ESPECÍFICOS POR SEÇÃO
+        obsInformacoesGerais: "", // Para a seção "Informações Gerais"
+        obsTorra: "", // Para a seção "SELECIONE A COR DA TORRA"
+        obsXicaras: "", // Para a seção "Pontuação dos atributos de xícaras"
+        obsDefeitos: "", // Para a seção "Defeitos"
+        obsCorpo: "", // ✅ Novo campo para observação de Corpo
+        obsEquilibrio: "", // ✅ Novo campo para observação de Equilíbrio
+        obsAvaliacaoPessoal: "", // ✅ Novo campo para observação de Avaliação Pessoal
+        obsAromaFragrancia: "", // ✅ Novo campo para observação de Aroma/Fragrância
+        obsSabor: "", // ✅ Novo campo para observação de Sabor
+        obsFinalizacao: "", // ✅ Novo campo para observação de Finalização
         ...overrides,
     }
 }
@@ -58,15 +75,14 @@ const Scaa = () => {
         const handleError = (error) => {
             console.error("Erro capturado:", error)
         }
-
         window.addEventListener("error", handleError)
         window.addEventListener("unhandledrejection", handleError)
-
         return () => {
             window.removeEventListener("error", handleError)
             window.removeEventListener("unhandledrejection", handleError)
         }
     }, [])
+
     // ✅ SUBSTITUINDO useState POR useLocalStorage PARA PERSISTÊNCIA
     const [avaliacoes, setAvaliacoes] = useLocalStorage("scaa-avaliacoes", [])
     const [abaAtiva, setAbaAtiva] = useLocalStorage("scaa-aba-ativa", null)
@@ -102,7 +118,7 @@ const Scaa = () => {
 
         return () => {
             window.removeEventListener("popstate", bloquearVoltar)
-            window.removeEventListener("scroll", handleScroll)
+            window.removeEventListener("scroll", bloquearVoltar)
             if (autoSaveTimeoutRef.current) {
                 clearTimeout(autoSaveTimeoutRef.current)
             }
@@ -137,7 +153,6 @@ const Scaa = () => {
                 console.error("Erro ao inicializar avaliação:", error)
             }
         }
-
         inicializarAvaliacao()
     }, [avaliacoes.length, abaAtiva, setAvaliacoes, setAbaAtiva])
 
@@ -150,7 +165,6 @@ const Scaa = () => {
                 const diferencaHoras = (agora.getTime() - dataAvaliacao.getTime()) / (1000 * 60 * 60)
                 return diferencaHoras < 24 // Avaliações das últimas 24 horas
             })
-
             if (avaliacoesRecentes.length > 0) {
                 setMostrarRecuperacao(true)
             }
@@ -166,11 +180,9 @@ const Scaa = () => {
             isSaved: true,
             firebaseId: av.id,
         }))
-
         setAvaliacoes(avaliacoesRecuperadas)
         setAbaAtiva(0)
         setMostrarRecuperacao(false)
-
         alert(`${avaliacoesRecuperadas.length} avaliação(ões) recuperada(s) com sucesso!`)
     }
 
@@ -188,7 +200,6 @@ const Scaa = () => {
     // Todas as funções originais mantidas iguais
     const handleNotaChange = (categoria, valor) => {
         if (!avaliacaoAtual) return
-
         setAvaliacoes((prev) => {
             const newAvaliacoes = [...prev]
             newAvaliacoes[abaAtiva] = {
@@ -205,12 +216,10 @@ const Scaa = () => {
 
     const toggleCheckbox = (atributo, index) => {
         if (!avaliacaoAtual) return
-
         setAvaliacoes((prev) => {
             const newAvaliacoes = [...prev]
             const newArray = [...newAvaliacoes[abaAtiva].notas[atributo]]
             newArray[index] = !newArray[index]
-
             newAvaliacoes[abaAtiva] = {
                 ...newAvaliacoes[abaAtiva],
                 notas: {
@@ -239,21 +248,17 @@ const Scaa = () => {
 
     const calcularPontuacaoFinal = () => {
         if (!avaliacaoAtual) return "0.00"
-
         let total = 0
-
         Object.keys(avaliacaoAtual.notas).forEach((key) => {
             if (!["doçura", "uniformidade", "xicaraLimpa"].includes(key)) {
                 total += avaliacaoAtual.notas[key]
             }
         })
-
         total += calcularPontuacaoXicara("xicaraLimpa")
         total += calcularPontuacaoXicara("uniformidade")
         total += calcularPontuacaoXicara("doçura")
         total -= avaliacaoAtual.defeitosLeves * 2
         total -= avaliacaoAtual.defeitosGraves * 4
-
         return total.toFixed(2)
     }
 
@@ -267,7 +272,6 @@ const Scaa = () => {
         try {
             const authInstance = getAuth()
             const user = authInstance.currentUser
-
             if (!user) {
                 console.warn("Usuário não autenticado.")
                 return null
@@ -293,15 +297,13 @@ const Scaa = () => {
                     total += avaliacao.notas[key]
                 }
             })
-
-            const calcularPontuacaoXicara = (atributo) => {
+            const calcularPontuacaoXicaraInterna = (atributo) => {
                 const marcados = avaliacao.notas[atributo].filter((v) => v).length
                 return 10 - marcados * 2
             }
-
-            total += calcularPontuacaoXicara("xicaraLimpa")
-            total += calcularPontuacaoXicara("uniformidade")
-            total += calcularPontuacaoXicara("doçura")
+            total += calcularPontuacaoXicaraInterna("xicaraLimpa")
+            total += calcularPontuacaoXicaraInterna("uniformidade")
+            total += calcularPontuacaoXicaraInterna("doçura")
             total -= totalDescontos
 
             const avaliacaoParaSalvar = {
@@ -314,9 +316,7 @@ const Scaa = () => {
             }
 
             const docRef = await addDoc(collection(db, "usuarios", user.uid, "avaliacoes_scaa"), avaliacaoParaSalvar)
-
             console.log(`Avaliação salva ${isFinalSave ? "manualmente" : "automaticamente"} com ID:`, docRef.id)
-
             return docRef.id
         } catch (error) {
             console.error("Erro ao salvar avaliação:", error)
@@ -326,22 +326,18 @@ const Scaa = () => {
 
     const handleSalvarAvaliacao = async () => {
         if (!avaliacaoAtual || isSaving) return
-
         if (!avaliacaoAtual.fornecedorSelecionado || !avaliacaoAtual.numeroAmostra || !avaliacaoAtual.torraSelecionada) {
             alert("Por favor, preencha todos os campos obrigatórios.")
             return
         }
 
         setIsSaving(true)
-
         try {
             if (autoSaveTimeoutRef.current) {
                 clearTimeout(autoSaveTimeoutRef.current)
                 autoSaveTimeoutRef.current = null
             }
-
             const docId = await salvarAvaliacaoFirebase(avaliacaoAtual, true)
-
             if (docId) {
                 setAvaliacoes((prev) => {
                     const newAvaliacoes = [...prev]
@@ -352,7 +348,6 @@ const Scaa = () => {
                     }
                     return newAvaliacoes
                 })
-
                 alert("Avaliação salva com sucesso!")
                 handlePrintPDF()
             }
@@ -368,7 +363,6 @@ const Scaa = () => {
         const novaAvaliacao = novaEstruturaAvaliacao({
             avaliador: avaliacoes.length > 0 && avaliacoes[0].avaliador ? avaliacoes[0].avaliador : "",
         })
-
         setAvaliacoes((prev) => [...prev, novaAvaliacao])
         setAbaAtiva(avaliacoes.length)
     }
@@ -379,11 +373,9 @@ const Scaa = () => {
             if (autoSaveTimeoutRef.current) {
                 clearTimeout(autoSaveTimeoutRef.current)
             }
-
             autoSaveTimeoutRef.current = setTimeout(async () => {
                 try {
                     const avaliacaoAtual = avaliacoes[abaAtiva]
-
                     if (
                         !avaliacaoAtual.isSaved &&
                         avaliacaoAtual.fornecedorSelecionado &&
@@ -409,7 +401,7 @@ const Scaa = () => {
         }
     }, [avaliacoes, abaAtiva, salvarAvaliacaoFirebase])
 
-    // Função handlePrintPDF mantida igual (muito longa, mantendo original)
+    // Função handlePrintPDF atualizada para incluir todos os dados e novas observações
     const handlePrintPDF = () => {
         if (!avaliacaoAtual) return
 
@@ -467,9 +459,7 @@ const Scaa = () => {
                 ["Finalização", avaliacaoAtual.notas.finalizacao],
                 ["Acidez", avaliacaoAtual.notas.acidez],
             ]
-
             if (avaliacaoAtual.obsAcidez) corpoNotas.push(["Tipo de Acidez", avaliacaoAtual.obsAcidez])
-
             corpoNotas.push(
                 ["Corpo", avaliacaoAtual.notas.corpo],
                 ["Equilíbrio", avaliacaoAtual.notas.equilibrio],
@@ -479,6 +469,7 @@ const Scaa = () => {
             const descontos = calcularTotalDescontos()
             const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
 
+            // Tabela 1: Identificação e Informações Gerais
             autoTable(
                 docPDF,
                 autoTableOptions({
@@ -489,6 +480,13 @@ const Scaa = () => {
                         ["Fornecedor", avaliacaoAtual.fornecedorSelecionado || "—"],
                         ["Nº Amostra", avaliacaoAtual.numeroAmostra || "—"],
                         ["Torra", avaliacaoAtual.torraSelecionada || "—"],
+                        ["Fazenda", avaliacaoAtual.fazenda || "—"],
+                        ["Variedade", avaliacaoAtual.variedade || "—"],
+                        ["Processo", avaliacaoAtual.processo || "—"],
+                        ["Altitude (m)", avaliacaoAtual.altitude || "—"],
+                        ["Umidade (%)", avaliacaoAtual.umidade || "—"],
+                        ["Densidade (g/L)", avaliacaoAtual.densidade || "—"],
+                        ["Obs. Informações Gerais", avaliacaoAtual.obsInformacoesGerais || "—"], // ✅ Adicionado
                         [
                             { content: "Pontuação Final", styles: { fontStyle: "bold" } },
                             { content: calcularPontuacaoFinal(), styles: { fontStyle: "bold" } },
@@ -501,6 +499,7 @@ const Scaa = () => {
                 }),
             )
 
+            // Tabela 2: Atributos Sensoriais
             autoTable(
                 docPDF,
                 autoTableOptions({
@@ -509,26 +508,74 @@ const Scaa = () => {
                 }),
             )
 
+            // Tabela 3: Dry, Break, Nível de Acidez, Nível de Corpo, Defeitos
             autoTable(
                 docPDF,
                 autoTableOptions({
                     head: [["Critério", "Valor"]],
                     body: [
                         ["Dry", intensidades[avaliacaoAtual.dry] || "—"],
+                        ["Observações Dry", avaliacaoAtual.obsDry || "—"],
                         ["Break", intensidades[avaliacaoAtual.breakValue] || "—"],
+                        ["Observações Break", avaliacaoAtual.obsBreak || "—"],
                         ["Nível de Acidez", intensidades[avaliacaoAtual.nivelAcidez] || "—"],
                         ["Nível de Corpo", intensidades[avaliacaoAtual.nivelCorpo] || "—"],
+                        ["Observações Torra", avaliacaoAtual.obsTorra || "—"], // ✅ Adicionado
                         ["Defeitos Leves", `-${avaliacaoAtual.defeitosLeves * 2}`],
                         ["Defeitos Graves", `-${avaliacaoAtual.defeitosGraves * 4}`],
+                        ["Observações Defeitos", avaliacaoAtual.obsDefeitos || "—"], // ✅ Adicionado
+                        ["Obs. Corpo", avaliacaoAtual.obsCorpo || "—"], // ✅ Adicionado
+                        ["Obs. Equilíbrio", avaliacaoAtual.obsEquilibrio || "—"], // ✅ Adicionado
+                        ["Obs. Avaliação Pessoal", avaliacaoAtual.obsAvaliacaoPessoal || "—"], // ✅ Adicionado
+                        ["Obs. Aroma / Fragrância", avaliacaoAtual.obsAromaFragrancia || "—"], // ✅ Adicionado
+                        ["Obs. Sabor", avaliacaoAtual.obsSabor || "—"], // ✅ Adicionado
+                        ["Obs. Finalização", avaliacaoAtual.obsFinalizacao || "—"], // ✅ Adicionado
                         ["Total de Pontos Descontados", `-${descontos}`],
                     ],
                 }),
             )
 
+            // Tabela 4: Detalhes de Doçura, Uniformidade, Xícara Limpa
+            const getCheckboxStatus = (arr) => {
+                return arr.map((checked, i) => `Copo ${i + 1}: ${checked ? "✓" : "✗"}`).join(", ")
+            }
+
             autoTable(
                 docPDF,
                 autoTableOptions({
-                    head: [["Observações", "Conteúdo"]],
+                    head: [["Atributo de Xícara", "Status dos Copos", "Pontuação"]],
+                    body: [
+                        ["Doçura", getCheckboxStatus(avaliacaoAtual.notas.doçura), calcularPontuacaoXicara("doçura")],
+                        [
+                            "Uniformidade",
+                            getCheckboxStatus(avaliacaoAtual.notas.uniformidade),
+                            calcularPontuacaoXicara("uniformidade"),
+                        ],
+                        [
+                            "Xícara Limpa",
+                            getCheckboxStatus(avaliacaoAtual.notas.xicaraLimpa),
+                            calcularPontuacaoXicara("xicaraLimpa"),
+                        ],
+                        [
+                            { content: "Pontuação Total das Xícaras", styles: { fontStyle: "bold" } },
+                            "",
+                            { content: calcularPontuacaoXicaras().toFixed(2), styles: { fontStyle: "bold" } },
+                        ],
+                        ["Observações Xícaras", { content: avaliacaoAtual.obsXicaras || "—", colSpan: 2 }], // ✅ Adicionado
+                    ],
+                    columnStyles: {
+                        0: { cellWidth: 40 },
+                        1: { cellWidth: 80 },
+                        2: { cellWidth: 30, halign: "center" },
+                    },
+                }),
+            )
+
+            // Tabela 5: Observações Gerais (mantida para observações que não se encaixam nas seções específicas)
+            autoTable(
+                docPDF,
+                autoTableOptions({
+                    head: [["Observações Gerais", "Conteúdo"]],
                     body: [["Observações Gerais", avaliacaoAtual.observacoes || "—"]],
                 }),
             )
@@ -536,7 +583,6 @@ const Scaa = () => {
             const assinaturaY = docPDF.lastAutoTable.finalY + 30
             const linhaLargura = 80
             const linhaInicioX = (pageWidth - linhaLargura) / 2
-
             docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
             docPDF.setFont("times", "normal")
             docPDF.setFontSize(12)
@@ -547,7 +593,6 @@ const Scaa = () => {
 
     const updateField = (field, value) => {
         if (abaAtiva === null) return
-
         setAvaliacoes((prev) => {
             const newAvaliacoes = [...prev]
             newAvaliacoes[abaAtiva] = {
@@ -583,7 +628,6 @@ const Scaa = () => {
                         </button>
                     </div>
                 </div>
-
                 {/* ✅ MODAL DE RECUPERAÇÃO DE DADOS */}
                 {mostrarRecuperacao && (
                     <div className="modal-recuperacao">
@@ -602,7 +646,6 @@ const Scaa = () => {
                         </div>
                     </div>
                 )}
-
                 <div className="scaa-form">
                     <p>Carregando avaliação...</p>
                     <button onClick={criarNovaAvaliacao}>Criar Nova Avaliação</button>
@@ -624,7 +667,6 @@ const Scaa = () => {
                     </button>
                 </div>
             </div>
-
             {/* ✅ INDICADOR DE STATUS DE PERSISTÊNCIA */}
             <div className="status-persistencia">
                 <span className={`status-indicator ${avaliacaoAtual.isSaved ? "saved" : "unsaved"}`}>
@@ -632,7 +674,6 @@ const Scaa = () => {
                 </span>
                 <span className="auto-save-info">Os dados são salvos automaticamente no seu navegador</span>
             </div>
-
             <div className={`abas-sticky-container ${scrollPosition > 100 ? "compact-mode" : ""}`}>
                 <div className="abas">
                     {avaliacoes.map((av, index) => {
@@ -656,7 +697,6 @@ const Scaa = () => {
                     </button>
                 </div>
             </div>
-
             <div className="scaa-form">
                 <div className="campos-form">
                     <div className="campo-form">
@@ -667,12 +707,10 @@ const Scaa = () => {
                             onChange={(e) => updateField("avaliador", e.target.value)}
                         />
                     </div>
-
                     <div className="campo-form">
                         <label>Data:</label>
                         <input type="date" value={avaliacaoAtual.data} onChange={(e) => updateField("data", e.target.value)} />
                     </div>
-
                     <div className="campo-form">
                         <label>Fornecedor:</label>
                         <div className="input-com-botao">
@@ -693,7 +731,6 @@ const Scaa = () => {
                             </button>
                         </div>
                     </div>
-
                     <div className="campo-form">
                         <label>N° da Amostra:</label>
                         <input
@@ -703,14 +740,71 @@ const Scaa = () => {
                             placeholder="Digite o número da amostra"
                         />
                     </div>
+                    {/* Novos campos de informações gerais */}
+                    <div className="campo-form">
+                        <label>Fazenda:</label>
+                        <input
+                            type="text"
+                            value={avaliacaoAtual.fazenda}
+                            onChange={(e) => updateField("fazenda", e.target.value)}
+                            placeholder="Nome da fazenda"
+                        />
+                    </div>
+                    <div className="campo-form">
+                        <label>Variedade:</label>
+                        <input
+                            type="text"
+                            value={avaliacaoAtual.variedade}
+                            onChange={(e) => updateField("variedade", e.target.value)}
+                            placeholder="Ex: Catuaí, Bourbon"
+                        />
+                    </div>
+                    <div className="campo-form">
+                        <label>Processo:</label>
+                        <input
+                            type="text"
+                            value={avaliacaoAtual.processo}
+                            onChange={(e) => updateField("processo", e.target.value)}
+                            placeholder="Ex: Natural, Lavado"
+                        />
+                    </div>
+                    <div className="campo-form">
+                        <label>Altitude (m):</label>
+                        <input
+                            type="number"
+                            value={avaliacaoAtual.altitude}
+                            onChange={(e) => updateField("altitude", e.target.value)}
+                            placeholder="Ex: 1200"
+                        />
+                    </div>
+                    <div className="campo-form">
+                        <label>Umidade (%):</label>
+                        <input
+                            type="number"
+                            value={avaliacaoAtual.umidade}
+                            onChange={(e) => updateField("umidade", e.target.value)}
+                            step="0.1"
+                            placeholder="Ex: 11.5"
+                        />
+                    </div>
+                    <div className="campo-form">
+                        <label>Densidade (g/L):</label>
+                        <input
+                            type="number"
+                            value={avaliacaoAtual.densidade}
+                            onChange={(e) => updateField("densidade", e.target.value)}
+                            step="0.1"
+                            placeholder="Ex: 650"
+                        />
+                    </div>
                 </div>
-
+                {/* ✅ Novo campo de observação para Informações Gerais */}
                 <div className="campo-form observacoes-campo">
-                    <label>Observações:</label>
+                    <label>Observações das Informações Gerais:</label>
                     <textarea
-                        value={avaliacaoAtual.observacoes}
-                        onChange={(e) => updateField("observacoes", e.target.value)}
-                        placeholder="Adicione observações..."
+                        value={avaliacaoAtual.obsInformacoesGerais}
+                        onChange={(e) => updateField("obsInformacoesGerais", e.target.value)}
+                        placeholder="Adicione observações específicas sobre as informações gerais..."
                         className="observacoes-textarea"
                     />
                 </div>
@@ -735,8 +829,17 @@ const Scaa = () => {
                             </div>
                         ))}
                     </div>
+                    {/* ✅ Novo campo de observação para Torra */}
+                    <div className="campo-form observacoes-campo">
+                        <label>Observações da Torra:</label>
+                        <textarea
+                            value={avaliacaoAtual.obsTorra}
+                            onChange={(e) => updateField("obsTorra", e.target.value)}
+                            placeholder="Adicione observações sobre a torra..."
+                            className="observacoes-textarea"
+                        />
+                    </div>
                 </div>
-
                 {/* Sliders verticais (DRY, BREAK) - mantidos iguais */}
                 <div className="vertical-sliders-container">
                     <div className="vertical-slider-box">
@@ -789,7 +892,6 @@ const Scaa = () => {
                             />
                         </div>
                     </div>
-
                     <div className="vertical-slider-box">
                         <h4 className="break">
                             Break <br /> "Aroma de Quebra de xicara"
@@ -841,7 +943,6 @@ const Scaa = () => {
                         </div>
                     </div>
                 </div>
-
                 {/* Todos os sliders horizontais mantidos iguais */}
                 <div className="nota-container">
                     <label>Aroma / Fragrancia:</label>
@@ -864,8 +965,13 @@ const Scaa = () => {
                             </span>
                         ))}
                     </div>
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Aroma / Fragrância"
+                        value={avaliacaoAtual.obsAromaFragrancia}
+                        onChange={(e) => updateField("obsAromaFragrancia", e.target.value)}
+                    />
                 </div>
-
                 <div className="nota-container">
                     <label>Sabor:</label>
                     <input
@@ -887,8 +993,13 @@ const Scaa = () => {
                             </span>
                         ))}
                     </div>
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Sabor"
+                        value={avaliacaoAtual.obsSabor}
+                        onChange={(e) => updateField("obsSabor", e.target.value)}
+                    />
                 </div>
-
                 <div className="nota-container">
                     <label>Finalização:</label>
                     <input
@@ -910,8 +1021,13 @@ const Scaa = () => {
                             </span>
                         ))}
                     </div>
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Finalização"
+                        value={avaliacaoAtual.obsFinalizacao}
+                        onChange={(e) => updateField("obsFinalizacao", e.target.value)}
+                    />
                 </div>
-
                 <div className="nota-cafe-container">
                     <label>Notas Sensoriais:</label>
                     <textarea
@@ -921,12 +1037,10 @@ const Scaa = () => {
                         className="notas-sensoriais-textarea"
                     />
                 </div>
-
                 <div className="vertical-sliders-container vertical-slider-single">
                     <div className="titulo-acidez-com-botao">
                         <h4>Nível de Acidez</h4>
                     </div>
-
                     <div className="slider-row">
                         <div className="slider-labels">
                             {intensidades
@@ -965,7 +1079,6 @@ const Scaa = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="nota-container">
                     <label>Acidez:</label>
                     <button
@@ -976,7 +1089,6 @@ const Scaa = () => {
                     >
                         <i className="bi bi-info-circle-fill"></i>
                     </button>
-
                     {mostrarTiposAcidez && (
                         <div className="caixa-tipos-acidez">
                             <button className="fechar-info" onClick={() => setMostrarTiposAcidez(false)}>
@@ -1029,7 +1141,6 @@ const Scaa = () => {
                         onChange={(e) => updateField("obsAcidez", e.target.value)}
                     />
                 </div>
-
                 <div className="vertical-sliders-container vertical-slider-single">
                     <h4>Nível de Corpo</h4>
                     <div className="slider-row">
@@ -1070,7 +1181,6 @@ const Scaa = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="nota-container">
                     <label>Corpo:</label>
                     <input
@@ -1092,8 +1202,14 @@ const Scaa = () => {
                             </span>
                         ))}
                     </div>
+                    {/* ✅ Novo campo de observação para Corpo */}
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Corpo"
+                        value={avaliacaoAtual.obsCorpo}
+                        onChange={(e) => updateField("obsCorpo", e.target.value)}
+                    />
                 </div>
-
                 <div className="nota-container">
                     <label>Equilíbrio:</label>
                     <input
@@ -1115,8 +1231,14 @@ const Scaa = () => {
                             </span>
                         ))}
                     </div>
+                    {/* ✅ Novo campo de observação para Equilíbrio */}
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Equilíbrio"
+                        value={avaliacaoAtual.obsEquilibrio}
+                        onChange={(e) => updateField("obsEquilibrio", e.target.value)}
+                    />
                 </div>
-
                 <div className="nota-container">
                     <label>Avaliação Pessoal:</label>
                     <input
@@ -1138,12 +1260,17 @@ const Scaa = () => {
                             </span>
                         ))}
                     </div>
+                    {/* ✅ Novo campo de observação para Avaliação Pessoal */}
+                    <textarea
+                        className="slider-lateral-note"
+                        placeholder="Observações Avaliação Pessoal"
+                        value={avaliacaoAtual.obsAvaliacaoPessoal}
+                        onChange={(e) => updateField("obsAvaliacaoPessoal", e.target.value)}
+                    />
                 </div>
-
                 <div className="secao-xicaras-defeitos">
                     <h4 className="titulo-secao">Pontuação dos atributos de xícaras:</h4>
                     <div className="nota-xicaras-valor">{calcularPontuacaoXicaras().toFixed(2)}</div>
-
                     <div className="xicaras-container">
                         <div className="xicaras-group">
                             <label>Doçura</label>
@@ -1158,7 +1285,6 @@ const Scaa = () => {
                                 ))}
                             </div>
                         </div>
-
                         <div className="xicaras-group">
                             <label>Uniformidade</label>
                             <div className="checkboxes-coluna">
@@ -1172,7 +1298,6 @@ const Scaa = () => {
                                 ))}
                             </div>
                         </div>
-
                         <div className="xicaras-group">
                             <label>Limpeza de xícara</label>
                             <div className="checkboxes-coluna">
@@ -1187,8 +1312,17 @@ const Scaa = () => {
                             </div>
                         </div>
                     </div>
+                    {/* ✅ Novo campo de observação para Xícaras */}
+                    <div className="campo-form observacoes-campo">
+                        <label>Observações das Xícaras:</label>
+                        <textarea
+                            value={avaliacaoAtual.obsXicaras}
+                            onChange={(e) => updateField("obsXicaras", e.target.value)}
+                            placeholder="Adicione observações sobre doçura, uniformidade e limpeza de xícara..."
+                            className="observacoes-textarea"
+                        />
+                    </div>
                 </div>
-
                 <div className="defeitos-container">
                     <div className="defeito-box">
                         <label>Defeito Leve (-2):</label>
@@ -1209,17 +1343,24 @@ const Scaa = () => {
                         <span className="resultado-defeito">= {avaliacaoAtual.defeitosGraves * 4}</span>
                     </div>
                 </div>
-
+                {/* ✅ Novo campo de observação para Defeitos */}
+                <div className="campo-form observacoes-campo">
+                    <label>Observações dos Defeitos:</label>
+                    <textarea
+                        value={avaliacaoAtual.obsDefeitos}
+                        onChange={(e) => updateField("obsDefeitos", e.target.value)}
+                        placeholder="Adicione observações sobre os defeitos encontrados..."
+                        className="observacoes-textarea"
+                    />
+                </div>
                 <div className="pontuacao-final">
                     <h2>PONTUAÇÃO FINAL: {calcularPontuacaoFinal()}</h2>
                     <p>Descontos Totais: {calcularTotalDescontos()}</p>
                 </div>
-
                 <button className="salvar" onClick={handleSalvarAvaliacao} disabled={isSaving}>
                     {isSaving ? "SALVANDO..." : "SALVAR"}
                 </button>
             </div>
-
             {scrollPosition > 300 && (
                 <button className="voltar-ao-topo" onClick={scrollToTop} title="Voltar ao topo">
                     <i className="bi bi-arrow-up-circle-fill"></i>

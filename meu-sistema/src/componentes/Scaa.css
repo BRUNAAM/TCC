@@ -220,6 +220,10 @@ body,
   max-width: 100%;
 }
 
+.aba.ativa .aba-fornecedor {
+  color: #ccc;
+}
+
 .aba-status {
   position: absolute;
   top: -5px;
@@ -691,7 +695,7 @@ textarea {
   box-shadow: 0 0 0 3px rgba(255, 186, 8, 0.3);
 }
 
-/* ===== SLIDERS HORIZONTAIS ===== */
+/* ===== SEÇÃO DE NOTAS (ESCALA HORIZONTAL) ===== */
 .nota-container {
   margin: 30px 0;
   padding: 25px;
@@ -715,48 +719,6 @@ textarea {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.nota-container input[type="range"] {
-  width: 100%;
-  height: 8px;
-  background: linear-gradient(
-    to right,
-    var(--cor-terciaria) 0%,
-    var(--cor-destaque) 100%
-  );
-  border-radius: 4px;
-  outline: none;
-  margin-bottom: 20px;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.nota-container input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, var(--cor-destaque) 0%, #ffd058 100%);
-  border: 3px solid white;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: var(--transicao);
-}
-
-.nota-container input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
-
-.nota-container input[type="range"]::-moz-range-thumb {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, var(--cor-destaque) 0%, #ffd058 100%);
-  border: 3px solid white;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
 .escala-notas {
   display: flex;
   justify-content: flex-start;
@@ -765,6 +727,7 @@ textarea {
   padding: 10px 0;
   scrollbar-width: thin;
   scrollbar-color: var(--cor-destaque) var(--cor-secundaria);
+  margin-bottom: 20px; /* Adicionado para espaçamento com a textarea */
 }
 
 .escala-notas::-webkit-scrollbar {
@@ -774,6 +737,10 @@ textarea {
 .escala-notas::-webkit-scrollbar-thumb {
   background: var(--cor-destaque);
   border-radius: 3px;
+}
+
+.escala-notas::-webkit-scrollbar-track {
+  background: var(--cor-secundaria);
 }
 
 .escala-notas span {
@@ -1179,77 +1146,61 @@ textarea {
   .scaa-header {
     padding: 15px 20px;
   }
-
   .scaa-header h2 {
     font-size: 18px;
   }
-
   .abas-sticky-container {
     padding: 10px 20px;
     top: 70px;
   }
-
   .scaa-form {
     padding: 20px 15px;
     padding-top: 160px;
   }
-
   .campos-form {
     grid-template-columns: 1fr;
     gap: 15px;
   }
-
   .vertical-sliders-container {
     flex-direction: column;
     gap: 20px;
   }
-
   .vertical-slider-box {
     min-width: unset;
   }
-
   .slider-row-with-note {
     flex-direction: column;
     gap: 15px;
   }
-
   .slider-lateral-note {
     width: 100%;
   }
-
   .torra-options {
     gap: 15px;
   }
-
   .torra-option {
     width: 120px;
     height: 140px;
   }
-
   .xicaras-container {
     flex-direction: column;
     gap: 20px;
   }
-
   .checkboxes-coluna {
     flex-direction: row;
     justify-content: space-between;
     max-width: 250px;
   }
-
   .defeitos-container {
     flex-direction: column;
   }
-
   .modal-content {
     padding: 30px 20px;
   }
-
   .modal-buttons {
     flex-direction: column;
     gap: 15px;
   }
-
   .btn-primary,
   .btn-secondary,
   .btn-danger {
@@ -1261,34 +1212,28 @@ textarea {
   .scaa-header h2 {
     font-size: 16px;
   }
-
   .scaa-form {
     padding: 15px 10px;
     padding-top: 140px;
   }
-
   .aba {
     min-width: 100px;
     padding: 8px 12px;
     font-size: 12px;
   }
-
   .torra-option {
     width: 100px;
     height: 120px;
   }
-
   .grao-svg {
     width: 50px;
     height: 70px;
   }
-
   .escala-notas span {
     min-width: 40px;
     height: 35px;
     font-size: 12px;
   }
-
   .voltar-ao-topo {
     width: 50px;
     height: 50px;
@@ -1303,18 +1248,15 @@ textarea {
     width: 80px;
     height: 100px;
   }
-
   .grao-svg {
     width: 40px;
     height: 60px;
   }
-
   .escala-notas span {
     min-width: 35px;
     height: 30px;
     font-size: 11px;
   }
-
   .checkboxes-coluna input[type="checkbox"] {
     width: 24px;
     height: 24px;

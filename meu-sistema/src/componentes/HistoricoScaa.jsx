@@ -7,7 +7,7 @@ import { deleteDoc, doc, getDoc } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
-import logo from "../assets/logopdf.png"
+import logo from "../assets/logopdf.png" // Certifique-se de que este caminho está correto
 import "bootstrap-icons/font/bootstrap-icons.css"
 import { useData } from "../context/DataContext"
 
@@ -308,7 +308,6 @@ const HistoricoScaa = () => {
                 const assinaturaY = docPDF.lastAutoTable.finalY + 30
                 const linhaLargura = 80
                 const linhaInicioX = (pageWidth - linhaLargura) / 2
-
                 docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
                 docPDF.setFont("times", "normal")
                 docPDF.setFontSize(12)
@@ -325,6 +324,138 @@ const HistoricoScaa = () => {
             img.onerror = () => {
                 console.error("Erro ao carregar a imagem do logo")
                 alert("Erro ao carregar a imagem do logo. O PDF será gerado sem a imagem.")
+                // Tenta gerar o PDF mesmo sem a imagem
+                const docPDFFallback = new jsPDF({ unit: "mm", format: "a4" })
+                const pageWidth = docPDFFallback.internal.pageSize.getWidth()
+                const pageHeight = docPDFFallback.internal.pageSize.getHeight()
+                const marginX = 20
+                const boxY = 10
+                const titulo = "Avaliação Sensorial de Café - Método SCAA"
+                docPDFFallback.setFont("times", "bold")
+                docPDFFallback.setFontSize(14)
+                docPDFFallback.text(titulo, pageWidth / 2, boxY + 16, { align: "center" })
+
+                const autoTableOptionsFallback = (config) => ({
+                    ...config,
+                    theme: "grid",
+                    margin: { left: marginX, right: marginX },
+                    startY: docPDFFallback.lastAutoTable ? docPDFFallback.lastAutoTable.finalY + 10 : boxY + 30,
+                    headStyles: {
+                        fillColor: [3, 43, 67],
+                        textColor: 255,
+                        fontStyle: "bold",
+                        font: "times",
+                    },
+                    bodyStyles: {
+                        font: "times",
+                        textColor: 0,
+                    },
+                    didDrawPage: (data) => {
+                        const pageCount = docPDFFallback.internal.getNumberOfPages()
+                        docPDFFallback.setFontSize(10)
+                        docPDFFallback.setTextColor(150)
+                        docPDFFallback.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, {
+                            align: "right",
+                        })
+                        docPDFFallback.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10)
+                    },
+                })
+
+                // Informações gerais
+                autoTable(
+                    docPDFFallback,
+                    autoTableOptionsFallback({
+                        head: [["Identificação", "Valor"]],
+                        body: [
+                            ["Avaliador", avaliacaoData.avaliador || "—"],
+                            ["Data", avaliacaoData.data ? new Date(avaliacaoData.data).toLocaleDateString("pt-BR") : "—"],
+                            ["Fornecedor", avaliacaoData.fornecedorSelecionado || "—"],
+                            ["Nº Amostra", avaliacaoData.numeroAmostra || "—"],
+                            ["Torra", avaliacaoData.torraSelecionada || "—"],
+                            ["Notas Sensoriais", avaliacaoData.notasSensorias || "—"],
+                        ],
+                    }),
+                )
+
+                // Notas sensoriais
+                const notasFallback = avaliacaoData.notas || {}
+                autoTable(
+                    docPDFFallback,
+                    autoTableOptionsFallback({
+                        head: [["Atributo Sensorial", "Nota"]],
+                        body: [
+                            ["Aroma/Fragrância", notasFallback.AromaFragrancia || "—"],
+                            ["Sabor", notasFallback.sabor || "—"],
+                            ["Finalização", notasFallback.finalizacao || "—"],
+                            ["Acidez", notasFallback.acidez || "—"],
+                            ["Corpo", notasFallback.corpo || "—"],
+                            ["Equilíbrio", notasFallback.equilibrio || "—"],
+                            ["Avaliação Pessoal", notasFallback.avaliacaoPessoal || "—"],
+                        ],
+                    }),
+                )
+
+                // Intensidades e observações
+                const intensidadesFallback = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
+                autoTable(
+                    docPDFFallback,
+                    autoTableOptionsFallback({
+                        head: [["Critério", "Valor"]],
+                        body: [
+                            ["Dry", intensidadesFallback[avaliacaoData.dry] || "—"],
+                            ["Break", intensidadesFallback[avaliacaoData.breakValue] || "—"],
+                            ["Nível de Acidez", intensidadesFallback[avaliacaoData.nivelAcidez] || "—"],
+                            ["Nível de Corpo", intensidadesFallback[avaliacaoData.nivelCorpo] || "—"],
+                            ["Defeitos Leves", `-${(avaliacaoData.defeitosLeves || 0) * 2}`],
+                            ["Defeitos Graves", `-${(avaliacaoData.defeitosGraves || 0) * 4}`],
+                        ],
+                    }),
+                )
+
+                // Pontuação final
+                autoTable(
+                    docPDFFallback,
+                    autoTableOptionsFallback({
+                        head: [["Resultado Final", "Valor"]],
+                        body: [
+                            ["Pontuação Total", avaliacaoData.pontuacaoFinal || "—"],
+                            ["Total Descontos", avaliacaoData.totalDescontos || "—"],
+                        ],
+                    }),
+                )
+
+                // Observações
+                if (avaliacaoData.observacoes) {
+                    autoTable(
+                        docPDFFallback,
+                        autoTableOptionsFallback({
+                            head: [["Observações"]],
+                            body: [[avaliacaoData.observacoes]],
+                        }),
+                    )
+                }
+
+                const assinaturaYFallback = docPDFFallback.lastAutoTable.finalY + 30
+                const linhaLarguraFallback = 80
+                const linhaInicioXFallback = (pageWidth - linhaLarguraFallback) / 2
+                docPDFFallback.line(
+                    linhaInicioXFallback,
+                    assinaturaYFallback,
+                    linhaInicioXFallback + linhaLarguraFallback,
+                    assinaturaYFallback,
+                )
+                docPDFFallback.setFont("times", "normal")
+                docPDFFallback.setFontSize(12)
+                docPDFFallback.text(`Avaliador: ${avaliacaoData.avaliador || "—"}`, pageWidth / 2, assinaturaYFallback + 7, {
+                    align: "center",
+                })
+                docPDFFallback.text(`Q Grader Certificado`, pageWidth / 2, assinaturaYFallback + 14, {
+                    align: "center",
+                })
+
+                const blobFallback = docPDFFallback.output("blob")
+                const urlFallback = URL.createObjectURL(blobFallback)
+                window.open(urlFallback, "_blank")
             }
         } catch (error) {
             console.error("Erro ao gerar PDF:", error)
@@ -392,7 +523,6 @@ const HistoricoScaa = () => {
                     )}
                 </div>
             </div>
-
             {avaliacoesScaa.length > 0 ? (
                 <table className="avaliacoes-table">
                     <thead>
@@ -429,7 +559,6 @@ const HistoricoScaa = () => {
                             } catch (e) {
                                 console.error("Erro ao formatar data:", e)
                             }
-
                             return (
                                 <tr key={avaliacao.id}>
                                     <td>
