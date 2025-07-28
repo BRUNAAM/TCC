@@ -1,5 +1,4 @@
 "use client"
-
 import "./Cob.css"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
@@ -8,7 +7,6 @@ import { collection, addDoc } from "firebase/firestore"
 import { getAuth } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
-import logo from "../assets/logopdf.png"
 import { useData } from "../context/DataContext"
 import {
     X,
@@ -29,6 +27,9 @@ import {
     Loader2,
     Eye,
     EyeOff,
+    CheckCircle,
+    Wifi,
+    WifiOff,
 } from "lucide-react"
 
 const tabelaClassificacao = [
@@ -96,17 +97,14 @@ const tabelaClassificacao = [
 
 function obterClassificacao(valorDefeitos) {
     if (valorDefeitos <= 0) return { rotulo: "2-5" }
-
     for (let i = 0; i < tabelaClassificacao.length; i++) {
         if (valorDefeitos <= tabelaClassificacao[i].defeitos) {
             return tabelaClassificacao[i]
         }
     }
-
     return tabelaClassificacao[tabelaClassificacao.length - 1]
 }
 
-// Tabela de defeitos como constante fora do componente
 const tabelaDefeitos = {
     "Grão Preto": { quantidade: 1, equivalencia: 1 },
     "Grão Ardido": { quantidade: 2, equivalencia: 1 },
@@ -129,6 +127,7 @@ const tabelaDefeitos = {
 }
 
 const Cob = () => {
+    // Estados principais
     const [avaliador, setAvaliador] = useState("")
     const [fornecedorSelecionado, setFornecedorSelecionado] = useState("")
     const [numeroAmostra, setNumeroAmostra] = useState("")
@@ -154,11 +153,19 @@ const Cob = () => {
     const [torraArabica, setTorraArabica] = useState("")
     const [torraCanephora, setTorraCanephora] = useState("")
     const [teorCafeina, setTeorCafeina] = useState("")
+
+    // Estados de UI e controle
     const [salvando, setSalvando] = useState(false)
     const [posicaoScroll, setPosicaoScroll] = useState(0)
     const [mostrarDetalhesDefeitos, setMostrarDetalhesDefeitos] = useState(false)
     const [erros, setErros] = useState({})
     const [tocados, setTocados] = useState({})
+    const [carregandoInicial, setCarregandoInicial] = useState(true)
+    const [logoState, setLogoState] = useState("loading")
+    const [online, setOnline] = useState(navigator.onLine)
+    const [notificacao, setNotificacao] = useState(null)
+    const [isMobile, setIsMobile] = useState(false)
+    const [dadosAlterados, setDadosAlterados] = useState(false)
 
     const navegar = useNavigate()
 
@@ -166,9 +173,159 @@ const Cob = () => {
     const refPrincipal = useRef(null)
     const refErro = useRef(null)
     const refSucesso = useRef(null)
+    const timeoutNotificacao = useRef(null)
+    const intervalSalvarDados = useRef(null)
 
     // Usando dados do contexto
     const { fornecedores, loading: carregandoDados } = useData()
+
+    // Sistema de notificações
+    const mostrarNotificacao = useCallback((mensagem, tipo = "info", duracao = 3000) => {
+        setNotificacao({ mensagem, tipo })
+
+        if (timeoutNotificacao.current) {
+            clearTimeout(timeoutNotificacao.current)
+        }
+
+        timeoutNotificacao.current = setTimeout(() => {
+            setNotificacao(null)
+        }, duracao)
+    }, [])
+
+    // Detectar dispositivo móvel
+    useEffect(() => {
+        const verificarMobile = () => {
+            const mobile = window.innerWidth <= 768
+            setIsMobile(mobile)
+        }
+
+        verificarMobile()
+        window.addEventListener("resize", verificarMobile)
+        return () => window.removeEventListener("resize", verificarMobile)
+    }, [])
+
+    // Preloader e inicialização
+    useEffect(() => {
+        const inicializar = async () => {
+            setLogoState("loading")
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            setLogoState("success")
+            setTimeout(() => {
+                setCarregandoInicial(false)
+            }, 300)
+        }
+
+        inicializar()
+    }, [])
+
+    // Monitorar status online/offline
+    useEffect(() => {
+        const handleOnline = () => {
+            setOnline(true)
+            mostrarNotificacao("Conexão restaurada", "success")
+        }
+
+        const handleOffline = () => {
+            setOnline(false)
+            mostrarNotificacao("Modo offline ativado", "warning")
+        }
+
+        window.addEventListener("online", handleOnline)
+        window.addEventListener("offline", handleOffline)
+
+        return () => {
+            window.removeEventListener("online", handleOnline)
+            window.removeEventListener("offline", handleOffline)
+        }
+    }, [mostrarNotificacao])
+
+    // Salvar dados automaticamente
+    const salvarDadosAutomaticamente = useCallback(() => {
+        try {
+            const dadosFormulario = {
+                avaliador,
+                fornecedorSelecionado,
+                numeroAmostra,
+                observacoes,
+                defeitos,
+                umidade,
+                equivalencias,
+                equivalenciaTotal,
+                tipo,
+                categoria,
+                peneiraSubcategoria,
+                grupoBebida,
+                subClassificacaoBebida,
+                classeBebida,
+                aparelho,
+                subcategoria,
+                tipoCafe,
+                postoServico,
+                classificadorMapa,
+                peloPreparo,
+                pelaSeca,
+                peloAspecto,
+                torraArabica,
+                torraCanephora,
+                teorCafeina,
+                timestamp: Date.now(),
+                sessaoId: `cob_${Date.now()}`,
+            }
+
+            localStorage.setItem("cob_dados_temporarios", JSON.stringify(dadosFormulario))
+            sessionStorage.setItem("cob_backup", JSON.stringify(dadosFormulario))
+        } catch (error) {
+            console.error("Erro ao salvar dados automaticamente:", error)
+        }
+    }, [
+        avaliador,
+        fornecedorSelecionado,
+        numeroAmostra,
+        observacoes,
+        defeitos,
+        umidade,
+        equivalencias,
+        equivalenciaTotal,
+        tipo,
+        categoria,
+        peneiraSubcategoria,
+        grupoBebida,
+        subClassificacaoBebida,
+        classeBebida,
+        aparelho,
+        subcategoria,
+        tipoCafe,
+        postoServico,
+        classificadorMapa,
+        peloPreparo,
+        pelaSeca,
+        peloAspecto,
+        torraArabica,
+        torraCanephora,
+        teorCafeina,
+    ])
+
+    // Auto-save inteligente
+    useEffect(() => {
+        if (dadosAlterados) {
+            salvarDadosAutomaticamente()
+            setDadosAlterados(false)
+
+            if (intervalSalvarDados.current) {
+                clearInterval(intervalSalvarDados.current)
+            }
+
+            intervalSalvarDados.current = setInterval(() => {
+                salvarDadosAutomaticamente()
+            }, 5000)
+        }
+
+        return () => {
+            if (intervalSalvarDados.current) {
+                clearInterval(intervalSalvarDados.current)
+            }
+        }
+    }, [dadosAlterados, salvarDadosAutomaticamente])
 
     // Skip link para acessibilidade
     const pularParaPrincipal = useCallback((e) => {
@@ -186,9 +343,10 @@ const Cob = () => {
         anuncio.className = "apenas-leitor-tela"
         anuncio.textContent = mensagem
         document.body.appendChild(anuncio)
-
         setTimeout(() => {
-            document.body.removeChild(anuncio)
+            if (document.body.contains(anuncio)) {
+                document.body.removeChild(anuncio)
+            }
         }, 1000)
     }, [])
 
@@ -215,26 +373,98 @@ const Cob = () => {
         setErros(novosErros)
     }, [fornecedorSelecionado, numeroAmostra, umidade, validarCampo])
 
-    useEffect(() => {
-        const bloquearVoltar = (e) => {
-            e.preventDefault()
-            window.history.pushState(null, null, window.location.href)
+    // Carregar dados salvos
+    const carregarDadosSalvos = useCallback(() => {
+        try {
+            let dadosSalvos = localStorage.getItem("cob_dados_temporarios")
+
+            if (!dadosSalvos) {
+                dadosSalvos = sessionStorage.getItem("cob_backup")
+            }
+
+            if (dadosSalvos) {
+                const dados = JSON.parse(dadosSalvos)
+                const agora = Date.now()
+                const tempoLimite = 7 * 24 * 60 * 60 * 1000 // 7 dias
+
+                if (agora - dados.timestamp < tempoLimite) {
+                    setAvaliador(dados.avaliador || "")
+                    setFornecedorSelecionado(dados.fornecedorSelecionado || "")
+                    setNumeroAmostra(dados.numeroAmostra || "")
+                    setObservacoes(dados.observacoes || "")
+                    setDefeitos(dados.defeitos || {})
+                    setUmidade(dados.umidade || "")
+                    setEquivalencias(dados.equivalencias || {})
+                    setEquivalenciaTotal(dados.equivalenciaTotal || 0)
+                    setTipo(dados.tipo || "")
+                    setPeneiraSubcategoria(dados.peneiraSubcategoria || [])
+                    setGrupoBebida(dados.grupoBebida || "")
+                    setSubClassificacaoBebida(dados.subClassificacaoBebida || "")
+                    setClasseBebida(dados.classeBebida || [])
+                    setAparelho(dados.aparelho || "")
+                    setSubcategoria(dados.subcategoria || "")
+                    setTipoCafe(dados.tipoCafe || { grupo: "", tamanho: "" })
+                    setPostoServico(dados.postoServico || "")
+                    setClassificadorMapa(dados.classificadorMapa || "")
+                    setPeloPreparo(dados.peloPreparo || "")
+                    setPelaSeca(dados.pelaSeca || "")
+                    setPeloAspecto(dados.peloAspecto || "")
+                    setTorraArabica(dados.torraArabica || "")
+                    setTorraCanephora(dados.torraCanephora || "")
+                    setTeorCafeina(dados.teorCafeina || "")
+
+                    mostrarNotificacao("Dados anteriores restaurados automaticamente", "success")
+                } else {
+                    localStorage.removeItem("cob_dados_temporarios")
+                    sessionStorage.removeItem("cob_backup")
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao carregar dados salvos:", error)
+            localStorage.removeItem("cob_dados_temporarios")
+            sessionStorage.removeItem("cob_backup")
         }
+    }, [mostrarNotificacao])
 
-        window.history.pushState(null, null, window.location.href)
-        window.addEventListener("popstate", bloquearVoltar)
+    // Função para confirmar saída
+    const confirmarSaida = useCallback(() => {
+        const temDados = fornecedorSelecionado || numeroAmostra || Object.keys(defeitos).length > 0 || observacoes
 
+        if (temDados) {
+            const confirmar = window.confirm(
+                "Você tem dados não salvos. Tem certeza que deseja sair?\n\nSeus dados foram salvos automaticamente e estarão disponíveis quando retornar.",
+            )
+            return confirmar
+        }
+        return true
+    }, [fornecedorSelecionado, numeroAmostra, defeitos, observacoes])
+
+    // Função para sair da tela
+    const sairDaTela = useCallback(() => {
+        if (confirmarSaida()) {
+            salvarDadosAutomaticamente()
+
+            if (intervalSalvarDados.current) {
+                clearInterval(intervalSalvarDados.current)
+            }
+
+            navegar("/logado")
+        }
+    }, [confirmarSaida, salvarDadosAutomaticamente, navegar])
+
+    // Configurar eventos e navegação
+    useEffect(() => {
         const manipularScroll = () => {
             setPosicaoScroll(window.scrollY)
         }
 
         window.addEventListener("scroll", manipularScroll)
+        carregarDadosSalvos()
 
         return () => {
-            window.removeEventListener("popstate", bloquearVoltar)
             window.removeEventListener("scroll", manipularScroll)
         }
-    }, [])
+    }, [carregarDadosSalvos])
 
     useEffect(() => {
         const nomeUsuario = localStorage.getItem("usuarioNome") || ""
@@ -249,6 +479,36 @@ const Cob = () => {
     useEffect(() => {
         atualizarErros()
     }, [atualizarErros])
+
+    // Marcar dados como alterados quando qualquer campo muda
+    useEffect(() => {
+        setDadosAlterados(true)
+    }, [
+        avaliador,
+        fornecedorSelecionado,
+        numeroAmostra,
+        observacoes,
+        defeitos,
+        umidade,
+        equivalencias,
+        equivalenciaTotal,
+        tipo,
+        peneiraSubcategoria,
+        grupoBebida,
+        subClassificacaoBebida,
+        classeBebida,
+        aparelho,
+        subcategoria,
+        tipoCafe,
+        postoServico,
+        classificadorMapa,
+        peloPreparo,
+        pelaSeca,
+        peloAspecto,
+        torraArabica,
+        torraCanephora,
+        teorCafeina,
+    ])
 
     const manipularMudancaDefeito = useCallback(
         (defeito, quantidade) => {
@@ -270,7 +530,6 @@ const Cob = () => {
             setEquivalencias(equivalenciasAtualizadas)
             setEquivalenciaTotal(totalEquivalencia)
 
-            // Anunciar mudança para leitores de tela
             anunciarParaLeitorTela(
                 `${defeito}: ${quantidadeValida} unidades, equivalência: ${equivalenciasAtualizadas[defeito] || 0}`,
             )
@@ -300,9 +559,11 @@ const Cob = () => {
         setTocados((anterior) => ({ ...anterior, [campo]: true }))
     }, [])
 
+    // Geração de PDF simplificada e segura (SEM IMAGENS)
     const manipularGerarPDF = useCallback(() => {
         if (!fornecedorSelecionado || !numeroAmostra) {
             anunciarParaLeitorTela("Erro: Preencha os campos obrigatórios antes de gerar o PDF")
+            mostrarNotificacao("Preencha os campos obrigatórios", "error")
             if (refErro.current) {
                 refErro.current.focus()
             }
@@ -310,35 +571,24 @@ const Cob = () => {
         }
 
         anunciarParaLeitorTela("Gerando PDF da avaliação...")
+        mostrarNotificacao("Gerando PDF...", "info")
 
-        const docPDF = new jsPDF({ unit: "mm", format: "a4" })
-        const img = new Image()
-        img.src = logo
-        img.crossOrigin = "anonymous"
-
-        img.onload = () => {
+        try {
+            const docPDF = new jsPDF({ unit: "mm", format: "a4" })
             const larguraPagina = docPDF.internal.pageSize.getWidth()
             const alturaPagina = docPDF.internal.pageSize.getHeight()
             const margemX = 20
-            const caixaY = 10
-            const larguraLogo = 25
-            const alturaLogo = 25
-            const espacamento = 5
 
-            const titulo = "Avaliação Física de Café - Método COB"
-            const larguraTitulo = docPDF.getTextWidth(titulo)
-            const inicioX = (larguraPagina - (larguraLogo + espacamento + larguraTitulo)) / 2
-
-            docPDF.addImage(img, "PNG", inicioX, caixaY, larguraLogo, alturaLogo)
+            // Título principal (SEM LOGO)
             docPDF.setFont("times", "bold")
-            docPDF.setFontSize(14)
-            docPDF.text(titulo, inicioX + larguraLogo + espacamento, caixaY + 16)
+            docPDF.setFontSize(16)
+            docPDF.text("Avaliação Física de Café - Método COB", larguraPagina / 2, 20, { align: "center" })
 
             const opcoesTabelaAuto = (config) => ({
                 ...config,
                 theme: "grid",
                 margin: { left: margemX, right: margemX },
-                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : caixaY + alturaLogo + 10,
+                startY: docPDF.lastAutoTable ? docPDF.lastAutoTable.finalY + 10 : 35,
                 headStyles: {
                     fillColor: [3, 43, 67],
                     textColor: 255,
@@ -360,83 +610,145 @@ const Cob = () => {
                 },
             })
 
-            // Tabelas do PDF
+            // Tabela de Identificação
             autoTable(
                 docPDF,
                 opcoesTabelaAuto({
                     head: [["Identificação", "Valor"]],
                     body: [
-                        ["Avaliador", avaliador || "—"],
-                        ["Data", new Date().toLocaleDateString("pt-BR")],
-                        ["Fornecedor", fornecedorSelecionado || "—"],
-                        ["Nº Amostra", numeroAmostra || "—"],
-                        ["Umidade", umidade || "—"],
-                        ["Aparelho", aparelho || "—"],
-                        ["Subcategoria", subcategoria || "—"],
-                        ["Tipo", tipo || "—"],
-                        ["Tipo Café (Chato ou Moca)", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "—"],
-                        ["Posto Serviço", postoServico || "—"],
-                        ["Classificador MAPA", classificadorMapa || "—"],
+                        ["Avaliador", avaliador || "Não informado"],
+                        ["Data da Avaliação", new Date().toLocaleDateString("pt-BR")],
+                        ["Hora da Avaliação", new Date().toLocaleTimeString("pt-BR")],
+                        ["Fornecedor/Produtor", fornecedorSelecionado || "Não informado"],
+                        ["Nº da Amostra", numeroAmostra || "Não informado"],
+                        ["Umidade (%)", umidade ? `${umidade}%` : "Não informado"],
+                        ["Aparelho de Medição", aparelho || "Não informado"],
+                        ["Subcategoria", subcategoria || "Não informado"],
+                        ["Tipo Final", tipo || "Não classificado"],
+                        ["Posto de Serviço", postoServico || "Não informado"],
+                        ["Classificador MAPA", classificadorMapa || "Não informado"],
                     ],
                 }),
             )
 
-            autoTable(
-                docPDF,
-                opcoesTabelaAuto({
-                    head: [["Defeito", "Quantidade", "Equivalência"]],
-                    body: Object.entries(defeitos || {}).map(([nome, qtd]) => [nome, qtd, equivalencias?.[nome] || 0]),
-                }),
-            )
+            // Tabela de Defeitos
+            const defeitosParaPDF = Object.entries(tabelaDefeitos).map(([nomeDefeito, info]) => [
+                nomeDefeito,
+                defeitos[nomeDefeito] || 0,
+                equivalencias[nomeDefeito] || 0,
+                `Cada ${info.quantidade} = ${info.equivalencia} equiv.`,
+            ])
 
             autoTable(
                 docPDF,
                 opcoesTabelaAuto({
+                    head: [["Defeito", "Quantidade", "Equivalência", "Regra"]],
+                    body: defeitosParaPDF,
+                }),
+            )
+
+            // Tabela de Totais
+            autoTable(
+                docPDF,
+                opcoesTabelaAuto({
+                    head: [["Resumo dos Defeitos", "Valor"]],
                     body: [
-                        ["Total de Defeitos", Object.values(defeitos || {}).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0)],
-                        ["Total Equivalência", equivalenciaTotal],
-                        ["Tipo do Café", tipo || "—"],
+                        [
+                            "Total de Defeitos Encontrados",
+                            Object.values(defeitos || {}).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0),
+                        ],
+                        ["Total da Equivalência", equivalenciaTotal],
+                        ["Classificação Final", tipo || "Não classificado"],
+                        ["Data da Classificação", new Date().toLocaleDateString("pt-BR")],
+                        ["Hora da Classificação", new Date().toLocaleTimeString("pt-BR")],
                     ],
-                    head: [],
                 }),
             )
 
+            // Tabela de Categoria
             autoTable(
                 docPDF,
                 opcoesTabelaAuto({
                     head: [["Categoria", "Valor"]],
                     body: [
-                        ["Peneira/Subcategoria", (peneiraSubcategoria || []).join(", ") || "—"],
-                        ["Grupo da Bebida", grupoBebida || "—"],
-                        ["Subclassificação", subClassificacaoBebida || "—"],
-                        ["Classe da Bebida", (classeBebida || []).join(", ") || "—"],
+                        [
+                            "Peneira/Subcategoria",
+                            (peneiraSubcategoria || []).length > 0 ? (peneiraSubcategoria || []).join(", ") : "Nenhuma selecionada",
+                        ],
+                        ["Tipo de Café", tipoCafe.grupo ? `${tipoCafe.grupo} - ${tipoCafe.tamanho}` : "Não informado"],
+                        ["Grupo da Bebida", grupoBebida || "Não informado"],
+                        ["Subclassificação da Bebida", subClassificacaoBebida || "Não informado"],
+                        [
+                            "Classe da Bebida",
+                            (classeBebida || []).length > 0 ? (classeBebida || []).join(", ") : "Nenhuma selecionada",
+                        ],
                     ],
                 }),
             )
 
+            // Tabela de Laudo Técnico
             autoTable(
                 docPDF,
                 opcoesTabelaAuto({
-                    head: [["Laudo Técnico", "Valor"]],
+                    head: [["Laudo Técnico", "Avaliação"]],
                     body: [
-                        ["Preparo", peloPreparo || "—"],
-                        ["Seca", pelaSeca || "—"],
-                        ["Aspecto", peloAspecto || "—"],
-                        ["Torra Arábica", torraArabica || "—"],
-                        ["Torra Canephora", torraCanephora || "—"],
-                        ["Teor Cafeína", teorCafeina || "—"],
+                        ["Pelo Preparo", peloPreparo || "Não avaliado"],
+                        ["Pela Seca", pelaSeca || "Não avaliado"],
+                        ["Pelo Aspecto", peloAspecto || "Não avaliado"],
+                        ["Torra Arábica", torraArabica || "Não aplicável"],
+                        ["Torra Canephora", torraCanephora || "Não aplicável"],
+                        ["Teor de Cafeína", teorCafeina || "Não informado"],
                     ],
                 }),
             )
 
+            // Tabela de Observações
+            if (observacoes && observacoes.trim()) {
+                autoTable(
+                    docPDF,
+                    opcoesTabelaAuto({
+                        head: [["Observações Gerais"]],
+                        body: [[observacoes]],
+                        styles: {
+                            cellPadding: 8,
+                            fontSize: 10,
+                            textColor: [0, 0, 0],
+                        },
+                        columnStyles: {
+                            0: { cellWidth: "auto" },
+                        },
+                    }),
+                )
+            } else {
+                autoTable(
+                    docPDF,
+                    opcoesTabelaAuto({
+                        head: [["Observações Gerais"]],
+                        body: [["Nenhuma observação adicional foi registrada."]],
+                    }),
+                )
+            }
+
+            // Tabela de Resumo Final
             autoTable(
                 docPDF,
                 opcoesTabelaAuto({
-                    body: [["Observações", observacoes || "—"]],
-                    head: [],
+                    head: [["Resumo Final da Avaliação"]],
+                    body: [
+                        [
+                            `Amostra ${numeroAmostra || "N/A"} do fornecedor ${fornecedorSelecionado || "N/A"} foi classificada como ${tipo || "Não classificado"} com ${equivalenciaTotal} pontos de equivalência em defeitos. Avaliação realizada por ${avaliador || "N/A"} em ${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR")}.`,
+                        ],
+                    ],
+                    styles: {
+                        fillColor: [240, 248, 255],
+                        textColor: [0, 0, 0],
+                        fontStyle: "italic",
+                        cellPadding: 10,
+                    },
                 }),
             )
 
+            // Assinatura
             const assinaturaY = docPDF.lastAutoTable.finalY + 30
             const larguraLinha = 80
             const inicioLinhaX = (larguraPagina - larguraLinha) / 2
@@ -449,13 +761,14 @@ const Cob = () => {
                 align: "center",
             })
 
+            // Salvar PDF
             docPDF.save(`laudo_cob_${numeroAmostra}_${new Date().toISOString().split("T")[0]}.pdf`)
             anunciarParaLeitorTela("PDF gerado com sucesso!")
-        }
-
-        img.onerror = () => {
-            console.warn("Erro ao carregar logo, gerando PDF sem imagem")
-            anunciarParaLeitorTela("Aviso: PDF gerado sem logo devido a erro no carregamento da imagem")
+            mostrarNotificacao("PDF gerado com sucesso!", "success")
+        } catch (error) {
+            console.error("Erro ao gerar PDF:", error)
+            anunciarParaLeitorTela("Erro ao gerar PDF. Tente novamente.")
+            mostrarNotificacao("Erro ao gerar PDF", "error")
         }
     }, [
         fornecedorSelecionado,
@@ -483,14 +796,15 @@ const Cob = () => {
         teorCafeina,
         observacoes,
         anunciarParaLeitorTela,
+        mostrarNotificacao,
     ])
 
     const manipularSalvarAvaliacao = useCallback(async () => {
         if (salvando) return
 
-        // Validar campos obrigatórios
         if (!fornecedorSelecionado || !numeroAmostra) {
             anunciarParaLeitorTela("Erro: Preencha todos os campos obrigatórios")
+            mostrarNotificacao("Preencha todos os campos obrigatórios", "error")
             if (refErro.current) {
                 refErro.current.focus()
             }
@@ -499,6 +813,7 @@ const Cob = () => {
 
         setSalvando(true)
         anunciarParaLeitorTela("Salvando avaliação...")
+        mostrarNotificacao("Salvando avaliação...", "info")
 
         try {
             const instanciaAuth = getAuth()
@@ -506,6 +821,7 @@ const Cob = () => {
 
             if (!usuario) {
                 anunciarParaLeitorTela("Erro: Usuário não autenticado")
+                mostrarNotificacao("Usuário não autenticado", "error")
                 setSalvando(false)
                 return
             }
@@ -537,11 +853,21 @@ const Cob = () => {
                 torraArabica,
                 torraCanephora,
                 teorCafeina,
+                totalDefeitos: Object.values(defeitos).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0),
+                classificacaoFinal: obterClassificacao(equivalenciaTotal),
+                dataAvaliacao: new Date().toLocaleDateString("pt-BR"),
+                horaAvaliacao: new Date().toLocaleTimeString("pt-BR"),
+                timestamp: new Date().toISOString(),
                 data: new Date().toISOString(),
             }
 
             await addDoc(collection(db, "usuarios", usuario.uid, "avaliacoes_cob"), avaliacao)
+
             anunciarParaLeitorTela("Avaliação salva com sucesso!")
+            mostrarNotificacao("Avaliação salva com sucesso!", "success")
+
+            localStorage.removeItem("cob_dados_temporarios")
+            sessionStorage.removeItem("cob_backup")
 
             if (refSucesso.current) {
                 refSucesso.current.focus()
@@ -554,6 +880,7 @@ const Cob = () => {
         } catch (error) {
             console.error("Erro ao salvar avaliação:", error)
             anunciarParaLeitorTela("Erro ao salvar avaliação. Tente novamente.")
+            mostrarNotificacao("Erro ao salvar avaliação", "error")
         } finally {
             setSalvando(false)
         }
@@ -585,6 +912,7 @@ const Cob = () => {
         torraCanephora,
         teorCafeina,
         anunciarParaLeitorTela,
+        mostrarNotificacao,
         manipularGerarPDF,
     ])
 
@@ -599,12 +927,48 @@ const Cob = () => {
     const totalDefeitos = Object.values(defeitos).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0)
     const temErros = Object.values(erros).some((erro) => erro !== "")
 
+    // Preloader
+    if (carregandoInicial) {
+        return (
+            <div className="preloader-container">
+                <div className="preloader-content">
+                    <div className={`logo-container logo-${logoState}`}>
+                        <Coffee className="logo-icon" size={isMobile ? 48 : 64} aria-hidden="true" />
+                        <div className="logo-pulse"></div>
+                    </div>
+                    <div className="preloader-text">
+                        <span>Carregando avaliação COB...</span>
+                        <div className="preloader-progress">
+                            <div className="preloader-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             {/* Link para pular conteúdo */}
             <a href="#conteudo-principal" className="link-pular" onClick={pularParaPrincipal}>
                 Pular para o conteúdo principal
             </a>
+
+            {/* Sistema de notificações */}
+            {notificacao && (
+                <div className={`notificacao notificacao-${notificacao.tipo}`} role="alert" aria-live="assertive">
+                    <div className="notificacao-conteudo">
+                        {notificacao.tipo === "success" && <CheckCircle size={20} />}
+                        {notificacao.tipo === "error" && <AlertCircle size={20} />}
+                        {notificacao.tipo === "warning" && <AlertCircle size={20} />}
+                        {notificacao.tipo === "info" && <Coffee size={20} />}
+                        <span>{notificacao.mensagem}</span>
+                    </div>
+                    <button className="notificacao-fechar" onClick={() => setNotificacao(null)} aria-label="Fechar notificação">
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
 
             <div className="container-pagina">
                 <header className="cabecalho-cob" role="banner">
@@ -613,11 +977,19 @@ const Cob = () => {
                             <Coffee className="icone-cabecalho" aria-hidden="true" size={24} />
                             Avaliação COB
                         </h1>
+
+                        <div className="status-container">
+                            <div className={`status-indicator ${online ? "online" : "offline"}`}>
+                                {online ? <Wifi size={16} /> : <WifiOff size={16} />}
+                                <span className="status-text">{online ? "Online" : "Offline"}</span>
+                            </div>
+                        </div>
+
                         <button
                             className="botao-fechar"
-                            onClick={() => navegar("/logado")}
+                            onClick={sairDaTela}
                             aria-label="Fechar avaliação e voltar ao painel principal"
-                            title="Fechar (Esc)"
+                            title="Fechar avaliação (dados serão salvos automaticamente)"
                         >
                             <X size={20} aria-hidden="true" />
                         </button>
@@ -689,7 +1061,6 @@ const Cob = () => {
                                 <User className="icone-secao" aria-hidden="true" size={20} />
                                 Identificação
                             </h2>
-
                             <div className="campos-formulario">
                                 <div className="campo-formulario">
                                     <label htmlFor="avaliador" className="rotulo-campo">
@@ -906,7 +1277,6 @@ const Cob = () => {
                                         Soma total de todos os defeitos encontrados
                                     </div>
                                 </div>
-
                                 <div className="item-total">
                                     <label htmlFor="total-equivalencia" className="rotulo-total">
                                         Total da Equivalência:
@@ -924,7 +1294,6 @@ const Cob = () => {
                                         Equivalência total calculada baseada na tabela COB
                                     </div>
                                 </div>
-
                                 <div className="item-total">
                                     <label htmlFor="tipo-cafe" className="rotulo-total">
                                         Tipo do Café:
@@ -951,7 +1320,6 @@ const Cob = () => {
                                 <Coffee className="icone-secao" aria-hidden="true" size={20} />
                                 Categoria
                             </h2>
-
                             <div className="grade-categoria">
                                 <div className="cartao-categoria">
                                     <h3 className="titulo-cartao-categoria">Subcategoria % Peneira</h3>
@@ -1108,7 +1476,6 @@ const Cob = () => {
                                 <FileCheck className="icone-secao" aria-hidden="true" size={20} />
                                 Conclusão
                             </h2>
-
                             <div className="campos-formulario">
                                 <div className="campo-formulario">
                                     <label htmlFor="umidade" className="rotulo-campo">
@@ -1276,7 +1643,6 @@ const Cob = () => {
                                 <FileCheck className="icone-secao" aria-hidden="true" size={20} />
                                 Laudo de Classificação
                             </h2>
-
                             <div className="grade-laudo">
                                 <div className="cartao-laudo">
                                     <h3 className="titulo-cartao-laudo">Preparo</h3>
@@ -1445,7 +1811,6 @@ const Cob = () => {
                                     </>
                                 )}
                             </button>
-
                             <div id="desc-salvar" className="apenas-leitor-tela">
                                 {salvando
                                     ? "Salvando avaliação no banco de dados"
@@ -1463,7 +1828,6 @@ const Cob = () => {
                                 <FileText className="icone-botao" aria-hidden="true" size={20} />
                                 <span>Gerar PDF</span>
                             </button>
-
                             <div id="desc-pdf" className="apenas-leitor-tela">
                                 Gerar relatório em PDF da avaliação realizada
                             </div>
