@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import "./Fornecedores.css"
 import { useData } from "../context/DataContext"
@@ -17,7 +16,8 @@ function Fornecedores() {
     const [telefone, setTelefone] = useState("")
     const [idParaEditar, setIdParaEditar] = useState(null)
     const [salvando, setSalvando] = useState(false)
-
+    const [filtro, setFiltro] = useState("")
+    const [mostrarFormulario, setMostrarFormulario] = useState(false)
     const { fornecedores, loading } = useData()
     const navigate = useNavigate()
 
@@ -27,10 +27,8 @@ function Fornecedores() {
             e.preventDefault()
             window.history.pushState(null, null, window.location.href)
         }
-
         window.history.pushState(null, null, window.location.href)
         window.addEventListener("popstate", bloquearVoltar)
-
         return () => {
             window.removeEventListener("popstate", bloquearVoltar)
         }
@@ -38,18 +36,15 @@ function Fornecedores() {
 
     const handleCadastro = async (e) => {
         e.preventDefault()
-
         if (!nome.trim()) {
             alert("Por favor, preencha o nome do fornecedor.")
             return
         }
 
         setSalvando(true)
-
         try {
             const authInstance = getAuth()
             const user = authInstance.currentUser
-
             if (!user) {
                 alert("Usuário não autenticado.")
                 setSalvando(false)
@@ -69,31 +64,13 @@ function Fornecedores() {
 
             if (idParaEditar) {
                 // Atualizar fornecedor existente
-                updateDoc(doc(db, "usuarios", user.uid, "fornecedores", idParaEditar), fornecedorData)
-                    .then(() => {
-                        alert("Fornecedor atualizado com sucesso!")
-                        setIdParaEditar(null)
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao salvar fornecedor:", error)
-                        alert("Erro ao salvar fornecedor. Tente novamente mais tarde.")
-                    })
-                    .finally(() => {
-                        setSalvando(false)
-                    })
+                await updateDoc(doc(db, "usuarios", user.uid, "fornecedores", idParaEditar), fornecedorData)
+                alert("Fornecedor atualizado com sucesso!")
+                setIdParaEditar(null)
             } else {
                 // Adicionar novo fornecedor
-                addDoc(collection(db, "usuarios", user.uid, "fornecedores"), fornecedorData)
-                    .then(() => {
-                        alert("Fornecedor cadastrado com sucesso!")
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao salvar fornecedor:", error)
-                        alert("Erro ao salvar fornecedor. Tente novamente mais tarde.")
-                    })
-                    .finally(() => {
-                        setSalvando(false)
-                    })
+                await addDoc(collection(db, "usuarios", user.uid, "fornecedores"), fornecedorData)
+                alert("Fornecedor cadastrado com sucesso!")
             }
 
             // Limpar formulário
@@ -103,9 +80,11 @@ function Fornecedores() {
             setCidade("")
             setCep("")
             setTelefone("")
+            setMostrarFormulario(false)
         } catch (error) {
             console.error("Erro ao salvar fornecedor:", error)
             alert("Erro ao salvar fornecedor. Tente novamente mais tarde.")
+        } finally {
             setSalvando(false)
         }
     }
@@ -118,31 +97,28 @@ function Fornecedores() {
         setCidade(fornecedor.cidade || "")
         setCep(fornecedor.cep || "")
         setTelefone(fornecedor.telefone || "")
-
+        setMostrarFormulario(true)
         // Scroll para o topo do formulário
         window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
-    const handleExcluir = (fornecedor) => {
+    const handleExcluir = async (fornecedor) => {
         const confirmar = window.confirm(`Tem certeza que deseja excluir o fornecedor "${fornecedor.nome}"?`)
-
         if (confirmar) {
-            const authInstance = getAuth()
-            const user = authInstance.currentUser
+            try {
+                const authInstance = getAuth()
+                const user = authInstance.currentUser
+                if (!user) {
+                    alert("Usuário não autenticado.")
+                    return
+                }
 
-            if (!user) {
-                alert("Usuário não autenticado.")
-                return
+                await deleteDoc(doc(db, "usuarios", user.uid, "fornecedores", fornecedor.id))
+                alert("Fornecedor excluído com sucesso!")
+            } catch (error) {
+                console.error("Erro ao excluir fornecedor:", error)
+                alert("Erro ao excluir fornecedor. Tente novamente mais tarde.")
             }
-
-            deleteDoc(doc(db, "usuarios", user.uid, "fornecedores", fornecedor.id))
-                .then(() => {
-                    alert("Fornecedor excluído com sucesso!")
-                })
-                .catch((error) => {
-                    console.error("Erro ao excluir fornecedor:", error)
-                    alert("Erro ao excluir fornecedor. Tente novamente mais tarde.")
-                })
         }
     }
 
@@ -154,146 +130,246 @@ function Fornecedores() {
         setCidade("")
         setCep("")
         setTelefone("")
+        setMostrarFormulario(false)
     }
 
+    const formatarTelefone = (valor) => {
+        const numeros = valor.replace(/\D/g, "")
+        if (numeros.length <= 10) {
+            return numeros.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3")
+        } else {
+            return numeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+        }
+    }
+
+    const formatarCEP = (valor) => {
+        const numeros = valor.replace(/\D/g, "")
+        return numeros.replace(/(\d{5})(\d{3})/, "$1-$2")
+    }
+
+    const fornecedoresFiltrados = fornecedores.filter(
+        (fornecedor) =>
+            fornecedor.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+            fornecedor.cidade?.toLowerCase().includes(filtro.toLowerCase()) ||
+            fornecedor.telefone?.includes(filtro),
+    )
+
     return (
-        <div className="container-fornecedores">
-            {/* Header com botão de fechar */}
+        <div className="fornecedores-container">
+            {/* Header fixo */}
             <div className="fornecedores-header">
-                <h1>{idParaEditar ? "Editar Fornecedor" : "Cadastro de Fornecedores"}</h1>
-                <button className="fechar" onClick={() => navigate("/logado")}>
-                    ✖
-                </button>
+                <div className="header-content">
+                    <h1>
+                        <span className="icon">🏢</span>
+                        Fornecedores
+                    </h1>
+                    <div className="header-actions">
+                        <button className="btn-novo" onClick={() => setMostrarFormulario(!mostrarFormulario)}>
+                            <span className="icon">➕</span>
+                            {mostrarFormulario ? "Ocultar" : "Novo"}
+                        </button>
+                        <button className="btn-fechar" onClick={() => navigate("/logado")}>
+                            <span className="icon">✖</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <form onSubmit={handleCadastro} className="form-fornecedores">
-                <div className="form-group">
-                    <label htmlFor="nome">Nome *:</label>
-                    <input
-                        type="text"
-                        id="nome"
-                        value={nome}
-                        onChange={(e) => setNome(e.target.value)}
-                        placeholder="Digite o nome do fornecedor"
-                        required
-                    />
-                </div>
+            <div className="fornecedores-content">
+                {/* Formulário colapsável */}
+                {mostrarFormulario && (
+                    <div className="form-container">
+                        <div className="form-header">
+                            <h2>
+                                <span className="icon">{idParaEditar ? "✏️" : "➕"}</span>
+                                {idParaEditar ? "Editar Fornecedor" : "Novo Fornecedor"}
+                            </h2>
+                        </div>
 
-                <div className="form-group">
-                    <label htmlFor="rua">Rua:</label>
-                    <input type="text" id="rua" value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Digite a rua" />
-                </div>
+                        <form onSubmit={handleCadastro} className="fornecedor-form">
+                            <div className="form-grid">
+                                <div className="form-group full-width">
+                                    <label htmlFor="nome">
+                                        <span className="icon">👤</span>
+                                        Nome do Fornecedor *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="nome"
+                                        value={nome}
+                                        onChange={(e) => setNome(e.target.value)}
+                                        placeholder="Digite o nome completo"
+                                        required
+                                        className="input-destaque"
+                                    />
+                                </div>
 
-                <div className="form-group">
-                    <label htmlFor="bairro">Bairro:</label>
-                    <input
-                        type="text"
-                        id="bairro"
-                        value={bairro}
-                        onChange={(e) => setBairro(e.target.value)}
-                        placeholder="Digite o bairro"
-                    />
-                </div>
+                                <div className="form-group">
+                                    <label htmlFor="telefone">
+                                        <span className="icon">📞</span>
+                                        Telefone
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="telefone"
+                                        value={telefone}
+                                        onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
+                                        placeholder="(11) 99999-9999"
+                                        maxLength="15"
+                                    />
+                                </div>
 
-                <div className="form-group">
-                    <label htmlFor="cidade">Cidade:</label>
-                    <input
-                        type="text"
-                        id="cidade"
-                        value={cidade}
-                        onChange={(e) => setCidade(e.target.value)}
-                        placeholder="Digite a cidade"
-                    />
-                </div>
+                                <div className="form-group">
+                                    <label htmlFor="cep">
+                                        <span className="icon">📮</span>
+                                        CEP
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="cep"
+                                        value={cep}
+                                        onChange={(e) => setCep(formatarCEP(e.target.value))}
+                                        placeholder="12345-678"
+                                        maxLength="9"
+                                    />
+                                </div>
 
-                <div className="form-group">
-                    <label htmlFor="cep">CEP:</label>
-                    <input type="text" id="cep" value={cep} onChange={(e) => setCep(e.target.value)} placeholder="Digite o CEP" />
-                </div>
+                                <div className="form-group">
+                                    <label htmlFor="rua">
+                                        <span className="icon">🏠</span>
+                                        Endereço
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="rua"
+                                        value={rua}
+                                        onChange={(e) => setRua(e.target.value)}
+                                        placeholder="Rua, número"
+                                    />
+                                </div>
 
-                <div className="form-group">
-                    <label htmlFor="telefone">Telefone:</label>
-                    <input
-                        type="text"
-                        id="telefone"
-                        value={telefone}
-                        onChange={(e) => setTelefone(e.target.value)}
-                        placeholder="Digite o telefone"
-                    />
-                </div>
+                                <div className="form-group">
+                                    <label htmlFor="bairro">
+                                        <span className="icon">🏘️</span>
+                                        Bairro
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="bairro"
+                                        value={bairro}
+                                        onChange={(e) => setBairro(e.target.value)}
+                                        placeholder="Nome do bairro"
+                                    />
+                                </div>
 
-                <div className="form-buttons">
-                    <button type="submit" className="botao-cadastrar" disabled={salvando}>
-                        {salvando ? "Salvando..." : idParaEditar ? "Atualizar Fornecedor" : "Cadastrar Fornecedor"}
-                    </button>
-                    {idParaEditar && (
-                        <button type="button" className="botao-cancelar" onClick={cancelarEdicao}>
-                            Cancelar
-                        </button>
-                    )}
-                </div>
-            </form>
+                                <div className="form-group">
+                                    <label htmlFor="cidade">
+                                        <span className="icon">🏙️</span>
+                                        Cidade
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="cidade"
+                                        value={cidade}
+                                        onChange={(e) => setCidade(e.target.value)}
+                                        placeholder="Nome da cidade"
+                                    />
+                                </div>
+                            </div>
 
-            <h2>Lista de Fornecedores ({fornecedores.length})</h2>
+                            <div className="form-actions">
+                                <button type="submit" className="btn-salvar" disabled={salvando}>
+                                    <span className="icon">{salvando ? "⏳" : "💾"}</span>
+                                    {salvando ? "Salvando..." : idParaEditar ? "Atualizar" : "Cadastrar"}
+                                </button>
+                                {idParaEditar && (
+                                    <button type="button" className="btn-cancelar" onClick={cancelarEdicao}>
+                                        <span className="icon">❌</span>
+                                        Cancelar
+                                    </button>
+                                )}
+                            </div>
+                        </form>
+                    </div>
+                )}
 
-            <div className="tabela-container">
-                <table className="tabela-fornecedores">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Rua</th>
-                            <th>Bairro</th>
-                            <th>Cidade</th>
-                            <th>CEP</th>
-                            <th>Telefone</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                {/* Lista de fornecedores */}
+                <div className="lista-container">
+                    <div className="lista-header">
+                        <h2>
+                            <span className="icon">📋</span>
+                            Fornecedores Cadastrados ({fornecedoresFiltrados.length})
+                        </h2>
+                        <div className="filtro-container">
+                            <input
+                                type="text"
+                                placeholder="🔍 Buscar por nome, cidade ou telefone..."
+                                value={filtro}
+                                onChange={(e) => setFiltro(e.target.value)}
+                                className="input-filtro"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="fornecedores-grid">
                         {loading ? (
-                            <tr>
-                                <td colSpan="7" className="loading-message">
-                                    🔄 Carregando fornecedores...
-                                </td>
-                            </tr>
-                        ) : fornecedores.length === 0 ? (
-                            <tr>
-                                <td colSpan="7" className="empty-message">
-                                    📝 Nenhum fornecedor cadastrado ainda
-                                </td>
-                            </tr>
+                            <div className="loading-state">
+                                <div className="loading-spinner"></div>
+                                <p>Carregando fornecedores...</p>
+                            </div>
+                        ) : fornecedoresFiltrados.length === 0 ? (
+                            <div className="empty-state">
+                                <span className="empty-icon">📝</span>
+                                <h3>Nenhum fornecedor encontrado</h3>
+                                <p>{filtro ? "Tente ajustar os filtros de busca" : "Cadastre seu primeiro fornecedor"}</p>
+                            </div>
                         ) : (
-                            fornecedores.map((fornecedor) => (
-                                <tr key={fornecedor.id}>
-                                    <td>{fornecedor.nome}</td>
-                                    <td>{fornecedor.rua || "-"}</td>
-                                    <td>{fornecedor.bairro || "-"}</td>
-                                    <td>{fornecedor.cidade || "-"}</td>
-                                    <td>{fornecedor.cep || "-"}</td>
-                                    <td>{fornecedor.telefone || "-"}</td>
-                                    <td className="celula-acoes">
-                                        <div className="acoes-botoes">
-                                            <button
-                                                className="botao-editar"
-                                                onClick={() => handleEditar(fornecedor)}
-                                                title="Editar fornecedor"
-                                            >
-                                                <i className="bi bi-pencil-square"></i>
+                            fornecedoresFiltrados.map((fornecedor) => (
+                                <div key={fornecedor.id} className="fornecedor-card">
+                                    <div className="card-header">
+                                        <h3>
+                                            <span className="icon">🏢</span>
+                                            {fornecedor.nome}
+                                        </h3>
+                                        <div className="card-actions">
+                                            <button className="btn-editar" onClick={() => handleEditar(fornecedor)} title="Editar fornecedor">
+                                                <span className="icon">✏️</span>
                                             </button>
                                             <button
-                                                className="botao-excluir"
+                                                className="btn-excluir"
                                                 onClick={() => handleExcluir(fornecedor)}
                                                 title="Excluir fornecedor"
                                             >
-                                                <i className="bi bi-trash3"></i>
+                                                <span className="icon">🗑️</span>
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+
+                                    <div className="card-content">
+                                        {fornecedor.telefone && (
+                                            <div className="info-item">
+                                                <span className="icon">📞</span>
+                                                <span>{fornecedor.telefone}</span>
+                                            </div>
+                                        )}
+                                        {(fornecedor.rua || fornecedor.bairro || fornecedor.cidade) && (
+                                            <div className="info-item">
+                                                <span className="icon">📍</span>
+                                                <span>{[fornecedor.rua, fornecedor.bairro, fornecedor.cidade].filter(Boolean).join(", ")}</span>
+                                            </div>
+                                        )}
+                                        {fornecedor.cep && (
+                                            <div className="info-item">
+                                                <span className="icon">📮</span>
+                                                <span>{fornecedor.cep}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             ))
                         )}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
         </div>
     )

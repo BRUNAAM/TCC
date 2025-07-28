@@ -1,5 +1,4 @@
 "use client"
-
 import "./HistoricoCob.css"
 import { useState, useEffect } from "react"
 import { auth, db } from "../config/firebase"
@@ -17,6 +16,10 @@ const HistoricoCob = () => {
     const [selectedAvaliacoes, setSelectedAvaliacoes] = useState({})
     const [hasSelected, setHasSelected] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [busca, setBusca] = useState("")
+    const [filtroData, setFiltroData] = useState("")
+    const [filtroFornecedor, setFiltroFornecedor] = useState("")
+    const [ordenacao, setOrdenacao] = useState("data-desc")
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -24,6 +27,42 @@ const HistoricoCob = () => {
         setSelectedAvaliacoes({})
         setHasSelected(false)
     }, [avaliacoesCOB])
+
+    // Filtrar e ordenar avaliações
+    const avaliacoesFiltradas = avaliacoesCOB
+        .filter((avaliacao) => {
+            const matchBusca =
+                !busca ||
+                avaliacao.avaliador?.toLowerCase().includes(busca.toLowerCase()) ||
+                avaliacao.fornecedor?.toLowerCase().includes(busca.toLowerCase()) ||
+                avaliacao.numeroAmostra?.toLowerCase().includes(busca.toLowerCase()) ||
+                avaliacao.tipo?.toLowerCase().includes(busca.toLowerCase())
+
+            const matchData =
+                !filtroData || (avaliacao.data && new Date(avaliacao.data).toISOString().split("T")[0] === filtroData)
+
+            const matchFornecedor =
+                !filtroFornecedor || avaliacao.fornecedor?.toLowerCase().includes(filtroFornecedor.toLowerCase())
+
+            return matchBusca && matchData && matchFornecedor
+        })
+        .sort((a, b) => {
+            switch (ordenacao) {
+                case "data-asc":
+                    return new Date(a.data || a.dataCriacao) - new Date(b.data || b.dataCriacao)
+                case "data-desc":
+                    return new Date(b.data || b.dataCriacao) - new Date(a.data || a.dataCriacao)
+                case "fornecedor":
+                    return (a.fornecedor || "").localeCompare(b.fornecedor || "")
+                case "avaliador":
+                    return (a.avaliador || "").localeCompare(b.avaliador || "")
+                default:
+                    return 0
+            }
+        })
+
+    // Obter lista única de fornecedores para filtro
+    const fornecedoresUnicos = [...new Set(avaliacoesCOB.map((a) => a.fornecedor).filter(Boolean))]
 
     // Função para manipular a seleção da caixa de seleção
     const handleSelectAvaliacao = (id) => {
@@ -41,7 +80,7 @@ const HistoricoCob = () => {
     const handleSelectAll = (event) => {
         if (event.target.checked) {
             const newSelected = {}
-            avaliacoesCOB.forEach((avaliacao) => {
+            avaliacoesFiltradas.forEach((avaliacao) => {
                 newSelected[avaliacao.id] = true
             })
             setSelectedAvaliacoes(newSelected)
@@ -343,85 +382,118 @@ const HistoricoCob = () => {
         return (
             <div className="historico-cob-container">
                 <div className="historico-header">
-                    <h2>Histórico de Avaliações COB</h2>
-                    <div className="botoes-topo">
+                    <div className="header-content">
+                        <h1>📊 Histórico COB</h1>
                         <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
-                            <i className="bi bi-arrow-return-left"></i>
+                            ← Voltar
                         </button>
                     </div>
                 </div>
-                <p className="carregando">Carregando avaliações...</p>
+                <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>🔄 Carregando avaliações...</p>
+                </div>
             </div>
         )
     }
 
     // Calcula se todos os itens estão selecionados
-    const allSelected = avaliacoesCOB.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesCOB.length
+    const allSelected =
+        avaliacoesFiltradas.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesFiltradas.length
 
     return (
         <div className="historico-cob-container">
+            {/* Header fixo */}
             <div className="historico-header">
-                <h2>Histórico de Avaliações COB ({avaliacoesCOB.length})</h2>
-                <div className="botoes-topo">
-                    <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
-                        <i className="bi bi-arrow-return-left"></i>
-                    </button>
-                    <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
-                        <i className="bi bi-printer"></i>
-                    </button>
-                    <button className="botao-atualizar" onClick={refreshData} title="Atualizar dados" disabled={dataLoading}>
-                        <i className="bi bi-arrow-clockwise"></i>
-                    </button>
-                    {hasSelected && (
-                        <button
-                            className="botao-excluir-selecionados"
-                            onClick={handleDeleteSelected}
-                            title="Excluir avaliações selecionadas"
-                            disabled={deleting}
-                            style={{
-                                backgroundColor: "#dc3545",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "4px",
-                                padding: "6px 12px",
-                                marginLeft: "8px",
-                                cursor: deleting ? "not-allowed" : "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "5px",
-                                opacity: deleting ? 0.6 : 1,
-                            }}
-                        >
-                            <i className="bi bi-trash3"></i>
-                            {deleting ? "Excluindo..." : `Excluir Selecionados (${Object.keys(selectedAvaliacoes).length})`}
+                <div className="header-content">
+                    <h1>📊 Histórico COB ({avaliacoesFiltradas.length})</h1>
+                    <div className="header-actions">
+                        <button className="botao-nova" onClick={() => navigate("/cob")} title="Nova Avaliação">
+                            ➕ Nova
                         </button>
-                    )}
+                        <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
+                            ← Voltar
+                        </button>
+                    </div>
+                </div>
+
+                {/* Filtros e busca */}
+                <div className="filtros-container">
+                    <div className="filtros-row">
+                        <input
+                            type="text"
+                            placeholder="🔍 Buscar por avaliador, fornecedor, amostra..."
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
+                            className="input-busca"
+                        />
+
+                        <input
+                            type="date"
+                            value={filtroData}
+                            onChange={(e) => setFiltroData(e.target.value)}
+                            className="input-data"
+                            title="Filtrar por data"
+                        />
+
+                        <select
+                            value={filtroFornecedor}
+                            onChange={(e) => setFiltroFornecedor(e.target.value)}
+                            className="select-fornecedor"
+                        >
+                            <option value="">Todos os fornecedores</option>
+                            {fornecedoresUnicos.map((fornecedor) => (
+                                <option key={fornecedor} value={fornecedor}>
+                                    {fornecedor}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)} className="select-ordenacao">
+                            <option value="data-desc">📅 Mais recente</option>
+                            <option value="data-asc">📅 Mais antigo</option>
+                            <option value="fornecedor">🏢 Fornecedor A-Z</option>
+                            <option value="avaliador">👤 Avaliador A-Z</option>
+                        </select>
+                    </div>
+
+                    {/* Ações em lote */}
+                    <div className="acoes-lote">
+                        <button className="botao-atualizar" onClick={refreshData} title="Atualizar dados" disabled={dataLoading}>
+                            🔄 Atualizar
+                        </button>
+                        <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
+                            🖨️ Imprimir
+                        </button>
+                        {hasSelected && (
+                            <button
+                                className="botao-excluir-selecionados"
+                                onClick={handleDeleteSelected}
+                                title="Excluir avaliações selecionadas"
+                                disabled={deleting}
+                            >
+                                {deleting ? "🗑️ Excluindo..." : `🗑️ Excluir (${Object.keys(selectedAvaliacoes).length})`}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {avaliacoesCOB.length > 0 ? (
-                <table className="avaliacoes-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: "40px" }}>
-                                <input
-                                    type="checkbox"
-                                    checked={allSelected}
-                                    onChange={handleSelectAll}
-                                    title="Selecionar todas"
-                                    style={{ cursor: "pointer" }}
-                                />
-                            </th>
-                            <th>Data</th>
-                            <th>Fornecedor</th>
-                            <th>Nº Amostra</th>
-                            <th>Tipo do Café</th>
-                            <th>Tipo de Bebida</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {avaliacoesCOB.map((avaliacao) => {
+            {/* Conteúdo principal */}
+            {avaliacoesFiltradas.length > 0 ? (
+                <div className="avaliacoes-grid">
+                    {/* Seleção em massa */}
+                    <div className="selecao-massa">
+                        <label className="checkbox-container">
+                            <input type="checkbox" checked={allSelected} onChange={handleSelectAll} />
+                            <span className="checkmark"></span>
+                            Selecionar todas as avaliações visíveis
+                        </label>
+                    </div>
+
+                    {/* Cards das avaliações */}
+                    <div className="cards-container">
+                        {avaliacoesFiltradas.map((avaliacao) => {
                             // Formatar a data com segurança
                             let formattedDate = "Data inválida"
                             try {
@@ -437,67 +509,90 @@ const HistoricoCob = () => {
                             }
 
                             return (
-                                <tr key={avaliacao.id}>
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={!!selectedAvaliacoes[avaliacao.id]}
-                                            onChange={() => handleSelectAvaliacao(avaliacao.id)}
-                                            style={{ cursor: "pointer" }}
-                                        />
-                                    </td>
-                                    <td>{formattedDate}</td>
-                                    <td>{avaliacao.fornecedor || "—"}</td>
-                                    <td>{avaliacao.numeroAmostra || "—"}</td>
-                                    <td>{avaliacao.tipo || "—"}</td>
-                                    <td>
-                                        {avaliacao.grupoBebida
-                                            ? `${avaliacao.grupoBebida} - ${avaliacao.subClassificacaoBebida || ""}`
-                                            : "—"}
-                                    </td>
-                                    <td className="celula-acoes">
-                                        <div className="acoes-botoes">
+                                <div
+                                    key={avaliacao.id}
+                                    className={`avaliacao-card ${selectedAvaliacoes[avaliacao.id] ? "selected" : ""}`}
+                                >
+                                    <div className="card-header">
+                                        <div className="card-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={!!selectedAvaliacoes[avaliacao.id]}
+                                                onChange={() => handleSelectAvaliacao(avaliacao.id)}
+                                            />
+                                        </div>
+                                        <div className="card-info">
+                                            <h3>{avaliacao.fornecedor || "Fornecedor não informado"}</h3>
+                                            <span className="card-date">📅 {formattedDate}</span>
+                                        </div>
+                                        <div className="card-actions">
+                                            <button className="botao-pdf" onClick={() => handlePrintPDF(avaliacao.id)} title="Gerar PDF">
+                                                📄
+                                            </button>
                                             <button
                                                 className="botao-excluir"
                                                 onClick={() => handleDelete(avaliacao.id)}
                                                 title="Excluir avaliação"
                                                 disabled={deleting}
                                             >
-                                                <i className="bi bi-trash3"></i>
-                                            </button>
-                                            <button
-                                                className="botao-imprimir-individual"
-                                                onClick={() => handlePrintPDF(avaliacao.id)}
-                                                title="Imprimir avaliação"
-                                            >
-                                                <i className="bi bi-printer"></i>
+                                                🗑️
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+
+                                    <div className="card-content">
+                                        <div className="info-grid">
+                                            <div className="info-item">
+                                                <span className="info-label">👤 Avaliador:</span>
+                                                <span className="info-value">{avaliacao.avaliador || "—"}</span>
+                                            </div>
+                                            <div className="info-item">
+                                                <span className="info-label">🔢 Nº Amostra:</span>
+                                                <span className="info-value">{avaliacao.numeroAmostra || "—"}</span>
+                                            </div>
+                                            <div className="info-item">
+                                                <span className="info-label">☕ Tipo:</span>
+                                                <span className="info-value">{avaliacao.tipo || "—"}</span>
+                                            </div>
+                                            <div className="info-item">
+                                                <span className="info-label">🥤 Bebida:</span>
+                                                <span className="info-value">
+                                                    {avaliacao.grupoBebida
+                                                        ? `${avaliacao.grupoBebida} - ${avaliacao.subClassificacaoBebida || ""}`
+                                                        : "—"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             )
                         })}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             ) : (
-                <div className="sem-avaliacoes">
-                    <p>📝 Nenhuma avaliação COB encontrada.</p>
-                    <button
-                        className="botao-nova-avaliacao"
-                        onClick={() => navigate("/cob")}
-                        style={{
-                            marginTop: "20px",
-                            padding: "10px 20px",
-                            backgroundColor: "#ffba08",
-                            color: "#032b43",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        Criar Nova Avaliação COB
-                    </button>
+                <div className="empty-state">
+                    {busca || filtroData || filtroFornecedor ? (
+                        <>
+                            <p>🔍 Nenhuma avaliação encontrada com os filtros aplicados</p>
+                            <button
+                                className="botao-limpar-filtros"
+                                onClick={() => {
+                                    setBusca("")
+                                    setFiltroData("")
+                                    setFiltroFornecedor("")
+                                }}
+                            >
+                                Limpar filtros
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <p>📝 Nenhuma avaliação COB encontrada</p>
+                            <button className="botao-nova-avaliacao" onClick={() => navigate("/cob")}>
+                                Criar primeira avaliação COB
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
         </div>
