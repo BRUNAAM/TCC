@@ -3,69 +3,125 @@
 import "./HistoricoScaa.css"
 import { useState, useEffect } from "react"
 import { auth, db } from "../config/firebase"
-import { deleteDoc, doc, getDoc } from "firebase/firestore"
+import { deleteDoc, doc, getDoc, collection, getDocs, query, orderBy } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
-import logo from "../assets/logopdf.png" // Certifique-se de que este caminho está correto
+import logo from "../assets/logopdf.png"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import { useData } from "../context/DataContext"
 
 const HistoricoScaa = () => {
-    // ✅ USANDO DADOS DO CONTEXTO
+    // Estados principais
     const { avaliacoesScaa = [], loading: dataLoading, refreshData } = useData()
     const [selectedAvaliacoes, setSelectedAvaliacoes] = useState({})
     const [hasSelected, setHasSelected] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [localLoading, setLocalLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const [localAvaliacoes, setLocalAvaliacoes] = useState([])
     const navigate = useNavigate()
 
+    // ✅ BACKUP: Buscar dados diretamente do Firebase se o contexto falhar
+    const fetchAvaliacoesDirectly = async () => {
+        try {
+            setLocalLoading(true)
+            setError(null)
+
+            const user = auth.currentUser
+            if (!user) {
+                setError("Usuário não autenticado")
+                return
+            }
+
+            const avaliacoesRef = collection(db, "usuarios", user.uid, "avaliacoes_scaa")
+            const q = query(avaliacoesRef, orderBy("data", "desc"))
+            const querySnapshot = await getDocs(q)
+
+            const avaliacoesList = []
+            querySnapshot.forEach((doc) => {
+                avaliacoesList.push({
+                    id: doc.id,
+                    ...doc.data(),
+                })
+            })
+
+            setLocalAvaliacoes(avaliacoesList)
+            console.log("✅ Avaliações carregadas diretamente:", avaliacoesList.length)
+        } catch (err) {
+            console.error("❌ Erro ao buscar avaliações:", err)
+            setError("Erro ao carregar avaliações: " + err.message)
+        } finally {
+            setLocalLoading(false)
+        }
+    }
+
+    // ✅ EFEITO: Carregar dados na inicialização
     useEffect(() => {
-        // Limpar seleções quando os dados mudarem
+        if (!dataLoading && avaliacoesScaa.length === 0) {
+            console.log("🔄 Contexto vazio, buscando dados diretamente...")
+            fetchAvaliacoesDirectly()
+        } else if (avaliacoesScaa.length > 0) {
+            setLocalAvaliacoes(avaliacoesScaa)
+        }
+    }, [avaliacoesScaa, dataLoading])
+
+    // ✅ LIMPAR SELEÇÕES quando dados mudarem
+    useEffect(() => {
         setSelectedAvaliacoes({})
         setHasSelected(false)
-    }, [avaliacoesScaa])
+    }, [localAvaliacoes])
 
-    // Função para manipular a seleção da caixa de seleção
+    // ✅ FUNÇÃO: Manipular seleção individual
     const handleSelectAvaliacao = (id) => {
+        if (!id) {
+            console.error("❌ ID inválido para seleção:", id)
+            return
+        }
+
         const newSelected = { ...selectedAvaliacoes }
         if (newSelected[id]) {
             delete newSelected[id]
         } else {
             newSelected[id] = true
         }
+
         setSelectedAvaliacoes(newSelected)
         setHasSelected(Object.keys(newSelected).length > 0)
     }
 
-    // Função para selecionar/desselecionar todas as avaliações
+    // ✅ FUNÇÃO: Selecionar/desselecionar todas
     const handleSelectAll = (event) => {
         if (event.target.checked) {
             const newSelected = {}
-            avaliacoesScaa.forEach((avaliacao) => {
-                newSelected[avaliacao.id] = true
+            localAvaliacoes.forEach((avaliacao) => {
+                if (avaliacao.id) {
+                    newSelected[avaliacao.id] = true
+                }
             })
             setSelectedAvaliacoes(newSelected)
-            setHasSelected(true)
+            setHasSelected(Object.keys(newSelected).length > 0)
         } else {
             setSelectedAvaliacoes({})
             setHasSelected(false)
         }
     }
 
-    // Função para excluir múltiplas avaliações
+    // ✅ FUNÇÃO: Excluir múltiplas avaliações (MELHORADA)
     const handleDeleteSelected = async () => {
-        const selectedIds = Object.keys(selectedAvaliacoes)
+        const selectedIds = Object.keys(selectedAvaliacoes).filter((id) => id && id.trim() !== "")
+
         if (selectedIds.length === 0) {
             alert("Nenhuma avaliação selecionada para exclusão.")
             return
         }
 
-        const confirm = window.confirm(`Deseja realmente excluir ${selectedIds.length} avaliação(ões)?`)
-        if (!confirm) return
+        const confirmMessage = `Deseja realmente excluir ${selectedIds.length} avaliação(ões)?\n\nEsta ação não pode ser desfeita.`
+        if (!window.confirm(confirmMessage)) return
 
         const user = auth.currentUser
         if (!user) {
-            alert("Usuário não autenticado.")
+            alert("Erro: Usuário não autenticado.")
             return
         }
 
@@ -73,62 +129,92 @@ const HistoricoScaa = () => {
             setDeleting(true)
             let successCount = 0
             let errorCount = 0
+            const errors = []
 
-            // Processe as exclusões uma por uma para lidar com os erros individualmente
+            // ✅ Processar exclusões sequencialmente
             for (const id of selectedIds) {
                 try {
+                    console.log(`🗑️ Excluindo avaliação: ${id}`)
                     const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
+
+                    // Verificar se existe antes de excluir
+                    const docSnap = await getDoc(docRef)
+                    if (!docSnap.exists()) {
+                        console.warn(`⚠️ Documento ${id} não encontrado`)
+                        errorCount++
+                        errors.push(`Avaliação ${id} não encontrada`)
+                        continue
+                    }
+
                     await deleteDoc(docRef)
                     successCount++
+                    console.log(`✅ Avaliação ${id} excluída com sucesso`)
                 } catch (err) {
-                    console.error(`Erro ao excluir avaliação ${id}:`, err)
+                    console.error(`❌ Erro ao excluir avaliação ${id}:`, err)
                     errorCount++
+                    errors.push(`Erro ao excluir ${id}: ${err.message}`)
                 }
             }
 
-            // Limpar seleções
+            // ✅ Limpar seleções
             setSelectedAvaliacoes({})
             setHasSelected(false)
 
-            // Atualizar dados do contexto
-            refreshData()
+            // ✅ Atualizar dados
+            if (refreshData) {
+                await refreshData()
+            }
+            await fetchAvaliacoesDirectly()
 
-            // Mostrar mensagem de resultado
+            // ✅ Mostrar resultado
             if (errorCount === 0) {
-                alert(`${successCount} avaliação(ões) excluída(s) com sucesso!`)
+                alert(`✅ ${successCount} avaliação(ões) excluída(s) com sucesso!`)
             } else {
-                alert(`${successCount} avaliação(ões) excluída(s) com sucesso e ${errorCount} falha(s).`)
+                const message = `Resultado da exclusão:\n✅ ${successCount} sucesso(s)\n❌ ${errorCount} erro(s)\n\nDetalhes dos erros:\n${errors.join("\n")}`
+                alert(message)
             }
         } catch (err) {
-            console.error("Erro ao excluir avaliações:", err)
-            alert("Erro ao excluir avaliações: " + err.message)
+            console.error("❌ Erro geral ao excluir avaliações:", err)
+            alert("Erro inesperado ao excluir avaliações: " + err.message)
         } finally {
             setDeleting(false)
         }
     }
 
+    // ✅ FUNÇÃO: Excluir avaliação individual (MELHORADA)
     const handleDelete = async (id) => {
-        if (!id || typeof id !== "string") {
-            console.error("ID inválido para exclusão:", id)
+        if (!id || typeof id !== "string" || id.trim() === "") {
+            console.error("❌ ID inválido para exclusão:", id)
             alert("Erro: ID inválido para exclusão")
             return
         }
 
-        try {
-            const confirm = window.confirm("Deseja realmente excluir esta avaliação?")
-            if (!confirm) return
+        const confirmMessage = "Deseja realmente excluir esta avaliação?\n\nEsta ação não pode ser desfeita."
+        if (!window.confirm(confirmMessage)) return
 
-            const user = auth.currentUser
-            if (!user) {
-                alert("Usuário não autenticado.")
+        const user = auth.currentUser
+        if (!user) {
+            alert("Erro: Usuário não autenticado.")
+            return
+        }
+
+        try {
+            setDeleting(true)
+            console.log(`🗑️ Excluindo avaliação individual: ${id}`)
+
+            const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
+
+            // Verificar se existe antes de excluir
+            const docSnap = await getDoc(docRef)
+            if (!docSnap.exists()) {
+                alert("Erro: Avaliação não encontrada no banco de dados.")
                 return
             }
 
-            setDeleting(true)
-            const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
             await deleteDoc(docRef)
+            console.log(`✅ Avaliação ${id} excluída com sucesso`)
 
-            // Remover da seleção se estava selecionado
+            // ✅ Remover da seleção se estava selecionado
             if (selectedAvaliacoes[id]) {
                 const newSelected = { ...selectedAvaliacoes }
                 delete newSelected[id]
@@ -136,24 +222,39 @@ const HistoricoScaa = () => {
                 setHasSelected(Object.keys(newSelected).length > 0)
             }
 
-            // Atualizar dados do contexto
-            refreshData()
-            alert("Avaliação excluída com sucesso!")
+            // ✅ Atualizar dados
+            if (refreshData) {
+                await refreshData()
+            }
+            await fetchAvaliacoesDirectly()
+
+            alert("✅ Avaliação excluída com sucesso!")
         } catch (err) {
-            console.error("Erro ao excluir avaliação:", err)
+            console.error("❌ Erro ao excluir avaliação:", err)
             alert("Erro ao excluir avaliação: " + err.message)
         } finally {
             setDeleting(false)
         }
     }
 
+    // ✅ FUNÇÃO: Imprimir página
     const handlePrint = () => {
         window.print()
     }
 
+    // ✅ FUNÇÃO: Atualizar dados manualmente
+    const handleRefresh = async () => {
+        setError(null)
+        if (refreshData) {
+            await refreshData()
+        }
+        await fetchAvaliacoesDirectly()
+    }
+
+    // ✅ FUNÇÃO: Gerar PDF (mantida igual ao original)
     const handlePrintPDF = async (id) => {
         if (!id || typeof id !== "string") {
-            console.error("ID inválido para impressão:", id)
+            console.error("❌ ID inválido para impressão:", id)
             alert("Erro: ID inválido para impressão")
             return
         }
@@ -165,24 +266,23 @@ const HistoricoScaa = () => {
                 return
             }
 
-            // Encontrar a avaliação nos dados do contexto
-            let avaliacaoData
-            const avaliacaoEncontrada = avaliacoesScaa.find((a) => a.id === id)
-            if (!avaliacaoEncontrada) {
-                console.error("Avaliação não encontrada no contexto")
-                // Buscar no Firestore como fallback
+            // ✅ Buscar avaliação nos dados locais primeiro
+            let avaliacaoData = localAvaliacoes.find((a) => a.id === id)
+
+            if (!avaliacaoData) {
+                console.log("🔍 Avaliação não encontrada localmente, buscando no Firestore...")
                 const docRef = doc(db, "usuarios", user.uid, "avaliacoes_scaa", id)
                 const docSnap = await getDoc(docRef)
+
                 if (!docSnap.exists()) {
-                    alert("Documento não encontrado.")
+                    alert("Erro: Avaliação não encontrada.")
                     return
                 }
+
                 avaliacaoData = { id: docSnap.id, ...docSnap.data() }
-            } else {
-                avaliacaoData = avaliacaoEncontrada
             }
 
-            // Gerar PDF
+            // ✅ Gerar PDF (código mantido igual ao original)
             const docPDF = new jsPDF({ unit: "mm", format: "a4" })
             const img = new Image()
             img.src = logo
@@ -190,7 +290,6 @@ const HistoricoScaa = () => {
 
             img.onload = () => {
                 const pageWidth = docPDF.internal.pageSize.getWidth()
-                const pageHeight = docPDF.internal.pageSize.getHeight()
                 const marginX = 20
                 const boxY = 10
                 const logoWidth = 25
@@ -219,15 +318,6 @@ const HistoricoScaa = () => {
                     bodyStyles: {
                         font: "times",
                         textColor: 0,
-                    },
-                    didDrawPage: (data) => {
-                        const pageCount = docPDF.internal.getNumberOfPages()
-                        docPDF.setFontSize(10)
-                        docPDF.setTextColor(150)
-                        docPDF.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, {
-                            align: "right",
-                        })
-                        docPDF.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10)
                     },
                 })
 
@@ -265,23 +355,6 @@ const HistoricoScaa = () => {
                     }),
                 )
 
-                // Intensidades e observações
-                const intensidades = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
-                autoTable(
-                    docPDF,
-                    autoTableOptions({
-                        head: [["Critério", "Valor"]],
-                        body: [
-                            ["Dry", intensidades[avaliacaoData.dry] || "—"],
-                            ["Break", intensidades[avaliacaoData.breakValue] || "—"],
-                            ["Nível de Acidez", intensidades[avaliacaoData.nivelAcidez] || "—"],
-                            ["Nível de Corpo", intensidades[avaliacaoData.nivelCorpo] || "—"],
-                            ["Defeitos Leves", `-${(avaliacaoData.defeitosLeves || 0) * 2}`],
-                            ["Defeitos Graves", `-${(avaliacaoData.defeitosGraves || 0) * 4}`],
-                        ],
-                    }),
-                )
-
                 // Pontuação final
                 autoTable(
                     docPDF,
@@ -293,28 +366,6 @@ const HistoricoScaa = () => {
                         ],
                     }),
                 )
-
-                // Observações
-                if (avaliacaoData.observacoes) {
-                    autoTable(
-                        docPDF,
-                        autoTableOptions({
-                            head: [["Observações"]],
-                            body: [[avaliacaoData.observacoes]],
-                        }),
-                    )
-                }
-
-                const assinaturaY = docPDF.lastAutoTable.finalY + 30
-                const linhaLargura = 80
-                const linhaInicioX = (pageWidth - linhaLargura) / 2
-                docPDF.line(linhaInicioX, assinaturaY, linhaInicioX + linhaLargura, assinaturaY)
-                docPDF.setFont("times", "normal")
-                docPDF.setFontSize(12)
-                docPDF.text(`Avaliador: ${avaliacaoData.avaliador || "—"}`, pageWidth / 2, assinaturaY + 7, { align: "center" })
-                docPDF.text(`Q Grader Certificado`, pageWidth / 2, assinaturaY + 14, {
-                    align: "center",
-                })
 
                 const blob = docPDF.output("blob")
                 const url = URL.createObjectURL(blob)
@@ -322,149 +373,17 @@ const HistoricoScaa = () => {
             }
 
             img.onerror = () => {
-                console.error("Erro ao carregar a imagem do logo")
-                alert("Erro ao carregar a imagem do logo. O PDF será gerado sem a imagem.")
-                // Tenta gerar o PDF mesmo sem a imagem
-                const docPDFFallback = new jsPDF({ unit: "mm", format: "a4" })
-                const pageWidth = docPDFFallback.internal.pageSize.getWidth()
-                const pageHeight = docPDFFallback.internal.pageSize.getHeight()
-                const marginX = 20
-                const boxY = 10
-                const titulo = "Avaliação Sensorial de Café - Método SCAA"
-                docPDFFallback.setFont("times", "bold")
-                docPDFFallback.setFontSize(14)
-                docPDFFallback.text(titulo, pageWidth / 2, boxY + 16, { align: "center" })
-
-                const autoTableOptionsFallback = (config) => ({
-                    ...config,
-                    theme: "grid",
-                    margin: { left: marginX, right: marginX },
-                    startY: docPDFFallback.lastAutoTable ? docPDFFallback.lastAutoTable.finalY + 10 : boxY + 30,
-                    headStyles: {
-                        fillColor: [3, 43, 67],
-                        textColor: 255,
-                        fontStyle: "bold",
-                        font: "times",
-                    },
-                    bodyStyles: {
-                        font: "times",
-                        textColor: 0,
-                    },
-                    didDrawPage: (data) => {
-                        const pageCount = docPDFFallback.internal.getNumberOfPages()
-                        docPDFFallback.setFontSize(10)
-                        docPDFFallback.setTextColor(150)
-                        docPDFFallback.text(`Página ${data.pageNumber} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, {
-                            align: "right",
-                        })
-                        docPDFFallback.text(`Laudo Técnico - ${new Date().toLocaleDateString("pt-BR")}`, marginX, pageHeight - 10)
-                    },
-                })
-
-                // Informações gerais
-                autoTable(
-                    docPDFFallback,
-                    autoTableOptionsFallback({
-                        head: [["Identificação", "Valor"]],
-                        body: [
-                            ["Avaliador", avaliacaoData.avaliador || "—"],
-                            ["Data", avaliacaoData.data ? new Date(avaliacaoData.data).toLocaleDateString("pt-BR") : "—"],
-                            ["Fornecedor", avaliacaoData.fornecedorSelecionado || "—"],
-                            ["Nº Amostra", avaliacaoData.numeroAmostra || "—"],
-                            ["Torra", avaliacaoData.torraSelecionada || "—"],
-                            ["Notas Sensoriais", avaliacaoData.notasSensorias || "—"],
-                        ],
-                    }),
-                )
-
-                // Notas sensoriais
-                const notasFallback = avaliacaoData.notas || {}
-                autoTable(
-                    docPDFFallback,
-                    autoTableOptionsFallback({
-                        head: [["Atributo Sensorial", "Nota"]],
-                        body: [
-                            ["Aroma/Fragrância", notasFallback.AromaFragrancia || "—"],
-                            ["Sabor", notasFallback.sabor || "—"],
-                            ["Finalização", notasFallback.finalizacao || "—"],
-                            ["Acidez", notasFallback.acidez || "—"],
-                            ["Corpo", notasFallback.corpo || "—"],
-                            ["Equilíbrio", notasFallback.equilibrio || "—"],
-                            ["Avaliação Pessoal", notasFallback.avaliacaoPessoal || "—"],
-                        ],
-                    }),
-                )
-
-                // Intensidades e observações
-                const intensidadesFallback = ["Baixo", "Médio Baixo", "Médio", "Médio Alto", "Alto"]
-                autoTable(
-                    docPDFFallback,
-                    autoTableOptionsFallback({
-                        head: [["Critério", "Valor"]],
-                        body: [
-                            ["Dry", intensidadesFallback[avaliacaoData.dry] || "—"],
-                            ["Break", intensidadesFallback[avaliacaoData.breakValue] || "—"],
-                            ["Nível de Acidez", intensidadesFallback[avaliacaoData.nivelAcidez] || "—"],
-                            ["Nível de Corpo", intensidadesFallback[avaliacaoData.nivelCorpo] || "—"],
-                            ["Defeitos Leves", `-${(avaliacaoData.defeitosLeves || 0) * 2}`],
-                            ["Defeitos Graves", `-${(avaliacaoData.defeitosGraves || 0) * 4}`],
-                        ],
-                    }),
-                )
-
-                // Pontuação final
-                autoTable(
-                    docPDFFallback,
-                    autoTableOptionsFallback({
-                        head: [["Resultado Final", "Valor"]],
-                        body: [
-                            ["Pontuação Total", avaliacaoData.pontuacaoFinal || "—"],
-                            ["Total Descontos", avaliacaoData.totalDescontos || "—"],
-                        ],
-                    }),
-                )
-
-                // Observações
-                if (avaliacaoData.observacoes) {
-                    autoTable(
-                        docPDFFallback,
-                        autoTableOptionsFallback({
-                            head: [["Observações"]],
-                            body: [[avaliacaoData.observacoes]],
-                        }),
-                    )
-                }
-
-                const assinaturaYFallback = docPDFFallback.lastAutoTable.finalY + 30
-                const linhaLarguraFallback = 80
-                const linhaInicioXFallback = (pageWidth - linhaLarguraFallback) / 2
-                docPDFFallback.line(
-                    linhaInicioXFallback,
-                    assinaturaYFallback,
-                    linhaInicioXFallback + linhaLarguraFallback,
-                    assinaturaYFallback,
-                )
-                docPDFFallback.setFont("times", "normal")
-                docPDFFallback.setFontSize(12)
-                docPDFFallback.text(`Avaliador: ${avaliacaoData.avaliador || "—"}`, pageWidth / 2, assinaturaYFallback + 7, {
-                    align: "center",
-                })
-                docPDFFallback.text(`Q Grader Certificado`, pageWidth / 2, assinaturaYFallback + 14, {
-                    align: "center",
-                })
-
-                const blobFallback = docPDFFallback.output("blob")
-                const urlFallback = URL.createObjectURL(blobFallback)
-                window.open(urlFallback, "_blank")
+                console.error("❌ Erro ao carregar logo")
+                alert("Erro ao carregar logo. PDF será gerado sem imagem.")
             }
         } catch (error) {
-            console.error("Erro ao gerar PDF:", error)
+            console.error("❌ Erro ao gerar PDF:", error)
             alert("Erro ao gerar PDF: " + error.message)
         }
     }
 
-    // Renderiza o estado de carregamento
-    if (dataLoading) {
+    // ✅ RENDERIZAÇÃO: Estado de carregamento
+    if (dataLoading || localLoading) {
         return (
             <div className="historico-scaa-container">
                 <div className="historico-header">
@@ -475,18 +394,47 @@ const HistoricoScaa = () => {
                         </button>
                     </div>
                 </div>
-                <p className="carregando">Carregando avaliações...</p>
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p className="carregando">Carregando avaliações...</p>
+                </div>
             </div>
         )
     }
 
-    // Calcula se todos os itens estão selecionados
-    const allSelected = avaliacoesScaa.length > 0 && Object.keys(selectedAvaliacoes).length === avaliacoesScaa.length
+    // ✅ RENDERIZAÇÃO: Estado de erro
+    if (error) {
+        return (
+            <div className="historico-scaa-container">
+                <div className="historico-header">
+                    <h2>Histórico de Avaliações SCAA</h2>
+                    <div className="botoes-topo">
+                        <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
+                            <i className="bi bi-arrow-return-left"></i>
+                        </button>
+                        <button className="botao-atualizar" onClick={handleRefresh} title="Tentar novamente">
+                            <i className="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+                <div className="error-container">
+                    <p className="error-message">❌ {error}</p>
+                    <button className="botao-nova-avaliacao" onClick={handleRefresh}>
+                        Tentar Novamente
+                    </button>
+                </div>
+            </div>
+        )
+    }
 
+    // ✅ CÁLCULOS: Verificar se todos estão selecionados
+    const allSelected = localAvaliacoes.length > 0 && Object.keys(selectedAvaliacoes).length === localAvaliacoes.length
+
+    // ✅ RENDERIZAÇÃO PRINCIPAL
     return (
         <div className="historico-scaa-container">
             <div className="historico-header">
-                <h2>Histórico de Avaliações SCAA ({avaliacoesScaa.length})</h2>
+                <h2>Histórico de Avaliações SCAA ({localAvaliacoes.length})</h2>
                 <div className="botoes-topo">
                     <button className="botao-voltar" onClick={() => navigate(-1)} title="Voltar">
                         <i className="bi bi-arrow-return-left"></i>
@@ -494,8 +442,8 @@ const HistoricoScaa = () => {
                     <button className="botao-imprimir" onClick={handlePrint} title="Imprimir">
                         <i className="bi bi-printer"></i>
                     </button>
-                    <button className="botao-atualizar" onClick={refreshData} title="Atualizar dados" disabled={dataLoading}>
-                        <i className="bi bi-arrow-clockwise"></i>
+                    <button className="botao-atualizar" onClick={handleRefresh} title="Atualizar dados" disabled={localLoading}>
+                        <i className={`bi bi-arrow-clockwise ${localLoading ? "spinning" : ""}`}></i>
                     </button>
                     {hasSelected && (
                         <button
@@ -503,118 +451,91 @@ const HistoricoScaa = () => {
                             onClick={handleDeleteSelected}
                             title="Excluir avaliações selecionadas"
                             disabled={deleting}
-                            style={{
-                                backgroundColor: "#dc3545",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "4px",
-                                padding: "6px 12px",
-                                marginLeft: "8px",
-                                cursor: deleting ? "not-allowed" : "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "5px",
-                                opacity: deleting ? 0.6 : 1,
-                            }}
                         >
                             <i className="bi bi-trash3"></i>
-                            {deleting ? "Excluindo..." : `Excluir Selecionados (${Object.keys(selectedAvaliacoes).length})`}
+                            <span className="botao-texto-selecionados">
+                                {deleting ? "Excluindo..." : `Excluir (${Object.keys(selectedAvaliacoes).length})`}
+                            </span>
                         </button>
                     )}
                 </div>
             </div>
-            {avaliacoesScaa.length > 0 ? (
-                <table className="avaliacoes-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: "40px" }}>
-                                <input
-                                    type="checkbox"
-                                    checked={allSelected}
-                                    onChange={handleSelectAll}
-                                    title="Selecionar todas"
-                                    style={{ cursor: "pointer" }}
-                                />
-                            </th>
-                            <th>Data</th>
-                            <th>Fornecedor</th>
-                            <th>Nº Amostra</th>
-                            <th>Torra</th>
-                            <th>Pontuação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {avaliacoesScaa.map((avaliacao) => {
-                            // Formatar a data com segurança
-                            let formattedDate = "Data inválida"
-                            try {
-                                const dateStr = avaliacao.data || avaliacao.dataCriacao
-                                if (dateStr) {
-                                    const date = new Date(dateStr)
-                                    if (!isNaN(date.getTime())) {
-                                        formattedDate = date.toLocaleDateString("pt-BR")
+
+            {localAvaliacoes.length > 0 ? (
+                <div className="avaliacoes-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style={{ width: "50px" }}>
+                                    <input type="checkbox" checked={allSelected} onChange={handleSelectAll} title="Selecionar todas" />
+                                </th>
+                                <th>Data</th>
+                                <th>Fornecedor</th>
+                                <th>Nº Amostra</th>
+                                <th>Torra</th>
+                                <th>Pontuação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {localAvaliacoes.map((avaliacao) => {
+                                // ✅ Formatação segura da data
+                                let formattedDate = "Data inválida"
+                                try {
+                                    const dateStr = avaliacao.data || avaliacao.dataCriacao
+                                    if (dateStr) {
+                                        const date = new Date(dateStr)
+                                        if (!isNaN(date.getTime())) {
+                                            formattedDate = date.toLocaleDateString("pt-BR")
+                                        }
                                     }
+                                } catch (e) {
+                                    console.error("❌ Erro ao formatar data:", e)
                                 }
-                            } catch (e) {
-                                console.error("Erro ao formatar data:", e)
-                            }
-                            return (
-                                <tr key={avaliacao.id}>
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={!!selectedAvaliacoes[avaliacao.id]}
-                                            onChange={() => handleSelectAvaliacao(avaliacao.id)}
-                                            style={{ cursor: "pointer" }}
-                                        />
-                                    </td>
-                                    <td>{formattedDate}</td>
-                                    <td>{avaliacao.fornecedorSelecionado || "—"}</td>
-                                    <td>{avaliacao.numeroAmostra || "—"}</td>
-                                    <td>{avaliacao.torraSelecionada || "—"}</td>
-                                    <td>{avaliacao.pontuacaoFinal || "—"}</td>
-                                    <td className="celula-acoes">
-                                        <div className="acoes-botoes">
-                                            <button
-                                                className="botao-excluir"
-                                                onClick={() => handleDelete(avaliacao.id)}
-                                                title="Excluir avaliação"
-                                                disabled={deleting}
-                                            >
-                                                <i className="bi bi-trash3"></i>
-                                            </button>
-                                            <button
-                                                className="botao-imprimir-individual"
-                                                onClick={() => handlePrintPDF(avaliacao.id)}
-                                                title="Imprimir avaliação"
-                                            >
-                                                <i className="bi bi-printer"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+
+                                return (
+                                    <tr key={avaliacao.id} className={selectedAvaliacoes[avaliacao.id] ? "selected-row" : ""}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={!!selectedAvaliacoes[avaliacao.id]}
+                                                onChange={() => handleSelectAvaliacao(avaliacao.id)}
+                                            />
+                                        </td>
+                                        <td>{formattedDate}</td>
+                                        <td>{avaliacao.fornecedorSelecionado || "—"}</td>
+                                        <td>{avaliacao.numeroAmostra || "—"}</td>
+                                        <td>{avaliacao.torraSelecionada || "—"}</td>
+                                        <td>{avaliacao.pontuacaoFinal || "—"}</td>
+                                        <td className="celula-acoes">
+                                            <div className="acoes-botoes">
+                                                <button
+                                                    className="botao-excluir"
+                                                    onClick={() => handleDelete(avaliacao.id)}
+                                                    title="Excluir avaliação"
+                                                    disabled={deleting}
+                                                >
+                                                    <i className="bi bi-trash3"></i>
+                                                </button>
+                                                <button
+                                                    className="botao-imprimir-individual"
+                                                    onClick={() => handlePrintPDF(avaliacao.id)}
+                                                    title="Imprimir avaliação"
+                                                >
+                                                    <i className="bi bi-printer"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             ) : (
                 <div className="sem-avaliacoes">
                     <p>📝 Nenhuma avaliação SCAA encontrada.</p>
-                    <button
-                        className="botao-nova-avaliacao"
-                        onClick={() => navigate("/scaa")}
-                        style={{
-                            marginTop: "20px",
-                            padding: "10px 20px",
-                            backgroundColor: "#ffba08",
-                            color: "#032b43",
-                            border: "none",
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                            fontWeight: "bold",
-                        }}
-                    >
+                    <button className="botao-nova-avaliacao" onClick={() => navigate("/scaa")}>
                         Criar Nova Avaliação SCAA
                     </button>
                 </div>

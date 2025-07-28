@@ -1,3 +1,5 @@
+/* ===== MANTENDO SEU ESTILO + MELHORIAS MOBILE ===== */
+
 /* Variáveis CSS para consistência */
 :root {
   --cor-primaria: #032b43;
@@ -18,7 +20,6 @@
   --transicao-padrao: all 0.3s ease;
   --focus-outline: 3px solid var(--cor-destaque);
   --focus-offset: 2px;
-
   /* Variáveis adicionais */
   --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
   --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -48,6 +49,8 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* ✅ NOVO: Previne zoom horizontal em mobile */
+  overflow-x: hidden;
 }
 
 /* Link para pular conteúdo */
@@ -113,12 +116,11 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  max-height: 100vh;
-  /* Limita altura máxima */
   width: 100%;
   padding: 15px;
-  overflow: hidden;
-  /* Evita scroll desnecessário */
+  /* ✅ MELHORADO: Melhor gestão de overflow */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .container-esqueci:focus {
@@ -129,16 +131,21 @@ body {
   background-color: var(--cor-primaria);
   text-align: center;
   max-width: 420px;
-  /* Ligeiramente maior que login para acomodar conteúdo extra */
   width: 100%;
   border-radius: 15px;
   box-shadow: var(--sombra-forte);
   padding: 20px;
-  /* Compacto para caber na viewport */
   animation: fadeInUp 0.6s ease-out;
   border: 2px solid rgba(255, 186, 8, 0.2);
   position: relative;
   backdrop-filter: blur(10px);
+  /* ✅ NOVO: Melhor controle de altura em mobile */
+  min-height: fit-content;
+}
+
+/* ✅ NOVO: Estado após animação completa */
+.caixa-esqueci.animacao-completa {
+  animation: none;
 }
 
 @keyframes fadeInUp {
@@ -177,16 +184,14 @@ body {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 10px;
-  /* Compacto */
 }
 
 .botao-fechar {
-  background: #e74c3c;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
   color: white;
   border: none;
   border-radius: 50%;
   width: 32px;
-  /* Menor que o original */
   height: 32px;
   font-size: 16px;
   cursor: pointer;
@@ -195,10 +200,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--sombra-suave);
+  /* ✅ NOVO: Melhor acessibilidade */
+  -webkit-tap-highlight-color: transparent;
 }
 
-.botao-fechar:hover {
-  background: #c0392b;
+/* ✅ NOVO: Estado navegando */
+.botao-fechar.navegando {
+  background: linear-gradient(135deg, #cccccc, #999999);
+  cursor: not-allowed;
+}
+
+.botao-fechar:hover:not(:disabled):not(.navegando) {
+  background: linear-gradient(135deg, #f85c4c, #d44332);
   transform: scale(1.1);
   box-shadow: var(--sombra-media);
 }
@@ -208,21 +222,92 @@ body {
   outline-offset: var(--focus-offset);
 }
 
+.botao-fechar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Logo */
 .container-logo {
   margin-bottom: 10px;
-  /* Compacto */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px; /* Evita layout shift */
+}
+
+/* ✅ NOVOS: Estados do logo */
+.logo-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-skeleton {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 186, 8, 0.1) 0%,
+    rgba(255, 186, 8, 0.2) 50%,
+    rgba(255, 186, 8, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.logo-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 15px;
+  background: rgba(255, 186, 8, 0.1);
+  border-radius: 8px;
+  border: 2px dashed var(--cor-destaque);
+}
+
+.icone-logo-fallback {
+  color: var(--cor-destaque);
+  filter: drop-shadow(0 2px 4px var(--cor-sombra));
+}
+
+.texto-logo-fallback {
+  color: var(--cor-destaque);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .logo-esqueci {
   width: 100px;
-  /* Menor que login para economizar espaço */
   height: 100px;
   filter: drop-shadow(0 4px 8px var(--cor-sombra));
   transition: var(--transicao-padrao);
   border-radius: 8px;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+  /* ✅ NOVO: Estados de carregamento */
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.logo-esqueci.logo-carregado {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .logo-esqueci:hover {
@@ -233,9 +318,7 @@ body {
 /* Título */
 .titulo-esqueci {
   font-size: clamp(1.3rem, 4vw, 1.5rem);
-  /* Menor que login */
   margin-bottom: 15px;
-  /* Compacto */
   color: var(--cor-destaque);
   text-shadow: 0 2px 4px var(--cor-sombra);
   position: relative;
@@ -266,7 +349,6 @@ body {
   background: var(--cor-info-bg);
   border-left: 4px solid var(--cor-info);
   padding: 12px;
-  /* Compacto */
   border-radius: 8px;
   margin-bottom: 15px;
   display: flex;
@@ -294,7 +376,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  /* Compacto */
   text-align: left;
 }
 
@@ -353,6 +434,9 @@ body {
   outline: none;
   width: 100%;
   font-family: var(--fonte-principal);
+  /* ✅ NOVO: Melhor acessibilidade */
+  user-select: text;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .input-esqueci::placeholder {
@@ -376,12 +460,16 @@ body {
   align-items: flex-start;
   background-color: var(--cor-erro-bg);
   padding: 10px;
-  /* Compacto */
   border-radius: 8px;
   border-left: 4px solid var(--cor-erro);
   animation: slideInError 0.3s ease-out;
   gap: 8px;
   backdrop-filter: blur(5px);
+}
+
+.container-erro.erro-bloqueio {
+  border-left-color: #ff4757;
+  background-color: rgba(255, 71, 87, 0.1);
 }
 
 .container-erro:focus {
@@ -407,6 +495,14 @@ body {
   animation: pulse 2s ease-in-out infinite;
 }
 
+/* ✅ NOVO: Conteúdo do erro */
+.conteudo-erro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .mensagem-erro {
   color: var(--cor-erro);
   font-size: 0.9rem;
@@ -415,13 +511,27 @@ body {
   font-weight: normal;
 }
 
+/* ✅ NOVOS: Informações adicionais de erro */
+.tempo-bloqueio,
+.tentativas-restantes {
+  color: var(--cor-erro);
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+.tempo-bloqueio {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
 /* Container de sucesso */
 .container-sucesso {
   display: flex;
   align-items: flex-start;
   background-color: var(--cor-sucesso-bg);
   padding: 10px;
-  /* Compacto */
   border-radius: 8px;
   border-left: 4px solid var(--cor-sucesso);
   animation: slideInSuccess 0.3s ease-out;
@@ -509,7 +619,21 @@ body {
   letter-spacing: 0.5px;
   overflow: hidden;
   margin-top: 8px;
-  /* Compacto */
+  /* ✅ NOVO: Melhor acessibilidade */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ✅ NOVO: Estado bloqueado */
+.botao-esqueci.botao-bloqueado {
+  background: linear-gradient(135deg, #666666, #555555);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.botao-esqueci.botao-bloqueado:hover {
+  transform: none;
+  box-shadow: var(--sombra-media);
 }
 
 .botao-esqueci::before {
@@ -534,7 +658,7 @@ body {
   background: linear-gradient(135deg, var(--cor-destaque-hover), #ffcc33);
 }
 
-.botao-esqueci:hover::before {
+.botao-esqueci:hover:not(:disabled)::before {
   left: 100%;
 }
 
@@ -544,7 +668,7 @@ body {
   transform: translateY(-1px);
 }
 
-.botao-esqueci:active {
+.botao-esqueci:active:not(:disabled) {
   transform: translateY(1px);
   box-shadow: var(--sombra-suave);
 }
@@ -565,7 +689,7 @@ body {
   transition: var(--transicao-padrao);
 }
 
-.botao-esqueci:hover .icone-botao {
+.botao-esqueci:hover:not(:disabled) .icone-botao:not(.icone-carregando) {
   transform: scale(1.1);
 }
 
@@ -585,21 +709,17 @@ body {
 /* Instruções */
 .instrucoes {
   margin: 15px 0 10px 0;
-  /* Compacto */
   text-align: left;
   background: rgba(124, 216, 228, 0.05);
   padding: 12px;
-  /* Compacto */
   border-radius: 8px;
   border: 1px solid rgba(124, 216, 228, 0.2);
 }
 
 .titulo-instrucoes {
   font-size: 0.95rem;
-  /* Menor */
   color: var(--cor-destaque);
   margin: 0 0 8px 0;
-  /* Compacto */
   font-weight: bold;
 }
 
@@ -608,22 +728,18 @@ body {
   padding-left: 20px;
   color: var(--cor-texto-claro);
   font-size: 0.85rem;
-  /* Menor */
   line-height: 1.4;
   font-weight: normal;
 }
 
 .lista-instrucoes li {
   margin-bottom: 4px;
-  /* Compacto */
 }
 
 /* Link de volta ao login */
 .link-login {
   margin-top: 10px;
-  /* Compacto */
   font-size: 0.9rem;
-  /* Menor */
   color: var(--cor-texto-claro);
   font-weight: normal;
 }
@@ -643,9 +759,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  /* ✅ NOVO: Melhor acessibilidade */
+  -webkit-tap-highlight-color: transparent;
 }
 
-.botao-link-login:hover {
+.botao-link-login:hover:not(:disabled) {
   color: var(--cor-destaque-hover);
   background-color: rgba(255, 186, 8, 0.1);
   transform: translateY(-1px);
@@ -656,10 +774,14 @@ body {
   outline-offset: var(--focus-offset);
 }
 
+.botao-link-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Versão do app */
 .versao-aplicativo {
   margin-top: 12px;
-  /* Compacto */
   font-size: 0.875rem;
   color: var(--cor-texto-claro);
   opacity: 0.9;
@@ -674,6 +796,46 @@ body {
   animation: pulse 3s ease-in-out infinite;
 }
 
+/* ✅ NOVO: Preloader */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--cor-primaria);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeOut 0.3s ease-out 0.6s forwards;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--cor-destaque);
+}
+
+.preloader-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.preloader-text {
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 /* Estados de foco melhorados */
 *:focus {
   outline: var(--focus-outline);
@@ -681,7 +843,31 @@ body {
   border-radius: 4px;
 }
 
-/* Responsividade */
+/* ===== RESPONSIVIDADE MELHORADA ===== */
+
+/* ✅ MELHORADO: Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .caixa-esqueci {
+    max-width: 400px;
+    padding: 22px;
+  }
+
+  .logo-esqueci {
+    width: 95px;
+    height: 95px;
+  }
+
+  .container-logo {
+    min-height: 95px;
+  }
+
+  .logo-skeleton {
+    width: 95px;
+    height: 95px;
+  }
+}
+
+/* ✅ MELHORADO: Mobile médio */
 @media (max-width: 768px) {
   html {
     font-size: 15px;
@@ -689,13 +875,20 @@ body {
 
   .container-esqueci {
     padding: 12px;
-    min-height: 100vh;
-    max-height: none;
+    justify-content: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .caixa-esqueci {
     max-width: 95%;
     padding: 18px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .container-logo {
+    min-height: 90px;
   }
 
   .logo-esqueci {
@@ -703,9 +896,13 @@ body {
     height: 90px;
   }
 
+  .logo-skeleton {
+    width: 90px;
+    height: 90px;
+  }
+
   .input-esqueci {
-    font-size: 16px;
-    /* Previne zoom no iOS */
+    font-size: 16px; /* Previne zoom no iOS */
   }
 
   .instrucoes {
@@ -717,6 +914,7 @@ body {
   }
 }
 
+/* ✅ MELHORADO: Mobile pequeno */
 @media (max-width: 480px) {
   html {
     font-size: 14px;
@@ -724,12 +922,20 @@ body {
 
   .container-esqueci {
     padding: 8px;
+    min-height: 100vh;
+    min-height: 100dvh; /* Melhor suporte para mobile */
   }
 
   .caixa-esqueci {
     padding: 16px;
     max-width: 98%;
     margin: 8px;
+    border-radius: 12px;
+  }
+
+  .container-logo {
+    margin-bottom: 8px;
+    min-height: 80px;
   }
 
   .logo-esqueci {
@@ -737,12 +943,23 @@ body {
     height: 80px;
   }
 
-  .container-logo {
-    margin-bottom: 8px;
+  .logo-skeleton {
+    width: 80px;
+    height: 80px;
+  }
+
+  .icone-logo-fallback {
+    width: 40px;
+    height: 40px;
+  }
+
+  .texto-logo-fallback {
+    font-size: 0.7rem;
   }
 
   .titulo-esqueci {
     margin-bottom: 12px;
+    font-size: clamp(1.2rem, 5vw, 1.4rem);
   }
 
   .caixa-info {
@@ -751,6 +968,10 @@ body {
 
   .texto-info {
     font-size: 0.85rem;
+  }
+
+  .wrapper-input {
+    min-height: 44px;
   }
 
   .input-esqueci {
@@ -762,6 +983,7 @@ body {
     padding: 12px 16px;
     font-size: 0.9rem;
     width: 100%;
+    min-height: 44px;
   }
 
   .instrucoes {
@@ -780,6 +1002,108 @@ body {
 
   .formulario-esqueci {
     gap: 10px;
+  }
+
+  .botao-fechar {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* ✅ NOVO: Mobile muito pequeno */
+@media (max-width: 360px) {
+  .caixa-esqueci {
+    padding: 12px;
+  }
+
+  .logo-esqueci {
+    width: 70px;
+    height: 70px;
+  }
+
+  .logo-skeleton {
+    width: 70px;
+    height: 70px;
+  }
+
+  .container-logo {
+    min-height: 70px;
+  }
+
+  .titulo-esqueci {
+    font-size: 1.1rem;
+  }
+
+  .botao-esqueci {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ✅ MELHORADO: Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .container-esqueci {
+    padding: 8px;
+    justify-content: center;
+  }
+
+  .caixa-esqueci {
+    padding: 16px 20px;
+    gap: 8px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .container-logo {
+    min-height: 60px;
+    margin-bottom: 6px;
+  }
+
+  .logo-esqueci {
+    width: 60px;
+    height: 60px;
+  }
+
+  .titulo-esqueci {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .caixa-info {
+    padding: 8px;
+  }
+
+  .formulario-esqueci {
+    gap: 8px;
+  }
+
+  .wrapper-input {
+    min-height: 40px;
+  }
+
+  .input-esqueci {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .botao-esqueci {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    min-height: 40px;
+  }
+
+  .instrucoes {
+    padding: 6px;
+    margin: 8px 0 6px 0;
+  }
+
+  .lista-instrucoes {
+    font-size: 0.7rem;
+  }
+
+  .versao-aplicativo {
+    margin-top: 8px;
+    font-size: 0.75rem;
   }
 }
 
@@ -829,6 +1153,10 @@ body {
     color: black;
     border: 2px solid black;
   }
+
+  .preloader {
+    display: none;
+  }
 }
 
 /* Suporte para zoom até 200% */
@@ -847,14 +1175,27 @@ body {
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .caixa-esqueci {
-    max-width: 400px;
-    padding: 22px;
+/* ✅ NOVO: Suporte para notch em iPhones */
+@supports (padding: max(0px)) {
+  .container-esqueci {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+    padding-top: max(15px, env(safe-area-inset-top));
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ✅ NOVO: Melhor performance em dispositivos antigos */
+@media (max-width: 768px) {
+  * {
+    will-change: auto;
   }
 
-  .logo-esqueci {
-    width: 95px;
-    height: 95px;
+  .logo-esqueci:hover {
+    transform: none;
+  }
+
+  .botao-esqueci:hover {
+    transform: translateY(-1px);
   }
 }

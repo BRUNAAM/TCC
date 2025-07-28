@@ -817,7 +817,8 @@ const Scaa = () => {
                             { nome: "Torra Clara", cor: "#a57b70" },
                             { nome: "Torra Média Clara", cor: "#704e44" },
                             { nome: "Torra Média", cor: "#553026" },
-                            { nome: "Torra Escura", cor: "#3b1e17" },
+                            { nome: "Torra Média Escura", cor: "#2b1a12ff" },
+                            { nome: "Torra Escura", cor: "#140b08ff" },
                         ].map((torra) => (
                             <div
                                 key={torra.nome}

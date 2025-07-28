@@ -1,3 +1,5 @@
+/* ===== MANTENDO SEU ESTILO ATUAL + MELHORIAS ===== */
+
 body {
   font-family: "Times New Roman", Times, serif;
   font-weight: bold;
@@ -5,11 +7,13 @@ body {
   padding: 0;
   color: #ffffff;
 }
+
 body {
   font-family: var(--fonte-principal);
   background-color: var(--cor-primaria);
   color: var(--cor-texto);
 }
+
 .historico-scaa-container {
   max-width: 1000px;
   margin: 40px auto;
@@ -155,6 +159,15 @@ body {
   background-color: rgba(255, 186, 8, 0.1);
 }
 
+/* ✅ NOVA: Linha selecionada */
+.selected-row {
+  background-color: rgba(255, 186, 8, 0.2) !important;
+}
+
+.selected-row td {
+  background-color: rgba(255, 186, 8, 0.2) !important;
+}
+
 /* ===== Ações da tabela ===== */
 .celula-acoes {
   padding: 10px !important;
@@ -259,6 +272,58 @@ body {
   font-size: 16px;
 }
 
+/* ✅ NOVOS: Estados de loading e erro */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 186, 8, 0.3);
+  border-top: 4px solid #ffba08;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-bottom: 20px;
+  background-color: rgba(231, 76, 60, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e74c3c;
+}
+
 /* ===== Preenchimento de tela ===== */
 html,
 body,
@@ -282,23 +347,33 @@ body,
     justify-content: space-between;
     align-items: center;
   }
+
   .botoes-topo button {
     font-size: 14px;
     padding: 8px 12px;
   }
+
+  /* ✅ NOVO: Ocultar texto do botão em mobile */
+  .botao-texto-selecionados {
+    display: none;
+  }
+
   .historico-scaa-container {
     padding: 15px;
     margin: 20px auto;
   }
+
   .avaliacoes-table th,
   .avaliacoes-table td {
     font-size: 13px;
     padding: 10px 8px;
   }
+
   .acoes-botoes {
     flex-direction: column;
     gap: 5px;
   }
+
   .botao-excluir,
   .botao-imprimir-individual {
     font-size: 14px;
@@ -313,21 +388,42 @@ body,
     font-size: 13px;
     padding: 6px 10px;
   }
+
   .historico-header h2 {
     font-size: 20px;
   }
+
   .avaliacoes-table {
     min-width: 600px;
   }
+
   .avaliacoes-table th,
   .avaliacoes-table td {
     font-size: 12px;
     padding: 8px 6px;
   }
+
   .botao-nova-avaliacao {
     font-size: 14px;
     padding: 12px 20px;
     min-width: 200px;
+  }
+
+  /* ✅ NOVO: Melhor responsividade para mobile */
+  .historico-scaa-container {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .loading-container,
+  .error-container {
+    padding: 20px;
+  }
+
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
   }
 }
 
@@ -371,16 +467,25 @@ body,
   .botao-nova-avaliacao {
     display: none !important;
   }
+
   .historico-scaa-container {
     background: white !important;
     color: black !important;
   }
+
   .avaliacoes-table th {
     background: #f0f0f0 !important;
     color: black !important;
   }
+
   .avaliacoes-table td {
     background: white !important;
     color: black !important;
+  }
+
+  /* ✅ NOVO: Ocultar checkboxes na impressão */
+  .avaliacoes-table th:first-child,
+  .avaliacoes-table td:first-child {
+    display: none !important;
   }
 }

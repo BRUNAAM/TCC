@@ -1,3 +1,5 @@
+/* ===== MANTENDO SEU ESTILO + MELHORIAS MOBILE ===== */
+
 /* Variáveis CSS para consistência */
 :root {
   --cor-primaria: #032b43;
@@ -15,7 +17,6 @@
   --transicao-padrao: all 0.3s ease;
   --focus-outline: 3px solid var(--cor-destaque);
   --focus-offset: 2px;
-
   /* Variáveis adicionais para melhor organização */
   --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
   --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -43,9 +44,10 @@ body {
   background-color: var(--cor-primaria);
   color: var(--cor-texto-branco);
   line-height: 1.6;
-  /* Melhorado para WCAG */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* ✅ NOVO: Previne zoom horizontal em mobile */
+  overflow-x: hidden;
 }
 
 /* Link para pular conteúdo */
@@ -111,13 +113,11 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  max-height: 100vh;
-  /* Limita altura máxima */
   width: 100%;
   padding: 15px;
-  /* Reduzido de 20px */
-  overflow: hidden;
-  /* Evita scroll desnecessário */
+  /* ✅ MELHORADO: Melhor gestão de overflow */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .container-login:focus {
@@ -128,16 +128,21 @@ body {
   background-color: var(--cor-primaria);
   text-align: center;
   max-width: 380px;
-  /* Reduzido de 420px */
   width: 100%;
   border-radius: 15px;
   box-shadow: var(--sombra-forte);
   padding: 25px;
-  /* Reduzido de 30px */
   animation: fadeInUp 0.6s ease-out;
   border: 2px solid rgba(255, 186, 8, 0.2);
   position: relative;
   backdrop-filter: blur(10px);
+  /* ✅ NOVO: Melhor controle de altura em mobile */
+  min-height: fit-content;
+}
+
+/* ✅ NOVO: Estado após animação completa */
+.caixa-login.animacao-completa {
+  animation: none;
 }
 
 @keyframes fadeInUp {
@@ -179,21 +184,84 @@ body {
 
 .cabecalho-login {
   margin-bottom: 15px;
-  /* Reduzido de 20px */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px; /* Evita layout shift */
+}
+
+/* ✅ NOVOS: Estados do logo */
+.logo-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-skeleton {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 186, 8, 0.1) 0%,
+    rgba(255, 186, 8, 0.2) 50%,
+    rgba(255, 186, 8, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.logo-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  background: rgba(255, 186, 8, 0.1);
+  border-radius: 8px;
+  border: 2px dashed var(--cor-destaque);
+}
+
+.icone-logo-fallback {
+  color: var(--cor-destaque);
+  filter: drop-shadow(0 2px 4px var(--cor-sombra));
+}
+
+.texto-logo-fallback {
+  color: var(--cor-destaque);
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .logo-login {
   width: 120px;
-  /* Reduzido de 160px */
   height: 120px;
-  /* Reduzido de 160px */
   margin: 0 auto;
   filter: drop-shadow(0 4px 8px var(--cor-sombra));
   transition: var(--transicao-padrao);
   border-radius: 8px;
-  /* Melhor qualidade de imagem */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+  /* ✅ NOVO: Estados de carregamento */
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.logo-login.logo-carregado {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .logo-login:hover {
@@ -203,9 +271,7 @@ body {
 
 .titulo-login {
   font-size: clamp(1.4rem, 4vw, 1.6rem);
-  /* Ligeiramente menor */
   margin-bottom: 20px;
-  /* Reduzido de 25px */
   color: var(--cor-destaque);
   text-shadow: 0 2px 4px var(--cor-sombra);
   position: relative;
@@ -235,7 +301,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* Reduzido de 20px */
   text-align: left;
 }
 
@@ -261,7 +326,6 @@ body {
   transition: var(--transicao-padrao);
   border: 2px solid rgba(255, 255, 255, 0.1);
   min-height: 48px;
-  /* WCAG - Área mínima de toque */
 }
 
 .wrapper-input:focus-within {
@@ -295,6 +359,9 @@ body {
   outline: none;
   width: 100%;
   font-family: var(--fonte-principal);
+  /* ✅ NOVO: Melhor acessibilidade */
+  user-select: text;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .input-login::placeholder {
@@ -303,6 +370,11 @@ body {
 
 .input-login:focus {
   outline: none;
+}
+
+.input-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Estados de validação */
@@ -335,9 +407,11 @@ body {
   border-radius: 6px;
   min-width: 32px;
   min-height: 32px;
+  /* ✅ NOVO: Melhor acessibilidade */
+  -webkit-tap-highlight-color: transparent;
 }
 
-.botao-alternar-senha:hover {
+.botao-alternar-senha:hover:not(:disabled) {
   background-color: rgba(255, 186, 8, 0.1);
   transform: scale(1.05);
 }
@@ -347,7 +421,12 @@ body {
   outline-offset: var(--focus-offset);
 }
 
-/* Container de erro */
+.botao-alternar-senha:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ✅ MELHORADO: Container de erro */
 .container-erro {
   display: flex;
   align-items: flex-start;
@@ -358,6 +437,11 @@ body {
   animation: slideInError 0.3s ease-out;
   gap: 8px;
   backdrop-filter: blur(5px);
+}
+
+.container-erro.erro-bloqueio {
+  border-left-color: #ff4757;
+  background-color: rgba(255, 71, 87, 0.1);
 }
 
 .container-erro:focus {
@@ -393,6 +477,14 @@ body {
   }
 }
 
+/* ✅ NOVO: Conteúdo do erro */
+.conteudo-erro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
 .erro-login {
   color: var(--cor-erro);
   font-size: 0.9rem;
@@ -401,21 +493,33 @@ body {
   font-weight: normal;
 }
 
+/* ✅ NOVOS: Informações adicionais de erro */
+.tempo-bloqueio,
+.tentativas-restantes {
+  color: var(--cor-erro);
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+.tempo-bloqueio {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
 /* Container de botões */
 .container-botoes {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* Reduzido de 12px */
   margin-top: 8px;
-  /* Reduzido de 10px */
 }
 
 .botao-login,
 .botao-cadastro {
   position: relative;
   min-height: 48px;
-  /* WCAG - Área mínima de toque */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -434,6 +538,21 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   overflow: hidden;
+  /* ✅ NOVO: Melhor acessibilidade */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ✅ NOVO: Estado bloqueado */
+.botao-login.botao-bloqueado {
+  background: linear-gradient(135deg, #666666, #555555);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.botao-login.botao-bloqueado:hover {
+  transform: none;
+  box-shadow: var(--sombra-media);
 }
 
 /* Efeito de brilho no hover */
@@ -454,15 +573,15 @@ body {
   transition: var(--transicao-padrao);
 }
 
-.botao-login:hover,
-.botao-cadastro:hover {
+.botao-login:hover:not(:disabled),
+.botao-cadastro:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   background: linear-gradient(135deg, var(--cor-destaque-hover), #ffcc33);
 }
 
-.botao-login:hover::before,
-.botao-cadastro:hover::before {
+.botao-login:hover:not(:disabled)::before,
+.botao-cadastro:hover:not(:disabled)::before {
   left: 100%;
 }
 
@@ -473,8 +592,8 @@ body {
   transform: translateY(-1px);
 }
 
-.botao-login:active,
-.botao-cadastro:active {
+.botao-login:active:not(:disabled),
+.botao-cadastro:active:not(:disabled) {
   transform: translateY(1px);
   box-shadow: var(--sombra-suave);
 }
@@ -495,8 +614,8 @@ body {
   transition: var(--transicao-padrao);
 }
 
-.botao-login:hover .icone-botao,
-.botao-cadastro:hover .icone-botao {
+.botao-login:hover:not(:disabled) .icone-botao:not(.icone-carregando),
+.botao-cadastro:hover:not(:disabled) .icone-botao {
   transform: scale(1.1);
 }
 
@@ -516,7 +635,6 @@ body {
 /* Link esqueci senha */
 .esqueci-senha {
   margin-top: 8px;
-  /* Reduzido de 5px */
   text-align: center;
 }
 
@@ -526,7 +644,6 @@ body {
   color: var(--cor-destaque);
   text-decoration: underline;
   font-size: 0.95rem;
-  /* Ligeiramente menor */
   cursor: pointer;
   padding: 8px 12px;
   border-radius: var(--border-radius);
@@ -534,9 +651,11 @@ body {
   font-family: var(--fonte-principal);
   transition: var(--transicao-padrao);
   min-height: 32px;
+  /* ✅ NOVO: Melhor acessibilidade */
+  -webkit-tap-highlight-color: transparent;
 }
 
-.link-esqueci-senha:hover {
+.link-esqueci-senha:hover:not(:disabled) {
   color: var(--cor-destaque-hover);
   background-color: rgba(255, 186, 8, 0.1);
   transform: translateY(-1px);
@@ -547,10 +666,14 @@ body {
   outline-offset: var(--focus-offset);
 }
 
+.link-esqueci-senha:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Versão do app */
 .versao-aplicativo {
   margin-top: 15px;
-  /* Reduzido de 20px */
   font-size: 0.875rem;
   color: var(--cor-texto-claro);
   opacity: 0.9;
@@ -565,6 +688,46 @@ body {
   animation: pulse 3s ease-in-out infinite;
 }
 
+/* ✅ NOVO: Preloader */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--cor-primaria);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeOut 0.3s ease-out 0.6s forwards;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--cor-destaque);
+}
+
+.preloader-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.preloader-text {
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 /* Estados de foco melhorados */
 *:focus {
   outline: var(--focus-outline);
@@ -572,7 +735,31 @@ body {
   border-radius: 4px;
 }
 
-/* Responsividade */
+/* ===== RESPONSIVIDADE MELHORADA ===== */
+
+/* ✅ MELHORADO: Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .caixa-login {
+    max-width: 360px;
+    padding: 25px;
+  }
+
+  .logo-login {
+    width: 110px;
+    height: 110px;
+  }
+
+  .cabecalho-login {
+    min-height: 110px;
+  }
+
+  .logo-skeleton {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+/* ✅ MELHORADO: Mobile médio */
 @media (max-width: 768px) {
   html {
     font-size: 15px;
@@ -580,26 +767,34 @@ body {
 
   .container-login {
     padding: 12px;
-    min-height: 100vh;
-    max-height: none;
-    /* Remove limitação no mobile */
+    justify-content: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .caixa-login {
     max-width: 95%;
-    /* Aproveita mais a largura */
     padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .cabecalho-login {
+    min-height: 100px;
   }
 
   .logo-login {
     width: 100px;
-    /* Menor no mobile */
+    height: 100px;
+  }
+
+  .logo-skeleton {
+    width: 100px;
     height: 100px;
   }
 
   .input-login {
-    font-size: 16px;
-    /* Previne zoom no iOS */
+    font-size: 16px; /* Previne zoom no iOS */
   }
 
   .formulario-login {
@@ -607,6 +802,7 @@ body {
   }
 }
 
+/* ✅ MELHORADO: Mobile pequeno */
 @media (max-width: 480px) {
   html {
     font-size: 14px;
@@ -614,28 +810,44 @@ body {
 
   .container-login {
     padding: 8px;
+    min-height: 100vh;
+    min-height: 100dvh; /* Melhor suporte para mobile */
   }
 
   .caixa-login {
     padding: 16px;
-    /* Bem preenchido */
     max-width: 98%;
-    /* Quase full width */
     margin: 8px;
+    border-radius: 12px;
   }
 
   .cabecalho-login {
     margin-bottom: 12px;
+    min-height: 90px;
   }
 
   .logo-login {
     width: 90px;
-    /* Compacto mas visível */
     height: 90px;
+  }
+
+  .logo-skeleton {
+    width: 90px;
+    height: 90px;
+  }
+
+  .icone-logo-fallback {
+    width: 50px;
+    height: 50px;
+  }
+
+  .texto-logo-fallback {
+    font-size: 0.8rem;
   }
 
   .titulo-login {
     margin-bottom: 16px;
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
   }
 
   .wrapper-input {
@@ -653,11 +865,110 @@ body {
     font-size: 0.9rem;
     min-height: 44px;
     width: 100%;
-    /* Full width em mobile */
   }
 
   .formulario-login {
     gap: 12px;
+  }
+
+  .container-erro {
+    padding: 10px;
+  }
+
+  .erro-login {
+    font-size: 0.85rem;
+  }
+
+  .tempo-bloqueio,
+  .tentativas-restantes {
+    font-size: 0.75rem;
+  }
+}
+
+/* ✅ NOVO: Mobile muito pequeno */
+@media (max-width: 360px) {
+  .caixa-login {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .logo-login {
+    width: 80px;
+    height: 80px;
+  }
+
+  .logo-skeleton {
+    width: 80px;
+    height: 80px;
+  }
+
+  .cabecalho-login {
+    min-height: 80px;
+  }
+
+  .titulo-login {
+    font-size: 1.1rem;
+  }
+
+  .botao-login,
+  .botao-cadastro {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ✅ MELHORADO: Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .container-login {
+    padding: 8px;
+    justify-content: center;
+  }
+
+  .caixa-login {
+    padding: 16px 20px;
+    gap: 12px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .cabecalho-login {
+    min-height: 70px;
+    margin-bottom: 8px;
+  }
+
+  .logo-login {
+    width: 70px;
+    height: 70px;
+  }
+
+  .titulo-login {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+
+  .formulario-login {
+    gap: 10px;
+  }
+
+  .wrapper-input {
+    min-height: 40px;
+  }
+
+  .input-login {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .botao-login,
+  .botao-cadastro {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    min-height: 40px;
+  }
+
+  .versao-aplicativo {
+    margin-top: 8px;
+    font-size: 0.75rem;
   }
 }
 
@@ -709,6 +1020,10 @@ body {
     color: black;
     border: 2px solid black;
   }
+
+  .preloader {
+    display: none;
+  }
 }
 
 /* Suporte para zoom até 200% */
@@ -727,14 +1042,28 @@ body {
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .caixa-login {
-    max-width: 360px;
-    padding: 25px;
+/* ✅ NOVO: Suporte para notch em iPhones */
+@supports (padding: max(0px)) {
+  .container-login {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+    padding-top: max(15px, env(safe-area-inset-top));
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ✅ NOVO: Melhor performance em dispositivos antigos */
+@media (max-width: 768px) {
+  * {
+    will-change: auto;
   }
 
-  .logo-login {
-    width: 110px;
-    height: 110px;
+  .logo-login:hover {
+    transform: none;
+  }
+
+  .botao-login:hover,
+  .botao-cadastro:hover {
+    transform: translateY(-1px);
   }
 }

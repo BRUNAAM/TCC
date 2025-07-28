@@ -1,3 +1,5 @@
+/* ===== MANTENDO SEU ESTILO + MELHORIAS MOBILE ===== */
+
 /* Variáveis CSS para consistência e manutenibilidade */
 :root {
   --cor-primaria: #032b43;
@@ -10,7 +12,6 @@
   --fonte-principal: "Times New Roman", Times, serif;
   --border-radius: 10px;
   --transicao-padrao: all 0.3s ease;
-
   /* Variáveis adicionais para melhor organização */
   --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
   --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -38,9 +39,10 @@ body {
   background-color: var(--cor-primaria);
   color: var(--cor-texto-branco);
   line-height: 1.6;
-  /* Melhorado para WCAG (mínimo 1.5) */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* ✅ NOVO: Previne zoom horizontal em mobile */
+  overflow-x: hidden;
 }
 
 /* Link para pular conteúdo - acessibilidade - Melhorado */
@@ -106,13 +108,11 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  max-height: 100vh;
-  /* Limita a altura máxima */
   width: 100%;
   padding: 15px;
-  /* Reduzido de 20px */
-  overflow: hidden;
-  /* Evita scroll desnecessário */
+  /* ✅ MELHORADO: Melhor gestão de overflow */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .container-inicio:focus {
@@ -125,18 +125,22 @@ body {
   border-radius: 15px;
   box-shadow: var(--sombra-forte);
   padding: 25px 30px;
-  /* Reduzido de 40px para 25px */
   max-width: 420px;
-  /* Reduzido de 450px */
   width: 100%;
   animation: fadeInUp 0.8s ease-out;
   border: 2px solid rgba(255, 186, 8, 0.2);
   display: flex;
   flex-direction: column;
   gap: 18px;
-  /* Reduzido de 25px */
   position: relative;
   backdrop-filter: blur(10px);
+  /* ✅ NOVO: Melhor controle de altura em mobile */
+  min-height: fit-content;
+}
+
+/* ✅ NOVO: Estado após animação completa */
+.conteudo-inicio.animacao-completa {
+  animation: none;
 }
 
 /* Animação melhorada */
@@ -178,20 +182,83 @@ body {
 
 .container-logo {
   margin-bottom: 5px;
-  /* Reduzido de 10px */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 140px; /* Evita layout shift */
+}
+
+/* ✅ NOVOS: Estados do logo */
+.logo-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-skeleton {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 186, 8, 0.1) 0%,
+    rgba(255, 186, 8, 0.2) 50%,
+    rgba(255, 186, 8, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.logo-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  background: rgba(255, 186, 8, 0.1);
+  border-radius: 8px;
+  border: 2px dashed var(--cor-destaque);
+}
+
+.icone-logo-fallback {
+  color: var(--cor-destaque);
+  filter: drop-shadow(0 2px 4px var(--cor-sombra));
+}
+
+.texto-logo-fallback {
+  color: var(--cor-destaque);
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .logo-inicio {
   width: 140px;
-  /* Reduzido de 180px */
   height: 140px;
-  /* Reduzido de 180px */
   filter: drop-shadow(0 4px 8px var(--cor-sombra));
   transition: var(--transicao-padrao);
   border-radius: 8px;
-  /* Melhor qualidade de imagem */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+  /* ✅ NOVO: Estados de carregamento */
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.logo-inicio.logo-carregado {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .logo-inicio:hover {
@@ -204,7 +271,6 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  /* Reduzido de 20px */
 }
 
 .titulo-inicio {
@@ -216,7 +282,6 @@ body {
   display: inline-block;
   font-weight: bold;
   line-height: 1.2;
-  /* Melhor legibilidade */
 }
 
 .titulo-inicio::after {
@@ -244,16 +309,13 @@ body {
     var(--cor-primaria)
   );
   padding: 16px;
-  /* Reduzido de 20px */
   border-radius: var(--border-radius);
   margin: 8px 0 15px;
-  /* Reduzido margens */
   box-shadow: var(--sombra-media);
   border: 1px solid rgba(124, 216, 228, 0.2);
   position: relative;
 }
 
-/* Indicador visual sutil para região importante */
 .caixa-descricao::before {
   content: "";
   position: absolute;
@@ -291,11 +353,30 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   min-height: 48px;
-  /* WCAG - Área mínima de toque */
   min-width: 44px;
-  /* WCAG - Área mínima de toque */
   position: relative;
   overflow: hidden;
+  /* ✅ NOVO: Melhor acessibilidade */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ✅ NOVO: Estado de navegação */
+.botao-inicio.navegando {
+  background: linear-gradient(135deg, #cccccc, #999999);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.botao-inicio.navegando:hover {
+  transform: none;
+  box-shadow: var(--sombra-media);
+}
+
+.botao-inicio:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Efeito de brilho no hover */
@@ -315,13 +396,13 @@ body {
   transition: var(--transicao-padrao);
 }
 
-.botao-inicio:hover {
+.botao-inicio:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   background: linear-gradient(135deg, var(--cor-destaque-hover), #ffcc33);
 }
 
-.botao-inicio:hover::before {
+.botao-inicio:hover:not(:disabled)::before {
   left: 100%;
 }
 
@@ -331,7 +412,7 @@ body {
   transform: translateY(-1px);
 }
 
-.botao-inicio:active {
+.botao-inicio:active:not(:disabled) {
   transform: translateY(1px);
   box-shadow: var(--sombra-suave);
 }
@@ -341,13 +422,26 @@ body {
   transition: var(--transicao-padrao);
 }
 
-.botao-inicio:hover .icone-botao {
+/* ✅ NOVO: Animação de loading */
+.icone-loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.botao-inicio:hover:not(:disabled) .icone-botao:not(.icone-loading) {
   transform: scale(1.1);
 }
 
 .versao-aplicativo {
   margin-top: 10px;
-  /* Reduzido de 15px */
   font-size: 0.875rem;
   color: var(--cor-texto-claro);
   opacity: 0.9;
@@ -372,6 +466,46 @@ body {
   }
 }
 
+/* ✅ NOVO: Preloader */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--cor-primaria);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeOut 0.3s ease-out 0.8s forwards;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--cor-destaque);
+}
+
+.preloader-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.preloader-text {
+  font-size: 1rem;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 /* Estados de foco melhorados - WCAG */
 *:focus {
   outline: 3px solid var(--cor-destaque);
@@ -379,14 +513,28 @@ body {
   border-radius: 4px;
 }
 
-/* Melhor visibilidade para elementos interativos */
 button:focus,
 a:focus {
   outline: 3px solid var(--cor-texto-claro);
   outline-offset: 3px;
 }
 
-/* Responsividade aprimorada */
+/* ===== RESPONSIVIDADE MELHORADA ===== */
+
+/* ✅ MELHORADO: Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .conteudo-inicio {
+    max-width: 400px;
+    padding: 30px 25px;
+  }
+
+  .logo-inicio {
+    width: 130px;
+    height: 130px;
+  }
+}
+
+/* ✅ MELHORADO: Mobile médio */
 @media (max-width: 768px) {
   html {
     font-size: 15px;
@@ -394,22 +542,30 @@ a:focus {
 
   .container-inicio {
     padding: 12px;
-    /* Menos padding para aproveitar mais espaço */
-    min-height: 100vh;
-    max-height: none;
-    /* Remove limitação no mobile */
+    justify-content: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .conteudo-inicio {
     padding: 25px 20px;
     max-width: 95%;
-    /* Aproveita mais a largura */
     gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .container-logo {
+    min-height: 120px;
   }
 
   .logo-inicio {
     width: 120px;
-    /* Menor no mobile para economizar espaço */
+    height: 120px;
+  }
+
+  .logo-skeleton {
+    width: 120px;
     height: 120px;
   }
 
@@ -420,9 +576,12 @@ a:focus {
   .botao-inicio {
     padding: 14px 28px;
     font-size: 0.9rem;
+    width: 100%;
+    max-width: 280px;
   }
 }
 
+/* ✅ MELHORADO: Mobile pequeno */
 @media (max-width: 480px) {
   html {
     font-size: 14px;
@@ -430,27 +589,53 @@ a:focus {
 
   .container-inicio {
     padding: 8px;
-    /* Mínimo padding */
+    min-height: 100vh;
+    min-height: 100dvh; /* Melhor suporte para mobile */
   }
 
   .conteudo-inicio {
     padding: 20px 16px;
-    /* Bem preenchido */
     gap: 16px;
     max-width: 98%;
-    /* Quase full width */
     margin: 8px;
-    /* Margem mínima */
+    border-radius: 12px;
+  }
+
+  .container-logo {
+    min-height: 100px;
+    margin-bottom: 8px;
   }
 
   .logo-inicio {
     width: 100px;
-    /* Compacto mas visível */
     height: 100px;
+  }
+
+  .logo-skeleton {
+    width: 100px;
+    height: 100px;
+  }
+
+  .icone-logo-fallback {
+    width: 60px;
+    height: 60px;
+  }
+
+  .texto-logo-fallback {
+    font-size: 0.9rem;
+  }
+
+  .titulo-inicio {
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
   }
 
   .caixa-descricao {
     padding: 14px;
+    margin: 6px 0 12px;
+  }
+
+  .descricao-inicio {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
   }
 
   .botao-inicio {
@@ -458,14 +643,91 @@ a:focus {
     font-size: 0.85rem;
     gap: 8px;
     width: 100%;
-  }
-
-  .container-logo {
-    margin-bottom: 8px;
+    max-width: none;
   }
 
   .conteudo-boas-vindas {
     gap: 12px;
+  }
+
+  .versao-aplicativo {
+    margin-top: 8px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ✅ NOVO: Mobile muito pequeno */
+@media (max-width: 360px) {
+  .conteudo-inicio {
+    padding: 16px 12px;
+    gap: 14px;
+  }
+
+  .logo-inicio {
+    width: 90px;
+    height: 90px;
+  }
+
+  .logo-skeleton {
+    width: 90px;
+    height: 90px;
+  }
+
+  .container-logo {
+    min-height: 90px;
+  }
+
+  .titulo-inicio {
+    font-size: 1.2rem;
+  }
+
+  .botao-inicio {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ✅ MELHORADO: Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .container-inicio {
+    padding: 8px;
+    justify-content: center;
+  }
+
+  .conteudo-inicio {
+    padding: 16px 20px;
+    gap: 12px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .container-logo {
+    min-height: 80px;
+    margin-bottom: 4px;
+  }
+
+  .logo-inicio {
+    width: 80px;
+    height: 80px;
+  }
+
+  .titulo-inicio {
+    font-size: 1.3rem;
+  }
+
+  .caixa-descricao {
+    padding: 12px;
+    margin: 4px 0 8px;
+  }
+
+  .botao-inicio {
+    padding: 10px 24px;
+    font-size: 0.85rem;
+  }
+
+  .versao-aplicativo {
+    margin-top: 6px;
+    font-size: 0.75rem;
   }
 }
 
@@ -519,6 +781,10 @@ a:focus {
   .descricao-inicio {
     color: black;
   }
+
+  .preloader {
+    display: none;
+  }
 }
 
 /* Suporte para zoom até 200% - WCAG */
@@ -537,14 +803,27 @@ a:focus {
   }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .conteudo-inicio {
-    max-width: 400px;
-    padding: 30px 25px;
+/* ✅ NOVO: Suporte para notch em iPhones */
+@supports (padding: max(0px)) {
+  .container-inicio {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+    padding-top: max(15px, env(safe-area-inset-top));
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ✅ NOVO: Melhor performance em dispositivos antigos */
+@media (max-width: 768px) {
+  * {
+    will-change: auto;
   }
 
-  .logo-inicio {
-    width: 130px;
-    height: 130px;
+  .logo-inicio:hover {
+    transform: none;
+  }
+
+  .botao-inicio:hover {
+    transform: translateY(-1px);
   }
 }
